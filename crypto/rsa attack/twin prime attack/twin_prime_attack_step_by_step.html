@@ -1,0 +1,265 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.soal-card{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.soal-card h2{color:#412402}
+.soal-card p{color:#633806}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.tbl td{padding:5px 10px;border:0.5px solid var(--color-border-tertiary);font-family:var(--font-mono);color:var(--color-text-primary)}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--color-border-secondary);border:none;padding:0;cursor:pointer;transition:background .15s}
+.dot.done{background:#EF9F27}
+.dot.active{background:#854F0B;width:24px;border-radius:5px}
+.btn-nav{padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;cursor:pointer}
+.btn-nav:hover{background:var(--color-background-secondary)}
+.btn-next{background:#854F0B;color:#fff;border-color:#854F0B}
+.btn-next:hover{background:#633806}
+.step-label{font-size:12px;color:var(--color-text-tertiary)}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:var(--font-mono);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:var(--color-text-primary)}
+.eq-hi{font-family:var(--font-mono);background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#412402}
+.eq-green{font-family:var(--font-mono);background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#173404}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.5rem 0}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.5rem 0}
+.warn{background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.5rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#854F0B;margin-bottom:8px}
+.big-ans{font-size:22px;font-weight:500;color:#854F0B;font-family:var(--font-mono)}
+.iter-row{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.iter-a{font-family:var(--font-mono);width:32px;font-weight:500;color:var(--color-text-primary)}
+.iter-b2{font-family:var(--font-mono);flex:1;color:var(--color-text-secondary)}
+.iter-ok{font-size:12px;font-weight:500}
+.found{background:#FAEEDA;border-radius:4px;padding:2px 8px;color:#633806}
+.miss{color:var(--color-text-tertiary)}
+.exp-tbl td{padding:4px 10px;font-family:var(--font-mono);font-size:12px;border:0.5px solid var(--color-border-tertiary)}
+.exp-tbl th{padding:4px 10px;font-size:12px;font-weight:500;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.exp-tbl{width:100%;border-collapse:collapse;margin:.5rem 0}
+.hi-row{background:#FAEEDA}
+.hi-row td{color:#412402}
+</style>
+
+<div style="padding:1rem 0">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#854F0B;margin-bottom:6px">Soal — Twin Prime Attack (Fermat Factorization)</div>
+  <h2>Pecahkan RSA dengan faktor prima yang berdekatan!</h2>
+  <p style="margin-top:6px;margin-bottom:10px">Eve mencuri kunci publik dan ciphertext berikut. Diketahui bahwa p dan q yang dipakai sangat berdekatan (twin prime):</p>
+  <table class="tbl">
+    <tr><th>Parameter</th><th>Nilai</th></tr>
+    <tr><td>N (modulus)</td><td>221</td></tr>
+    <tr><td>e (exponent publik)</td><td>5</td></tr>
+    <tr><td>C (ciphertext)</td><td>22</td></tr>
+  </table>
+  <p style="margin-top:8px">Gunakan Fermat Factorization untuk faktorkan N, lalu dekripsi C dan temukan M!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<!-- STEP 0 -->
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Verifikasi syarat serangan</div>
+    <h3>Kenapa Twin Prime Attack bisa dilakukan?</h3>
+    <p style="margin-bottom:.75rem">Serangan ini memanfaatkan kelemahan ketika p dan q dipilih terlalu berdekatan. Identitas kuncinya:</p>
+    <span class="eq">N = p × q = (a+b)(a-b) = a² - b²</span>
+    <p style="margin:.5rem 0">Dimana:</p>
+    <span class="eq">a = (p+q)/2  →  nilai tengah antara p dan q
+b = (p-q)/2  →  selisih setengah p dan q</span>
+    <p style="margin:.75rem 0 .4rem">Jika p ≈ q (sangat dekat), maka:</p>
+    <span class="eq">b = (p-q)/2 sangat kecil  →  a ≈ √N</span>
+    <div class="ok">Artinya: kita cukup coba a mulai dari ⌈√N⌉, dan dalam beberapa iterasi b² akan menjadi kuadrat sempurna!</div>
+    <div class="note" style="margin-top:.5rem">Syarat serangan: p dan q berdekatan. Makin dekat, makin sedikit iterasi yang dibutuhkan.</div>
+    <p style="margin-top:.75rem;font-size:13px">Cek apakah N = 221 layak diserang:</p>
+    <span class="eq">√221 ≈ 14.87 → a mulai dari 15</span>
+    <span class="eq">Jika ketemu, berarti p dan q memang berdekatan ✓</span>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Fermat Factorization (iterasi)</div>
+    <h3>Mulai dari a = ⌈√N⌉ = ⌈√221⌉ = 15</h3>
+    <p style="margin-bottom:.75rem">Setiap iterasi: hitung b² = a² - N, cek apakah b² adalah kuadrat sempurna (b = integer).</p>
+
+    <div style="margin:.75rem 0">
+      <div class="iter-row" style="border-bottom:1px solid var(--color-border-secondary)">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);width:32px">a</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex:1">b² = a² - N</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary)">b = √b²</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary)">Status</span>
+      </div>
+      <div class="iter-row">
+        <span class="iter-a found">15</span>
+        <span class="iter-b2">15² - 221 = 225 - 221 = <strong style="color:var(--color-text-primary)">4</strong></span>
+        <span class="iter-a">√4 = 2</span>
+        <span class="iter-ok found">Ketemu!</span>
+      </div>
+    </div>
+
+    <div class="ok" style="margin-top:.5rem">Hanya 1 iterasi! b² = 4 adalah kuadrat sempurna → b = 2 (integer).</div>
+    <div class="note" style="margin-top:.5rem">Kalau b² bukan kuadrat sempurna (hasilnya desimal), lanjut ke a+1 dan ulangi. Contoh: kalau N=15, a=4 → b²=1, b=1 ✓ langsung dapat juga.</div>
+    <span class="eq" style="margin-top:.75rem">a = 15,  b = 2  →  siap faktorkan N!</span>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung p dan q</div>
+    <h3>Gunakan a dan b untuk temukan faktor prima</h3>
+    <p style="margin-bottom:.75rem">Dari identitas N = (a+b)(a-b), maka:</p>
+    <span class="eq">p = a + b
+q = a - b</span>
+    <span class="eq">p = 15 + 2 = 17
+q = 15 - 2 = 13</span>
+    <span class="eq-hi">p = 17,  q = 13</span>
+
+    <p style="margin:.75rem 0 .4rem">Verifikasi faktorisasi:</p>
+    <span class="eq">p × q = 17 × 13 = 221 = N ✓</span>
+    <div class="ok">N berhasil difaktorkan! Dengan p dan q diketahui, RSA sudah runtuh.</div>
+
+    <p style="margin-top:.75rem;font-size:13px">Kenapa ini bahaya? Karena kunci privat RSA dihitung dari φ(N) = (p-1)(q-1), dan sekarang kita tahu p dan q-nya.</p>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung φ(N)</div>
+    <h3>φ(N) = (p-1)(q-1)</h3>
+    <p style="margin-bottom:.75rem">φ(N) atau Euler's totient dibutuhkan untuk menghitung kunci privat d.</p>
+    <span class="eq">φ(N) = (p - 1) × (q - 1)</span>
+    <span class="eq">φ(221) = (17 - 1) × (13 - 1)</span>
+    <span class="eq">       = 16 × 12</span>
+    <span class="eq-hi">φ(N) = 192</span>
+    <div class="note" style="margin-top:.5rem">φ(N) = jumlah bilangan bulat 1..N yang coprime dengan N. Untuk RSA semiprime, rumusnya selalu (p-1)(q-1).</div>
+    <p style="margin-top:.75rem;font-size:13px">Selanjutnya kita pakai φ(N) = 192 untuk hitung kunci privat d.</p>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung kunci privat d</div>
+    <h3>d = e⁻¹ mod φ(N) = 5⁻¹ mod 192</h3>
+    <p style="margin-bottom:.75rem">Cari d sehingga e × d ≡ 1 (mod φ(N)), yaitu 5d ≡ 1 (mod 192). Gunakan Extended Euclidean:</p>
+
+    <p style="font-size:12px;font-weight:500;color:#854F0B;margin-bottom:4px">Fase maju:</p>
+    <span class="eq">192 = 38 × 5 + 2
+  5 =  2 × 2 + 1
+  2 =  2 × 1 + 0  ← gcd = 1</span>
+
+    <p style="font-size:12px;font-weight:500;color:#854F0B;margin:.75rem 0 4px">Fase mundur (substitusi balik):</p>
+    <span class="eq">1 = 5 - 2 × 2
+  = 5 - 2 × (192 - 38 × 5)
+  = 5 - 2×192 + 76×5
+  = 77×5 - 2×192</span>
+
+    <span class="eq-hi">5⁻¹ ≡ 77 (mod 192)  →  d = 77</span>
+
+    <p style="margin:.75rem 0 .3rem;font-size:13px">Verifikasi:</p>
+    <span class="eq">e × d = 5 × 77 = 385
+385 mod 192 = 385 - 2×192 = 385 - 384 = 1 ✓</span>
+    <div class="ok">d = 77 adalah kunci privat yang berhasil kita rekonstruksi!</div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Dekripsi C menggunakan d</div>
+    <h3>M = C^d mod N = 22^77 mod 221</h3>
+    <p style="margin-bottom:.75rem">Hitung 22^77 mod 221 menggunakan <strong style="font-weight:500">fast modular exponentiation</strong> (eksponen dalam bentuk biner).</p>
+
+    <p style="font-size:12px;font-weight:500;color:#854F0B;margin-bottom:4px">77 dalam biner = 64 + 8 + 4 + 1 = 1001101₂</p>
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:.5rem">Hitung pangkat 2 berulang, ambil yang bit-nya 1:</p>
+
+    <table class="exp-tbl">
+      <tr><th>Pangkat</th><th>Nilai</th><th>Hitung</th><th>Dipakai?</th></tr>
+      <tr><td>22¹</td><td>22</td><td>langsung</td><td style="color:#27500A;font-weight:500">✓ (bit 1)</td></tr>
+      <tr><td>22²</td><td>42</td><td>22² = 484, 484 mod 221 = 42</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>22⁴</td><td>217</td><td>42² = 1764, 1764 mod 221 = 217</td><td style="color:#27500A;font-weight:500">✓ (bit 4)</td></tr>
+      <tr><td>22⁸</td><td>16</td><td>217² = 47089, 47089 mod 221 = 16</td><td style="color:#27500A;font-weight:500">✓ (bit 8)</td></tr>
+      <tr><td>22¹⁶</td><td>35</td><td>16² = 256, 256 mod 221 = 35</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>22³²</td><td>120</td><td>35² = 1225, 1225 mod 221 = 120</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>22⁶⁴</td><td>35</td><td>120² = 14400, 14400 mod 221 = 35</td><td style="color:#27500A;font-weight:500">✓ (bit 64)</td></tr>
+    </table>
+
+    <p style="font-size:12px;font-weight:500;color:#854F0B;margin:.75rem 0 4px">Kalikan semua yang dipakai:</p>
+    <span class="eq">22^77 = 22^64 × 22^8 × 22^4 × 22^1 mod 221</span>
+    <span class="eq">= 35 × 16 × 217 × 22 mod 221</span>
+    <span class="eq">35 × 16   = 560 mod 221 = 118
+118 × 217 = 25606 mod 221 = 191
+191 × 22  = 4202 mod 221 = 3</span>
+    <span class="eq-hi">M = 3</span>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi</div>
+    <h3>Enkripsi ulang M=3 dan bandingkan</h3>
+    <span class="eq">C = M^e mod N = 3^5 mod 221</span>
+    <span class="eq">3^5 = 243</span>
+    <span class="eq">243 mod 221 = 243 - 1×221 = 22 = C ✓</span>
+    <div class="ok" style="margin-top:.5rem">Ciphertext cocok! Serangan berhasil.</div>
+
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <div style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:4px">Plaintext ditemukan</div>
+      <div class="big-ans">M = 3</div>
+    </div>
+
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:var(--color-background-secondary);border-left:3px solid #854F0B;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0">
+      <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">Ringkasan langkah Twin Prime Attack</p>
+      <p style="font-size:12px">1. Identifikasi: p ≈ q → Fermat Factorization</p>
+      <p style="font-size:12px">2. Hitung a = ⌈√N⌉, iterasi sampai b² = a²-N adalah kuadrat sempurna</p>
+      <p style="font-size:12px">3. Dapat p = a+b, q = a-b</p>
+      <p style="font-size:12px">4. Hitung φ(N) = (p-1)(q-1)</p>
+      <p style="font-size:12px">5. Hitung d = e⁻¹ mod φ(N) (Extended Euclidean)</p>
+      <p style="font-size:12px">6. Dekripsi M = C^d mod N (fast modular exponentiation)</p>
+      <p style="font-size:12px">7. Verifikasi: C = M^e mod N</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let cur=0;
+const total=7;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1) goStep(cur+1);}
+function prevStep(){if(cur>0) goStep(cur-1);}
+renderDots();
+</script>

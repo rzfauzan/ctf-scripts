@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#185FA5;color:#fff;border-color:#185FA5}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer;transition:background .15s}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#042C53}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-warn{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:8px}
+.step-title-r{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#A32D2D;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px}
+.bb{background:#E6F1FB;color:#0C447C}
+.br{background:#FCEBEB;color:#791F1F}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace}
+.blk{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:5px;font-family:monospace;font-size:11px;font-weight:500;min-width:36px}
+.blk-p{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.blk-c{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.blk-iv{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.blk-mod{background:#FCEBEB;color:#791F1F;border:2px solid #E24B4A}
+.blk-ok{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.blk-x{background:#f5f5f5;color:#888;border:0.5px solid #ddd;font-size:14px}
+.flow-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.4rem 0}
+.arr{color:#888;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge bb">CBC Attack</div>
+  <h2>Dua serangan utama pada AES-CBC</h2>
+  <p style="margin-top:4px">CBC punya dua kelemahan berbeda yang bisa diserang dengan cara berbeda. Pilih serangan yang ingin dipelajari:</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('bf')">Bit-flipping Attack</button>
+  <button class="nav-btn" onclick="showSec('po')">Padding Oracle Attack</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- BIT FLIPPING -->
+<!-- ============================================================ -->
+<div id="sec-bf" class="sec active">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:6px">Soal — CBC Bit-Flipping Attack</div>
+  <h2 style="color:#042C53">Ubah "user" menjadi "admi" tanpa kunci!</h2>
+  <p style="color:#0C447C;margin-top:6px;margin-bottom:10px">Sebuah web app mengenkripsi cookie sesi dengan AES-CBC (blok 16 byte). Cookie plaintext-nya adalah:</p>
+  <div style="background:#fff;border-radius:8px;padding:.6rem 1rem;font-family:monospace;font-size:12px;color:#1a1a1a;border:0.5px solid #85B7EB;margin-bottom:.75rem">
+    <span style="color:#888">Blok 1 (byte 0-15): </span>userid=12345678<br>
+    <span style="color:#888">Blok 2 (byte 16-31): </span>role=user&amp;xxx=0
+  </div>
+  <p style="color:#0C447C;margin-bottom:.5rem">Kamu berhasil mencuri ciphertext cookie dan IV-nya. Ubah "user" di blok 2 menjadi "admi" (untuk akses admin) dengan memodifikasi ciphertext — tanpa tahu kunci enkripsi!</p>
+  <div style="background:#fff;border-radius:8px;padding:.6rem 1rem;font-family:monospace;font-size:12px;color:#1a1a1a;border:0.5px solid #85B7EB">
+    <div style="color:#888;margin-bottom:2px">IV  = </div>
+    <div>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div>
+    <div style="color:#888;margin-top:6px;margin-bottom:2px">C₁ (enkripsi blok 1) = </div>
+    <div>3F A2 9C 01 E7 48 BB F3 2D 77 5A C9 11 6E D4 82</div>
+    <div style="color:#888;margin-top:6px;margin-bottom:2px">C₂ (enkripsi blok 2) = </div>
+    <div>8B 44 1D 76 C2 93 5E 0A F1 20 6E B9 3A D5 47 CC</div>
+  </div>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="bf-prev" onclick="prevStep('bf')" disabled>Prev</button>
+  <div class="step-dots" id="bf-dots"></div>
+  <span class="step-label" id="bf-counter">1 / 7</span>
+  <button class="btn-nav" id="bf-next" onclick="nextStep('bf')" style="background:#185FA5;color:#fff;border-color:#185FA5">Next</button>
+</div>
+
+<!-- BF STEP 0 -->
+<div class="step-panel active" id="bf-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami rumus dekripsi CBC</div>
+    <h3>Kunci dari serangan ini ada di rumus dekripsi CBC</h3>
+    <p style="margin-bottom:.75rem">Saat server mendekripsi ciphertext, rumusnya adalah:</p>
+    <span class="eq">P_i = AES_K⁻¹(C_i) ⊕ C_{i-1}</span>
+    <p style="margin:.5rem 0">Untuk blok pertama (i=1), C₀ = IV. Jadi:</p>
+    <span class="eq">P₂ = AES_K⁻¹(C₂) ⊕ C₁</span>
+    <p style="margin:.75rem 0 .4rem">Sekarang, kalau kita ganti C₁ dengan C₁' yang sudah dimodifikasi:</p>
+    <span class="eq">P₂' = AES_K⁻¹(C₂) ⊕ C₁'</span>
+    <div class="note">AES_K⁻¹(C₂) tidak berubah — karena C₂ tidak kita ubah! Yang berubah hanya C₁. Ini yang akan kita eksploitasi.</div>
+    <div class="warn" style="margin-top:.5rem">Trade-off: blok C₁ yang kita modifikasi akan mendekripsi menjadi sampah acak di P₁. Tapi di serangan ini kita tidak peduli isi P₁ — kita hanya peduli P₂!</div>
+  </div>
+</div>
+
+<!-- BF STEP 1 -->
+<div class="step-panel" id="bf-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Identifikasi target byte</div>
+    <h3>Di posisi byte berapa kata "user" berada?</h3>
+    <p style="margin-bottom:.75rem">Blok 2 plaintext: <span style="font-family:monospace;background:#f5f5f5;padding:2px 6px;border-radius:4px">role=user&amp;xxx=0</span></p>
+    <table class="tbl">
+      <tr><th>Posisi dalam blok 2</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr>
+      <tr><td>Karakter</td><td>r</td><td>o</td><td>l</td><td>e</td><td>=</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">u</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">s</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">e</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">r</td><td>&amp;</td><td>x</td><td>x</td><td>x</td><td>=</td><td>0</td><td style="background:#f5f5f5;color:#888">—</td></tr>
+      <tr><td>Byte index (global)</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">21</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">22</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">23</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td></tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">"user" ada di posisi 5,6,7,8 dalam blok 2 — atau byte ke-21,22,23,24 secara global.</div>
+    <p style="margin-top:.75rem;font-size:13px">Karena P₂ dipengaruhi oleh C₁, kita harus modifikasi byte ke-5,6,7,8 dari C₁ (0-indexed) untuk mengubah byte yang sama di P₂.</p>
+  </div>
+</div>
+
+<!-- BF STEP 2 -->
+<div class="step-panel" id="bf-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Turunkan rumus modifikasi</div>
+    <h3>Hitung nilai C₁' yang diperlukan</h3>
+    <p style="margin-bottom:.75rem">Kita ingin P₂'[j] = target_char. Dari rumus dekripsi:</p>
+    <span class="eq">P₂[j]  = AES_K⁻¹(C₂)[j] ⊕ C₁[j]
+P₂'[j] = AES_K⁻¹(C₂)[j] ⊕ C₁'[j]</span>
+    <p style="margin:.5rem 0">XOR kedua persamaan:</p>
+    <span class="eq">P₂[j] ⊕ P₂'[j] = C₁[j] ⊕ C₁'[j]</span>
+    <p style="margin:.5rem 0">Isolasi C₁'[j]:</p>
+    <span class="eq-hi">C₁'[j] = C₁[j] ⊕ P₂[j] ⊕ P₂'[j]</span>
+    <div class="note">Formula ini adalah inti dari seluruh serangan. Kita perlu tahu: nilai C₁[j] asli (punya), nilai P₂[j] asli (punya = plaintext kita ketahui), dan nilai P₂'[j] yang kita inginkan.</div>
+    <p style="margin-top:.75rem;font-size:13px">Dengan kata lain: <strong>C₁'[j] = C₁[j] XOR original_char XOR target_char</strong></p>
+  </div>
+</div>
+
+<!-- BF STEP 3 -->
+<div class="step-panel" id="bf-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung modifikasi untuk 'u' → 'a'</div>
+    <h3>Byte ke-5 blok 2: 'u' (0x75) → 'a' (0x61)</h3>
+    <p style="margin-bottom:.75rem">Data yang kita punya:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Variabel</th><th>Nilai</th><th>Keterangan</th></tr>
+      <tr><td>C₁[5]</td><td>0x93</td><td>Byte ke-5 dari C₁ asli</td></tr>
+      <tr><td>P₂[5] = 'u'</td><td>0x75</td><td>Plaintext asli yang kita ketahui</td></tr>
+      <tr><td>P₂'[5] = 'a'</td><td>0x61</td><td>Target yang kita inginkan</td></tr>
+    </table>
+    <span class="eq">C₁'[5] = C₁[5] ⊕ P₂[5] ⊕ P₂'[5]
+       = 0x93 ⊕ 0x75 ⊕ 0x61</span>
+    <p style="margin:.5rem 0;font-size:12px">Hitung step by step:</p>
+    <span class="eq">0x93 ⊕ 0x75:
+  1001 0011
+⊕ 0111 0101
+= 1110 0110 = 0xE6
+
+0xE6 ⊕ 0x61:
+  1110 0110
+⊕ 0110 0001
+= 1000 0111 = 0x87</span>
+    <span class="eq-ok">C₁'[5] = 0x87</span>
+    <p style="margin-top:.5rem;font-size:12px">Ganti byte ke-5 C₁ dari 0x93 → 0x87. Lanjut ke byte berikutnya.</p>
+  </div>
+</div>
+
+<!-- BF STEP 4 -->
+<div class="step-panel" id="bf-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung modifikasi untuk 's','e','r' → 'd','m','i'</div>
+    <h3>Tiga byte sisanya: byte 6,7,8</h3>
+
+    <p style="font-size:12px;font-weight:500;margin-bottom:4px">Byte ke-6: 's' (0x73) → 'd' (0x64)</p>
+    <span class="eq">C₁'[6] = C₁[6] ⊕ 's' ⊕ 'd'
+       = 0x5E ⊕ 0x73 ⊕ 0x64
+       = 0x5E ⊕ 0x17   (0x73⊕0x64 = 0x17)
+       = 0x49</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte ke-7: 'e' (0x65) → 'm' (0x6D)</p>
+    <span class="eq">C₁'[7] = C₁[7] ⊕ 'e' ⊕ 'm'
+       = 0x0A ⊕ 0x65 ⊕ 0x6D
+       = 0x0A ⊕ 0x08   (0x65⊕0x6D = 0x08)
+       = 0x02</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte ke-8: 'r' (0x72) → 'i' (0x69)</p>
+    <span class="eq">C₁'[8] = C₁[8] ⊕ 'r' ⊕ 'i'
+       = 0xF1 ⊕ 0x72 ⊕ 0x69
+       = 0xF1 ⊕ 0x1B   (0x72⊕0x69 = 0x1B)
+       = 0xEA</span>
+
+    <div class="ok" style="margin-top:.5rem">Semua 4 byte modifikasi sudah dihitung: C₁'[5]=0x87, C₁'[6]=0x49, C₁'[7]=0x02, C₁'[8]=0xEA</div>
+  </div>
+</div>
+
+<!-- BF STEP 5 -->
+<div class="step-panel" id="bf-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Rakit C' yang sudah dimodifikasi</div>
+    <h3>Ganti byte di C₁, kirim (IV, C₁', C₂) ke server</h3>
+    <p style="margin-bottom:.75rem">C₁ asli vs C₁' yang sudah dimodifikasi:</p>
+    <table class="tbl">
+      <tr><th>Byte</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>...</th></tr>
+      <tr><td>C₁ asli</td><td>3F</td><td>A2</td><td>9C</td><td>01</td><td>E7</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">93</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">5E</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">0A</td><td style="background:#FCEBEB;color:#791F1F;font-weight:500">F1</td><td>...</td></tr>
+      <tr><td>C₁' modif</td><td>3F</td><td>A2</td><td>9C</td><td>01</td><td>E7</td><td style="background:#EAF3DE;color:#27500A;font-weight:500">87</td><td style="background:#EAF3DE;color:#27500A;font-weight:500">49</td><td style="background:#EAF3DE;color:#27500A;font-weight:500">02</td><td style="background:#EAF3DE;color:#27500A;font-weight:500">EA</td><td>...</td></tr>
+    </table>
+    <p style="margin:.75rem 0 .4rem">Kirim cookie yang dimodifikasi ke server:</p>
+    <span class="eq">Cookie baru = Base64( IV || C₁' || C₂ )</span>
+    <div class="warn" style="margin-top:.5rem">Ingat: P₁ akan rusak total (sampah acak). Tapi server tetap menerima kalau dia tidak validasi integritas P₁ — dia hanya parse role= dari P₂.</div>
+  </div>
+</div>
+
+<!-- BF STEP 6 -->
+<div class="step-panel" id="bf-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi hasil dekripsi</div>
+    <h3>Apa yang server dekripsi dari C₁' dan C₂?</h3>
+    <span class="eq">P₂' = AES_K⁻¹(C₂) ⊕ C₁'
+
+Karena AES_K⁻¹(C₂) tidak berubah, dan kita sudah hitung:
+C₁'[5] dipilih agar P₂'[5] = 'a' ✓
+C₁'[6] dipilih agar P₂'[6] = 'd' ✓
+C₁'[7] dipilih agar P₂'[7] = 'm' ✓
+C₁'[8] dipilih agar P₂'[8] = 'i' ✓</span>
+    <span class="eq-ok">P₂' = "role=admi&xxx=0"</span>
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan</div>
+      <div class="big-ans" style="color:#185FA5">role=admi → akses admin berhasil!</div>
+    </div>
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #185FA5">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Bit-flipping Attack</p>
+      <p style="font-size:12px">1. Identifikasi posisi byte target di plaintext blok ke-i</p>
+      <p style="font-size:12px">2. Byte itu dikontrol oleh C_{i-1} di posisi yang sama</p>
+      <p style="font-size:12px">3. Hitung: C'[j] = C[j] ⊕ original_byte ⊕ target_byte</p>
+      <p style="font-size:12px">4. Kirim ciphertext yang sudah dimodifikasi ke server</p>
+      <p style="font-size:12px">5. Blok C_{i-1} sendiri akan rusak saat didekripsi — tidak masalah</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Syarat: attacker tahu plaintext aslinya (atau bisa menduga strukturnya)</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-bf -->
+
+<!-- ============================================================ -->
+<!-- PADDING ORACLE -->
+<!-- ============================================================ -->
+<div id="sec-po" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:6px">Soal — Padding Oracle Attack</div>
+  <h2 style="color:#042C53">Dekripsi ciphertext tanpa kunci menggunakan error server!</h2>
+  <p style="color:#0C447C;margin-top:6px;margin-bottom:.75rem">Server memiliki kelemahan: ia mengembalikan pesan error berbeda untuk "padding salah" vs "padding benar tapi MAC gagal". Ini sudah cukup untuk mendekripsi seluruh ciphertext!</p>
+  <div style="background:#fff;border-radius:8px;padding:.6rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #85B7EB;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:2px">Ciphertext yang ingin didekripsi (2 blok, 16 byte/blok):</div>
+    <div>C₁ = 3F A2 9C 01 E7 48 BB F3 2D 77 5A C9 11 6E D4 82</div>
+    <div style="margin-top:4px">C₂ = 8B 44 1D 76 C2 93 5E 0A F1 20 6E B9 3A D5 47 CC</div>
+  </div>
+  <p style="color:#0C447C;font-size:12px">Server response: <span style="background:#FCEBEB;color:#791F1F;padding:2px 6px;border-radius:4px">{"error":"invalid padding"}</span> atau <span style="background:#EAF3DE;color:#27500A;padding:2px 6px;border-radius:4px">{"error":"invalid MAC"}</span></p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="po-prev" onclick="prevStep('po')" disabled>Prev</button>
+  <div class="step-dots" id="po-dots"></div>
+  <span class="step-label" id="po-counter">1 / 8</span>
+  <button class="btn-nav" id="po-next" onclick="nextStep('po')" style="background:#185FA5;color:#fff;border-color:#185FA5">Next</button>
+</div>
+
+<!-- PO STEP 0 -->
+<div class="step-panel active" id="po-step-0">
+  <div class="card">
+    <div class="step-title-r">Langkah 1 — Pahami PKCS#7 Padding</div>
+    <h3>Apa itu padding dan kenapa penting?</h3>
+    <p style="margin-bottom:.75rem">AES bekerja dengan blok 16 byte. Kalau plaintext tidak pas 16 byte, ditambah padding. Standar yang dipakai: <strong>PKCS#7</strong>.</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;font-family:monospace;font-size:12px;border:0.5px solid #ddd;margin:.5rem 0">
+      <div style="color:#555;margin-bottom:4px">Aturan PKCS#7: tambahkan N byte, tiap byte bernilai N</div>
+      <div>Plaintext 13 byte → butuh 3 byte padding → tambah <span style="background:#FAEEDA;color:#633806;padding:1px 4px">03 03 03</span></div>
+      <div>Plaintext 15 byte → butuh 1 byte padding → tambah <span style="background:#FAEEDA;color:#633806;padding:1px 4px">01</span></div>
+      <div>Plaintext 16 byte → butuh 16 byte padding → tambah <span style="background:#FAEEDA;color:#633806;padding:1px 4px">10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10</span></div>
+    </div>
+    <div class="note">Server selalu cek padding setelah dekripsi. Kalau padding tidak valid (misal byte terakhir adalah 0x03 tapi dua sebelumnya bukan 0x03), server lempar error "invalid padding".</div>
+    <div class="warn" style="margin-top:.4rem">Inilah oracle-nya! Perbedaan respons "invalid padding" vs "invalid MAC" membocorkan informasi tentang byte terakhir plaintext yang terdekripsi.</div>
+  </div>
+</div>
+
+<!-- PO STEP 1 -->
+<div class="step-panel" id="po-step-1">
+  <div class="card">
+    <div class="step-title-r">Langkah 2 — Inti matematika Padding Oracle</div>
+    <h3>Eksploitasi rumus dekripsi CBC</h3>
+    <p style="margin-bottom:.75rem">Ingat rumus dekripsi CBC:</p>
+    <span class="eq">P₂[j] = AES_K⁻¹(C₂)[j] ⊕ C₁[j]</span>
+    <p style="margin:.5rem 0">Misalkan kita tahu <span style="font-family:monospace">AES_K⁻¹(C₂)[15]</span> = nilai misterius yang kita sebut <strong>I₂[15]</strong> (intermediate). Maka:</p>
+    <span class="eq">P₂[15] = I₂[15] ⊕ C₁[15]</span>
+    <p style="margin:.5rem 0">Kalau kita kirim C₁' yang byte terakhirnya kita ubah menjadi nilai X:</p>
+    <span class="eq">P₂'[15] = I₂[15] ⊕ X</span>
+    <p style="margin:.5rem 0">Untuk padding valid dengan nilai 0x01, kita butuh P₂'[15] = 0x01:</p>
+    <span class="eq">I₂[15] ⊕ X = 0x01
+→ X = I₂[15] ⊕ 0x01</span>
+    <div class="note">Jadi: coba semua 256 nilai X (0x00 sampai 0xFF) sampai server bilang padding valid. Kalau valid, kita tahu I₂[15] = X ⊕ 0x01. Lalu P₂[15] = I₂[15] ⊕ C₁[15] asli!</div>
+  </div>
+</div>
+
+<!-- PO STEP 2 -->
+<div class="step-panel" id="po-step-2">
+  <div class="card">
+    <div class="step-title-r">Langkah 3 — Ekstrak byte terakhir P₂</div>
+    <h3>Brute-force byte ke-15 (byte terakhir) C₁</h3>
+    <p style="margin-bottom:.75rem">C₁[15] asli = 0x82. Kita coba semua nilai X dari 0x00 sampai 0xFF untuk C₁'[15] dan kirim ke server:</p>
+    <table class="tbl">
+      <tr><th>C₁'[15] dicoba</th><th>Server response</th><th>Keterangan</th></tr>
+      <tr><td>0x00</td><td style="color:#791F1F">invalid padding</td><td style="color:#888">P₂'[15] = I₂[15]⊕0x00 bukan 0x01</td></tr>
+      <tr><td>0x01</td><td style="color:#791F1F">invalid padding</td><td style="color:#888">...</td></tr>
+      <tr><td>...</td><td style="color:#888">...</td><td style="color:#888">...</td></tr>
+      <tr class="ok-row"><td>0x83</td><td style="color:#27500A;font-weight:500">invalid MAC ✓</td><td style="color:#27500A">padding valid! P₂'[15] = 0x01</td></tr>
+      <tr><td>...</td><td style="color:#791F1F">invalid padding</td><td style="color:#888">...</td></tr>
+    </table>
+    <p style="margin:.75rem 0 .4rem;font-size:13px">Server bilang valid saat X = 0x83. Artinya:</p>
+    <span class="eq">I₂[15] ⊕ 0x83 = 0x01
+I₂[15] = 0x01 ⊕ 0x83 = 0x82</span>
+    <span class="eq-ok">P₂[15] = I₂[15] ⊕ C₁[15] = 0x82 ⊕ 0x82 = 0x00</span>
+    <div class="ok">Byte terakhir P₂ = 0x00! (kemungkinan padding atau null byte). Dengan cara yang sama untuk semua 16 byte, seluruh P₂ bisa dikupas.</div>
+  </div>
+</div>
+
+<!-- PO STEP 3 -->
+<div class="step-panel" id="po-step-3">
+  <div class="card">
+    <div class="step-title-r">Langkah 4 — Lanjut ke byte ke-14</div>
+    <h3>Untuk byte ke-14, target padding = 0x02 0x02</h3>
+    <p style="margin-bottom:.75rem">Kita sudah tahu I₂[15] = 0x82. Sekarang ekstrak I₂[14]. Untuk padding valid 0x02, kita butuh P₂'[15] = 0x02 DAN P₂'[14] = 0x02.</p>
+    <p style="font-size:12px;margin-bottom:.5rem">Fix dulu byte ke-15 agar menghasilkan 0x02:</p>
+    <span class="eq">Ingin P₂'[15] = 0x02
+C₁'[15] = I₂[15] ⊕ 0x02 = 0x82 ⊕ 0x02 = 0x80  ← fix di sini</span>
+    <p style="font-size:12px;margin:.5rem 0">Lalu brute-force C₁'[14] (0x00–0xFF) sampai padding valid:</p>
+    <span class="eq">Kalau valid saat C₁'[14] = Y:
+I₂[14] ⊕ Y = 0x02
+I₂[14] = Y ⊕ 0x02
+P₂[14] = I₂[14] ⊕ C₁[14]</span>
+    <div class="note">Pola ini berulang untuk tiap byte: untuk byte ke-j, target padding = (16-j), dan semua byte setelahnya sudah difix menggunakan nilai I yang sudah diketahui.</div>
+  </div>
+</div>
+
+<!-- PO STEP 4 -->
+<div class="step-panel" id="po-step-4">
+  <div class="card">
+    <div class="step-title-r">Langkah 5 — Tabel proses lengkap</div>
+    <h3>Ringkasan ekstraksi semua 16 byte P₂</h3>
+    <table class="tbl">
+      <tr><th>Byte target</th><th>Target padding</th><th>Max queries</th><th>Yang didapat</th></tr>
+      <tr><td>Byte 15</td><td>0x01</td><td>256</td><td>I₂[15] → P₂[15]</td></tr>
+      <tr><td>Byte 14</td><td>0x02 0x02</td><td>256</td><td>I₂[14] → P₂[14]</td></tr>
+      <tr><td>Byte 13</td><td>0x03 0x03 0x03</td><td>256</td><td>I₂[13] → P₂[13]</td></tr>
+      <tr><td>...</td><td>...</td><td>256</td><td>...</td></tr>
+      <tr><td>Byte 0</td><td>0x10 × 16</td><td>256</td><td>I₂[0] → P₂[0]</td></tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">Total: 16 byte × 256 queries max = 4096 request untuk satu blok. Untuk N blok = N × 4096 request. Seluruh plaintext terbongkar!</div>
+    <div class="warn" style="margin-top:.4rem">Untuk blok pertama (P₁), kita butuh IV. Kalau IV diketahui, proses yang sama bisa dilakukan dengan mengganti C₀ = IV.</div>
+  </div>
+</div>
+
+<!-- PO STEP 5 -->
+<div class="step-panel" id="po-step-5">
+  <div class="card">
+    <div class="step-title-r">Langkah 6 — Edge case: 2 nilai valid</div>
+    <h3>Hati-hati: kadang ada 2 X yang menghasilkan padding valid!</h3>
+    <p style="margin-bottom:.75rem">Saat mencari byte terakhir, bisa ada 2 nilai yang menghasilkan "valid":</p>
+    <div class="grid2">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Kasus benar (0x01)</p>
+        <p style="font-size:11px;color:#3B6D11">P₂'[15] = 0x01 → valid karena padding 1 byte</p>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Kebetulan valid</p>
+        <p style="font-size:11px;color:#3B6D11">P₂'[15] = 0x02 dan P₂'[14] kebetulan = 0x02 juga → valid!</p>
+      </div>
+    </div>
+    <p style="margin:.75rem 0 .4rem;font-size:13px">Cara bedain: kalau dapat 2 nilai valid, modifikasi juga byte ke-14 (set ke nilai random). Kalau masih valid → itu yang 0x01. Kalau jadi invalid → yang tadi kebetulan.</p>
+    <div class="note">Di implementasi nyata (tools seperti padbuster, python-paddingoracle), edge case ini sudah ditangani otomatis.</div>
+  </div>
+</div>
+
+<!-- PO STEP 6 -->
+<div class="step-panel" id="po-step-6">
+  <div class="card">
+    <div class="step-title-r">Langkah 7 — Padding Oracle untuk enkripsi (bonus)</div>
+    <h3>Padding Oracle juga bisa ENKRIPSI arbitrary plaintext!</h3>
+    <p style="margin-bottom:.75rem">Bukan hanya dekripsi — Padding Oracle bisa membuat ciphertext valid dari plaintext apapun, tanpa kunci!</p>
+    <span class="eq">Ingin enkripsi P' = "admin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b"
+(dengan padding PKCS#7 yang valid)</span>
+    <p style="margin:.5rem 0;font-size:12px">Caranya:</p>
+    <div style="background:#f5f5f5;padding:.6rem .85rem;border-radius:8px;font-size:12px;line-height:1.9;border:0.5px solid #ddd">
+      1. Mulai dari blok terakhir: set C' = blok acak<br>
+      2. Gunakan Padding Oracle untuk cari C'_{i-1} yang menghasilkan plaintext yang kita inginkan<br>
+      3. Ingat: P'[j] = I[j] ⊕ C'[j] → C'[j] = I[j] ⊕ P'[j]<br>
+      4. Dan I[j] sudah kita tahu dari proses oracle sebelumnya!<br>
+      5. Ulangi untuk tiap blok dari belakang ke depan
+    </div>
+    <div class="danger" style="margin-top:.5rem">Ini sangat berbahaya: attacker bisa forge ciphertext valid tanpa kunci. Inilah kenapa CBC WAJIB dikombinasikan dengan MAC (misal HMAC) untuk cegah tampering.</div>
+  </div>
+</div>
+
+<!-- PO STEP 7 -->
+<div class="step-panel" id="po-step-7">
+  <div class="card">
+    <div class="step-title-r">Langkah 8 — Perbandingan dua serangan CBC</div>
+    <h3>Bit-flipping vs Padding Oracle — kapan pakai yang mana?</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Aspek</th><th>Bit-flipping</th><th>Padding Oracle</th></tr>
+      <tr><td>Tujuan</td><td>Modifikasi plaintext</td><td>Dekripsi plaintext</td></tr>
+      <tr><td>Syarat attacker</td><td>Tahu plaintext asli</td><td>Akses ke oracle (server)</td></tr>
+      <tr><td>Jumlah query</td><td>1 request</td><td>≤ 4096 per blok</td></tr>
+      <tr><td>Efek samping</td><td>Blok sebelumnya rusak</td><td>Tidak ada</td></tr>
+      <tr><td>Butuh kunci?</td><td>Tidak</td><td>Tidak</td></tr>
+      <tr><td>Contoh nyata</td><td>Cookie tampering</td><td>POODLE (SSL 3.0, 2014)</td></tr>
+    </table>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Solusi untuk keduanya</div>
+      <div class="big-ans" style="color:#185FA5">Gunakan AES-GCM — ada auth tag!</div>
+      <div style="font-size:12px;color:#555;margin-top:6px">Auth tag mendeteksi modifikasi apapun → kedua serangan gagal</div>
+    </div>
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #A32D2D">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Padding Oracle Attack</p>
+      <p style="font-size:12px">1. Temukan oracle: server mengembalikan error berbeda untuk padding valid vs invalid</p>
+      <p style="font-size:12px">2. Untuk setiap blok Cᵢ, brute-force byte C_{i-1} dari belakang ke depan</p>
+      <p style="font-size:12px">3. Saat padding valid → dapatkan nilai I (intermediate) = AES_K⁻¹(Cᵢ)</p>
+      <p style="font-size:12px">4. Hitung plaintext: Pᵢ[j] = I[j] ⊕ C_{i-1}[j] asli</p>
+      <p style="font-size:12px">5. Ulangi untuk setiap byte dan setiap blok</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-po -->
+
+<script>
+const state={
+  bf:{cur:0,total:7},
+  po:{cur:0,total:8}
+};
+
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.background=i<s.cur?'#85B7EB':i===s.cur?'#185FA5':'#ccc';
+    if(i===s.cur)b.style.width='24px',b.style.borderRadius='5px';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+renderDots('bf');
+renderDots('po');
+</script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 11px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:11px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.btn-next:hover{background:#085041}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#04342C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.eq-warn{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#E1F5EE;color:#085041}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.teal-row td{background:#E1F5EE;color:#04342C}
+.big-ans{font-size:15px;font-weight:500;font-family:monospace;color:#0F6E56}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0;word-break:break-all}
+.cm{color:#555}.ck{color:#64b5f6}.cs{color:#ffd700}.cn{color:#f48fb1}
+.hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+.yl{color:#ffd700}.wh{color:#fff}.tl{color:#5DCAA5}
+.tx-cell{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px;border-radius:4px;margin:2px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tx-plain{background:#f5f5f5;color:#1a1a1a}
+.tx-sus{background:#FCEBEB;color:#791F1F;border-color:#F09595;border-width:2px}
+.tx-ok{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.tx-warn{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.tx-teal{background:#E1F5EE;color:#04342C;border-color:#5DCAA5}
+.addr{font-size:10px;color:#888;font-family:monospace}
+.step-box{padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #0F6E56;border-radius:0 6px 6px 0;font-size:12px;margin:.3rem 0;line-height:1.8}
+.hash-box{font-family:monospace;font-size:11px;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem .75rem;margin:.3rem 0;word-break:break-all;color:#1a1a1a;line-height:1.8}
+.hash-hi{font-family:monospace;font-size:11px;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:6px;padding:.5rem .75rem;margin:.3rem 0;word-break:break-all;color:#04342C;line-height:1.8}
+.chain-block{padding:.6rem .85rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;font-family:monospace;font-size:11px;margin:.3rem 0;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Forensic — Blockchain Forensic</div>
+  <h2>Transaction Forensic & Smart Contract Recovery</h2>
+  <p style="margin-top:4px">Blockchain forensic memanfaatkan sifat blockchain yang <strong>transparan dan immutable</strong> — semua transaksi tersimpan permanen dan bisa dianalisis. Tujuannya: melacak aliran dana mencurigakan, mengidentifikasi pelaku, dan memulihkan data dari smart contract.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('konsep')">Konsep Blockchain</button>
+  <button class="nav-btn" onclick="showSec('tx')">Soal 1: Tx Forensic</button>
+  <button class="nav-btn" onclick="showSec('cluster')">Soal 2: Address Clustering</button>
+  <button class="nav-btn" onclick="showSec('sc')">Soal 3: Smart Contract</button>
+  <button class="nav-btn" onclick="showSec('tools')">Tools & Ringkasan</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- KONSEP -->
+<!-- ============================================================ -->
+<div id="sec-konsep" class="sec active">
+  <div class="card">
+    <div class="step-title">Fondasi — Mengapa blockchain bisa dianalisis forensik</div>
+    <h3>Blockchain = ledger publik yang permanen dan transparan</h3>
+    <p style="margin-bottom:.75rem">Berbeda dari rekening bank yang privat, semua transaksi blockchain tercatat di ledger publik yang bisa dibaca siapapun. Ini membuat blockchain LEBIH mudah dilacak daripada tunai!</p>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Mitos: "Bitcoin anonim"</p>
+        <p style="font-size:11px;color:#A32D2D">Salah! Bitcoin pseudonim — alamat terlihat, tapi identitas asli tersembunyi sampai ada link ke dunia nyata.</p>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Fakta: Blockchain forensics powerful</p>
+        <p style="font-size:11px;color:#3B6D11">Chainalysis, Elliptic, TRM Labs bisa melacak aliran dana ransomware, exchange hack, dan money laundering.</p>
+      </div>
+    </div>
+    <p style="margin:.75rem 0 .4rem">Properti blockchain yang dimanfaatkan forensik:</p>
+    <div style="display:flex;flex-direction:column;gap:.35rem;font-size:12px">
+      <div class="step-box"><strong>Immutability:</strong> transaksi tidak bisa dihapus → jejak permanen</div>
+      <div class="step-box"><strong>Transparency:</strong> semua tx publik → bisa ditelusuri siapapun</div>
+      <div class="step-box"><strong>Pseudonymity:</strong> alamat terlihat, identitas perlu di-link ke off-chain data</div>
+      <div class="step-box"><strong>Graph structure:</strong> tx membentuk graph → bisa ditelusuri dengan graph analysis</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Anatomi transaksi Bitcoin/Ethereum</div>
+    <h3>Apa saja yang ada dalam satu transaksi</h3>
+    <div class="code-block">
+<span class="cm">=== Bitcoin Transaction ===</span>
+{
+  "txid":     "<span class="tl">a1b2c3d4...8f9e</span>",    <span class="cm">← hash unik transaksi</span>
+  "inputs":  [{"address": "1Alice...", "value": 1.5}],
+  "outputs": [
+    {"address": "1Bob...",   "value": 1.4},  <span class="cm">← penerima</span>
+    {"address": "1Alice...", "value": 0.09}  <span class="cm">← kembalian</span>
+  ],
+  "fee":      0.01,                          <span class="cm">← fee ke miner</span>
+  "block":    785432,
+  "timestamp": "2024-01-15T10:23:45Z"
+}
+
+<span class="cm">=== Ethereum Transaction ===</span>
+{
+  "hash":   "<span class="tl">0x1234...abcd</span>",
+  "from":   "0xAlice...",                    <span class="cm">← pengirim</span>
+  "to":     "0xBob...",                      <span class="cm">← penerima / contract</span>
+  "value":  "1.5 ETH",
+  "gas":    21000,
+  "input":  "0x...",                         <span class="cm">← data / fungsi contract</span>
+  "block":  18500000
+}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Teknik utama blockchain forensics</div>
+    <table class="tbl">
+      <tr><th>Teknik</th><th>Cara kerja</th><th>Menemukan apa</th></tr>
+      <tr><td style="font-weight:500">Transaction tracing</td><td>Ikuti aliran dana dari tx ke tx</td><td>Tujuan akhir dana, exchange, mixer</td></tr>
+      <tr><td style="font-weight:500">Address clustering</td><td>Group alamat yang sering bertransaksi</td><td>Alamat yang dimiliki entitas yang sama</td></tr>
+      <tr><td style="font-weight:500">Heuristic analysis</td><td>Common-input-ownership, change detection</td><td>Identifikasi wallet dan pola penggunaan</td></tr>
+      <tr><td style="font-weight:500">OSINT linking</td><td>Link alamat ke identitas di forum/exchange</td><td>Identitas asli dari alamat</td></tr>
+      <tr><td style="font-weight:500">Smart contract analysis</td><td>Decode bytecode dan storage</td><td>Logic exploit, rugpull, reentrancy</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SOAL 1: TX FORENSIC -->
+<!-- ============================================================ -->
+<div id="sec-tx" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:6px">Soal 1 — Transaction Forensic</div>
+  <h2 style="color:#04342C">Lacak aliran dana ransomware!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Sebuah perusahaan membayar tebusan ransomware 2 BTC ke alamat yang diberikan pelaku. Tim forensik diminta melacak ke mana uang itu pergi. Analisis transaksi-transaksi berikut:</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #5DCAA5;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:6px">Transaksi yang diketahui:</div>
+    <div><span style="color:#0F6E56">TX-A:</span> Korban → <span style="color:#791F1F">1RansomXXX</span> = <span style="color:#27500A">2.00 BTC</span> (block 785100)</div>
+    <div><span style="color:#0F6E56">TX-B:</span> <span style="color:#791F1F">1RansomXXX</span> → <span style="color:#633806">1MixerAAA</span> = <span style="color:#27500A">1.95 BTC</span> + 1RansomXXX = 0.04 BTC (block 785105)</div>
+    <div><span style="color:#0F6E56">TX-C:</span> <span style="color:#633806">1MixerAAA</span> → 1Out111 = 0.5 BTC, 1Out222 = 0.5 BTC, 1Out333 = 0.5 BTC, 1Out444 = 0.44 BTC (block 785200)</div>
+    <div><span style="color:#0F6E56">TX-D:</span> 1Out222 → <span style="color:#185FA5">1ExchangeKYC</span> = 0.50 BTC (block 785210)</div>
+    <div><span style="color:#0F6E56">TX-E:</span> 1Out333 → <span style="color:#185FA5">1ExchangeKYC</span> = 0.25 BTC + 1Out333 = 0.24 BTC (block 785215)</div>
+  </div>
+  <p style="color:#085041;font-size:12px">Pertanyaan: (1) Apa fungsi 1MixerAAA? (2) Berapa total BTC ke exchange? (3) Alamat mana yang paling kuat sebagai lead investigasi? (4) Buat transaction flow graph-nya!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="tx-prev" onclick="prevStep('tx')" disabled>Prev</button>
+  <div class="step-dots" id="tx-dots"></div>
+  <span class="step-label" id="tx-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="tx-next" onclick="nextStep('tx')">Next</button>
+</div>
+
+<!-- TX STEP 0 -->
+<div class="step-panel active" id="tx-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Bangun Transaction Flow Graph</div>
+    <h3>Visualisasikan aliran dana sebagai directed graph</h3>
+    <p style="margin-bottom:.75rem">Setiap transaksi adalah edge, setiap alamat adalah node. Ikuti anak panah dari sumber ke tujuan:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;font-family:monospace;font-size:11px;border:0.5px solid #ddd;line-height:2">
+      <div><span style="color:#555">Korban</span></div>
+      <div>&nbsp;&nbsp;│ TX-A: 2.00 BTC</div>
+      <div>&nbsp;&nbsp;▼</div>
+      <div><span style="color:#791F1F">1RansomXXX</span> (Ransom wallet)</div>
+      <div>&nbsp;&nbsp;│ TX-B: 1.95 BTC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│ TX-B: 0.04 BTC (kembalian)</div>
+      <div>&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼</div>
+      <div><span style="color:#633806">1MixerAAA</span> (Mixer) &nbsp;&nbsp;&nbsp;<span style="color:#791F1F">1RansomXXX</span> (masih pegang)</div>
+      <div>&nbsp;&nbsp;│ TX-C: 4 output masing-masing ~0.5 BTC</div>
+      <div>&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼</div>
+      <div>1Out111 &nbsp;1Out222 &nbsp;1Out333 &nbsp;1Out444</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│TX-D &nbsp;&nbsp;&nbsp;&nbsp;│TX-E&nbsp;</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#185FA5">1ExchangeKYC</span> ← KYC Exchange!</div>
+    </div>
+    <div class="note" style="margin-top:.5rem">Graph ini dibuat dengan data on-chain. Tools seperti Chainalysis Reactor atau Crystal Blockchain bisa generate ini secara otomatis.</div>
+  </div>
+</div>
+
+<!-- TX STEP 1 -->
+<div class="step-panel" id="tx-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Identifikasi 1MixerAAA</div>
+    <h3>Tanda-tanda mixer/tumbler dari pola transaksi</h3>
+    <p style="margin-bottom:.75rem">Analisis TX-B dan TX-C untuk identifikasi 1MixerAAA:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Ciri</th><th>TX-C (dari MixerAAA)</th><th>Interpretasi</th></tr>
+      <tr class="warn-row"><td>Jumlah output</td><td>4 output sekaligus</td><td>Mixer memecah dana ke banyak alamat</td></tr>
+      <tr class="warn-row"><td>Nilai output</td><td>Hampir sama (~0.5 BTC)</td><td>Equal-value splitting = ciri khas mixer</td></tr>
+      <tr class="warn-row"><td>Delay</td><td>95 blok (~16 jam) setelah receive</td><td>Mixer menunggu sebelum kirim (time delay)</td></tr>
+      <tr class="warn-row"><td>Pola</td><td>Satu masuk, banyak keluar</td><td>Fan-out pattern = mixing/splitting</td></tr>
+    </table>
+    <div class="danger">1MixerAAA adalah <strong>cryptocurrency mixer/tumbler</strong> — layanan yang memecah dan mencampur dana untuk mempersulit pelacakan. Ini tanda kuat money laundering!</div>
+    <div class="note" style="margin-top:.4rem">Contoh mixer nyata: Bitcoin Fog, Helix, BestMixer (semua sudah ditutup dan operatornya ditangkap oleh DOJ).</div>
+  </div>
+</div>
+
+<!-- TX STEP 2 -->
+<div class="step-panel" id="tx-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung aliran dana</div>
+    <h3>Tracking berapa BTC berhasil dilacak ke exchange</h3>
+    <p style="margin-bottom:.75rem">Dari graph, hitung total dana yang berhasil diidentifikasi:</p>
+    <table class="tbl">
+      <tr><th>Aliran</th><th>Jumlah</th><th>Status</th></tr>
+      <tr class="teal-row"><td>Korban → 1RansomXXX (TX-A)</td><td>2.00 BTC</td><td>Origin — awal pelacakan</td></tr>
+      <tr><td>1RansomXXX → 1MixerAAA (TX-B)</td><td>1.95 BTC</td><td>Masuk mixer</td></tr>
+      <tr><td>1RansomXXX (kembalian TX-B)</td><td>0.04 BTC</td><td>Masih di ransom wallet</td></tr>
+      <tr><td>Fee TX-B</td><td>0.01 BTC</td><td>Ke miner</td></tr>
+      <tr class="ok-row"><td>1Out222 → 1ExchangeKYC (TX-D)</td><td>0.50 BTC</td><td>Terdeteksi di exchange ✓</td></tr>
+      <tr class="ok-row"><td>1Out333 → 1ExchangeKYC (TX-E)</td><td>0.25 BTC</td><td>Terdeteksi di exchange ✓</td></tr>
+      <tr><td>1Out333 (kembalian TX-E)</td><td>0.24 BTC</td><td>Masih beredar</td></tr>
+      <tr><td>1Out111, 1Out444</td><td>0.94 BTC total</td><td>Belum dilacak — perlu investigasi lanjut</td></tr>
+    </table>
+    <span class="eq-ok">Total dana ke exchange = 0.50 + 0.25 = 0.75 BTC dari 2.00 BTC awal
+Persentase terdeteksi = 0.75/1.95 × 100 = 38.5% dari yang melewati mixer</span>
+  </div>
+</div>
+
+<!-- TX STEP 3 -->
+<div class="step-panel" id="tx-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Identifikasi lead investigasi terkuat</div>
+    <h3>1ExchangeKYC adalah titik kritis investigasi</h3>
+    <p style="margin-bottom:.75rem">Dari semua alamat yang teridentifikasi, <code>1ExchangeKYC</code> adalah yang paling penting:</p>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box">
+        <strong>Mengapa exchange adalah lead terkuat?</strong><br>
+        Exchange dengan KYC (Know Your Customer) menyimpan data identitas user. Ini bisa di-subpoena oleh penegak hukum untuk mendapatkan nama asli, email, nomor telepon, bahkan alamat fisik pelaku.
+      </div>
+      <div class="step-box">
+        <strong>Prosedur selanjutnya:</strong><br>
+        1. Kirim legal request (subpoena) ke exchange<br>
+        2. Dapatkan KYC data dari akun yang menerima 1Out222 dan 1Out333<br>
+        3. Kalau exchange di yurisdiksi berbeda → gunakan MLA (Mutual Legal Assistance)
+      </div>
+    </div>
+    <div class="ok">Bahkan jika pelaku pakai mixer, kalau mereka punya satu titik kontak dengan exchange KYC, identitas mereka bisa terungkap. Ini kelemahan utama crypto criminals!</div>
+    <div class="warn" style="margin-top:.4rem">Dua aliran lain (1Out111, 1Out444) masih belum jelas. Perlu dilanjutkan dengan transaction tracing di blok berikutnya.</div>
+  </div>
+</div>
+
+<!-- TX STEP 4 -->
+<div class="step-panel" id="tx-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Heuristic: Change detection</div>
+    <h3>Identifikasi "kembalian" untuk temukan wallet yang sama</h3>
+    <p style="margin-bottom:.75rem">Heuristic paling berguna: dalam sebuah transaksi Bitcoin, sering ada satu output yang merupakan "kembalian" ke pengirim. Mendeteksi ini membantu cluster alamat.</p>
+    <span class="eq">Indikator kembalian (change output):
+1. Nilai yang tidak bulat (round number = pembayaran, tidak bulat = kembalian)
+2. Alamat baru yang tidak pernah muncul sebelumnya
+3. Output yang nilainya lebih kecil dari input
+4. Alamat yang sama dengan input (reuse)</span>
+    <div style="margin:.75rem 0">
+      <p style="font-size:12px;font-weight:500;margin-bottom:4px">Analisis TX-B:</p>
+      <div class="tx-cell tx-warn">
+        <span>Output 1: 1MixerAAA = 1.95 BTC (pembayaran ke mixer)</span>
+      </div>
+      <div class="tx-cell tx-sus">
+        <span>Output 2: 1RansomXXX = 0.04 BTC ← KEMBALIAN! (alamat sama dengan input)</span>
+      </div>
+    </div>
+    <div class="ok">Ketahuan! 1RansomXXX masih memegang 0.04 BTC. Kalau pelaku bertransaksi lagi dari sini, bisa dilacak lebih lanjut.</div>
+  </div>
+</div>
+
+<!-- TX STEP 5 -->
+<div class="step-panel" id="tx-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Query blockchain dengan tools</div>
+    <h3>Cara praktis menganalisis di Etherscan / Blockchair / blockchain.com</h3>
+    <div class="code-block">
+<span class="cm"># Menggunakan Python + bitcoin library untuk trace</span>
+<span class="ck">import</span> requests
+
+<span class="ck">def</span> get_tx(txid):
+    url = <span class="cs">f"https://blockchain.info/rawtx/{txid}?format=json"</span>
+    <span class="ck">return</span> requests.get(url).json()
+
+<span class="ck">def</span> trace_wallet(address, depth=<span class="cn">3</span>):
+    url = <span class="cs">f"https://blockchain.info/rawaddr/{address}"</span>
+    data = requests.get(url).json()
+    txs = data[<span class="cs">'txs'</span>]
+
+    <span class="ck">for</span> tx <span class="ck">in</span> txs:
+        <span class="ck">for</span> out <span class="ck">in</span> tx[<span class="cs">'out'</span>]:
+            print(<span class="cs">f"  → {out['addr']}: {out['value']/1e8:.8f} BTC"</span>)
+        <span class="ck">if</span> depth > <span class="cn">1</span>:
+            <span class="ck">for</span> out <span class="ck">in</span> tx[<span class="cs">'out'</span>]:
+                trace_wallet(out[<span class="cs">'addr'</span>], depth-<span class="cn">1</span>)
+
+trace_wallet(<span class="cs">"1RansomXXX"</span>)
+
+<span class="cm"># Atau gunakan Chainalysis API (law enforcement tool):</span>
+<span class="cm"># curl -X POST https://api.chainalysis.com/api/risk/v2/entities \</span>
+<span class="cm">#   -d '{"subject": {"address": "1RansomXXX"}}' \</span>
+<span class="cm">#   -H "Authorization: Bearer {TOKEN}"</span>
+    </div>
+  </div>
+</div>
+
+<!-- TX STEP 6 -->
+<div class="step-panel" id="tx-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">(1) Mixer/tumbler (2) 0.75 BTC</div>
+      <div class="big-ans" style="margin-top:4px">(3) 1ExchangeKYC (4) Graph: Korban→Ransom→Mixer→Out→Exchange</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #0F6E56">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Transaction Forensic</p>
+      <p style="font-size:12px">1. Bangun transaction flow graph dari semua TX yang diketahui</p>
+      <p style="font-size:12px">2. Identifikasi pola: mixer (fan-out, equal value), exchange (KYC), darknet market</p>
+      <p style="font-size:12px">3. Hitung aliran dana ke setiap destinasi</p>
+      <p style="font-size:12px">4. Cari "entry point" ke exchange KYC → lead investigasi terkuat</p>
+      <p style="font-size:12px">5. Gunakan change detection heuristic untuk cluster alamat</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tx -->
+
+<!-- ============================================================ -->
+<!-- SOAL 2: ADDRESS CLUSTERING -->
+<!-- ============================================================ -->
+<div id="sec-cluster" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:6px">Soal 2 — Address Clustering</div>
+  <h2 style="color:#04342C">Temukan semua alamat yang dimiliki pelaku!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Pelaku menggunakan banyak alamat Bitcoin untuk menyembunyikan identitas. Gunakan heuristic <strong>common-input-ownership</strong> dan <strong>change detection</strong> untuk cluster semua alamat yang dimiliki entitas yang sama!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #5DCAA5;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">Transaksi yang dianalisis:</div>
+    <div><span style="color:#0F6E56">TX-1:</span> inputs=[<span style="color:#791F1F">AddrA</span>, <span style="color:#791F1F">AddrB</span>] outputs=[AddrX=1.8BTC, <span style="color:#791F1F">AddrC</span>=0.19BTC]</div>
+    <div><span style="color:#0F6E56">TX-2:</span> inputs=[<span style="color:#791F1F">AddrC</span>, <span style="color:#791F1F">AddrD</span>] outputs=[AddrY=0.9BTC, <span style="color:#791F1F">AddrE</span>=0.28BTC]</div>
+    <div><span style="color:#0F6E56">TX-3:</span> inputs=[<span style="color:#791F1F">AddrE</span>] outputs=[AddrZ=0.15BTC, <span style="color:#791F1F">AddrF</span>=0.12BTC]</div>
+    <div style="margin-top:4px;color:#888">AddrX, AddrY, AddrZ = alamat penerima (bukan milik pelaku)</div>
+    <div>Diketahui dari OSINT: <span style="color:#27500A">AddrA muncul di forum hacker dengan username "phantom_cr"</span></div>
+  </div>
+  <p style="color:#085041;font-size:12px">Pertanyaan: Cluster semua alamat yang dimiliki pelaku yang sama!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="cl-prev" onclick="prevStep('cl')" disabled>Prev</button>
+  <div class="step-dots" id="cl-dots"></div>
+  <span class="step-label" id="cl-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="cl-next" onclick="nextStep('cl')">Next</button>
+</div>
+
+<!-- CL STEP 0 -->
+<div class="step-panel active" id="cl-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Heuristic 1: Common Input Ownership</div>
+    <h3>Input dalam satu transaksi = satu pemilik</h3>
+    <p style="margin-bottom:.75rem">Untuk membayar Bitcoin, kamu harus sign semua input dengan private key kamu. Jadi kalau satu transaksi punya banyak input, semua input itu dimiliki satu entitas (yang punya semua private key-nya).</p>
+    <span class="eq">Aturan: jika AddrX dan AddrY sama-sama jadi input di satu TX,
+maka AddrX dan AddrY dimiliki entitas yang SAMA.</span>
+    <p style="font-size:12px;margin:.75rem 0 .4rem">Terapkan ke TX-1:</p>
+    <div class="tx-cell tx-sus">
+      <span>TX-1 inputs: [<strong>AddrA</strong>, <strong>AddrB</strong>] → AddrA dan AddrB dimiliki entitas yang SAMA!</span>
+    </div>
+    <p style="font-size:12px;margin:.5rem 0 .4rem">Terapkan ke TX-2:</p>
+    <div class="tx-cell tx-sus">
+      <span>TX-2 inputs: [<strong>AddrC</strong>, <strong>AddrD</strong>] → AddrC dan AddrD dimiliki entitas yang SAMA!</span>
+    </div>
+    <div class="ok" style="margin-top:.5rem">Dari TX-1: cluster {AddrA, AddrB}. Dari TX-2: cluster {AddrC, AddrD}. Tapi belum tahu apakah kedua cluster ini milik orang yang sama!</div>
+  </div>
+</div>
+
+<!-- CL STEP 1 -->
+<div class="step-panel" id="cl-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Heuristic 2: Change Output Detection</div>
+    <h3>Output "kembalian" → ke alamat pengirim sendiri</h3>
+    <p style="margin-bottom:.75rem">Identifikasi output mana yang merupakan kembalian (change). Kembalian = milik pengirim!</p>
+    <table class="tbl">
+      <tr><th>TX</th><th>Output</th><th>Nilai</th><th>Ciri kembalian?</th><th>Kesimpulan</th></tr>
+      <tr class="ok-row"><td>TX-1</td><td>AddrX</td><td>1.8 BTC</td><td>Nilai besar, bulat</td><td>Pembayaran ke penerima</td></tr>
+      <tr class="warn-row"><td>TX-1</td><td>AddrC</td><td>0.19 BTC</td><td>Nilai kecil, tidak bulat, alamat baru</td><td>KEMBALIAN → milik pengirim TX-1!</td></tr>
+      <tr class="ok-row"><td>TX-2</td><td>AddrY</td><td>0.9 BTC</td><td>Nilai besar, bulat</td><td>Pembayaran ke penerima</td></tr>
+      <tr class="warn-row"><td>TX-2</td><td>AddrE</td><td>0.28 BTC</td><td>Nilai kecil, tidak bulat, alamat baru</td><td>KEMBALIAN → milik pengirim TX-2!</td></tr>
+      <tr class="ok-row"><td>TX-3</td><td>AddrZ</td><td>0.15 BTC</td><td>Nilai besar relatif</td><td>Pembayaran</td></tr>
+      <tr class="warn-row"><td>TX-3</td><td>AddrF</td><td>0.12 BTC</td><td>Nilai kecil, tidak bulat</td><td>KEMBALIAN → milik pengirim TX-3!</td></tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">Karena AddrC adalah kembalian TX-1, dan TX-1 diinput oleh {AddrA, AddrB}, maka AddrC juga milik cluster {AddrA, AddrB}!</div>
+  </div>
+</div>
+
+<!-- CL STEP 2 -->
+<div class="step-panel" id="cl-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Gabungkan heuristic: merge cluster</div>
+    <h3>Trace ownership chain dari TX ke TX</h3>
+    <p style="margin-bottom:.75rem">Sekarang kita bisa gabungkan semua informasi:</p>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><strong>TX-1:</strong> inputs={AddrA,AddrB} → Common input ownership → {AddrA,AddrB} adalah satu cluster</div>
+      <div class="step-box"><strong>TX-1:</strong> change=AddrC → AddrC milik pengirim TX-1 = cluster {AddrA,AddrB} → merge: {AddrA,AddrB,AddrC}</div>
+      <div class="step-box"><strong>TX-2:</strong> inputs={AddrC,AddrD} → AddrC sudah di cluster → AddrD join cluster: {AddrA,AddrB,AddrC,AddrD}</div>
+      <div class="step-box"><strong>TX-2:</strong> change=AddrE → AddrE milik pengirim TX-2 = cluster → merge: {AddrA,AddrB,AddrC,AddrD,AddrE}</div>
+      <div class="step-box"><strong>TX-3:</strong> input={AddrE} → AddrE sudah di cluster → TX-3 dikirim oleh cluster yang sama</div>
+      <div class="step-box"><strong>TX-3:</strong> change=AddrF → AddrF milik pengirim TX-3 → merge: {AddrA,AddrB,AddrC,AddrD,AddrE,AddrF}</div>
+    </div>
+    <span class="eq-hi">Cluster final: {AddrA, AddrB, AddrC, AddrD, AddrE, AddrF}
+Semua 6 alamat ini dimiliki oleh SATU entitas!</span>
+  </div>
+</div>
+
+<!-- CL STEP 3 -->
+<div class="step-panel" id="cl-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Linking ke identitas nyata (OSINT)</div>
+    <h3>AddrA terhubung ke username "phantom_cr" → de-anonymize!</h3>
+    <p style="margin-bottom:.75rem">Dari soal, AddrA pernah muncul di forum hacker. Karena kita tahu AddrA milik cluster yang sama dengan AddrB-F, kita bisa identifikasi seluruh cluster sebagai milik "phantom_cr".</p>
+    <div class="code-block">
+<span class="cm">## Langkah OSINT untuk linking:</span>
+
+<span class="cm"># 1. Search alamat di forum, exchange, paste sites</span>
+$ grep -r "AddrA" /data/forums_scrape/
+→ Ditemukan di: hackerforums.onion/thread/123 oleh user "phantom_cr"
+
+<span class="cm"># 2. Username "phantom_cr" di-search di clearnet</span>
+$ sherlock phantom_cr   <span class="cm"># tool OSINT untuk cari username</span>
+→ Twitter: @phantom_cr (email: phcr@protonmail.com)
+→ Github: github.com/phantom-cr
+→ HackerNews: phantom_cr
+
+<span class="cm"># 3. Correlate dengan data breach</span>
+→ protonmail account linked to registration IP: 203.x.x.x
+→ IP registered to ISP in [negara]
+
+<span class="cm"># 4. Semua 6 alamat sekarang bisa di-attribute ke phantom_cr!</span>
+    </div>
+    <div class="danger">Dengan satu link saja (AddrA di forum), seluruh cluster 6 alamat terdeanonymize. Ini menunjukkan pentingnya TIDAK pernah posting alamat crypto di forum dengan identitas yang bisa dilacak!</div>
+  </div>
+</div>
+
+<!-- CL STEP 4 -->
+<div class="step-panel" id="cl-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Ringkasan Address Clustering</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Cluster yang ditemukan</div>
+      <div class="big-ans">{AddrA, AddrB, AddrC, AddrD, AddrE, AddrF}</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Semua milik "phantom_cr" via common input + change detection</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #0F6E56">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Dua heuristic utama address clustering</p>
+      <p style="font-size:12px"><strong>1. Common Input Ownership:</strong> semua input satu TX = satu pemilik</p>
+      <p style="font-size:12px"><strong>2. Change Detection:</strong> output nilai kecil/tidak bulat/alamat baru = kembalian = milik pengirim</p>
+      <p style="font-size:12px;margin-top:4px">Setelah cluster, link satu alamat ke identitas nyata (OSINT) → seluruh cluster terdeanonymize</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Limitasi: CoinJoin dan Schnorr signature menyulitkan common-input heuristic</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end cluster -->
+
+<!-- ============================================================ -->
+<!-- SOAL 3: SMART CONTRACT -->
+<!-- ============================================================ -->
+<div id="sec-sc" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:6px">Soal 3 — Smart Contract Forensic & Recovery</div>
+  <h2 style="color:#04342C">Analisis exploit reentrancy dan trace dana hasil hack!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Sebuah DeFi protocol mengalami exploit. Analisis transaksi exploit dan smart contract bytecode untuk: (1) identifikasi jenis exploit, (2) hitung dana yang dicuri, (3) trace ke mana perginya!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #5DCAA5;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">Data exploit:</div>
+    <div>Contract victim: <span style="color:#185FA5">0xVictimDeFi</span></div>
+    <div>TX exploit: <span style="color:#791F1F">0xExploitTx</span> — block 18,500,000</div>
+    <div>Attacker EOA: <span style="color:#791F1F">0xAttacker</span></div>
+    <div>Attack contract: <span style="color:#791F1F">0xAttackContract</span></div>
+    <div style="margin-top:6px;color:#888">Internal calls dalam TX exploit (simplified):</div>
+    <div>① 0xAttackContract.attack() dipanggil</div>
+    <div>② 0xVictimDeFi.withdraw(1 ETH) ← attacker deposit 1 ETH dulu</div>
+    <div>③ 0xVictimDeFi mengirim 1 ETH ke 0xAttackContract</div>
+    <div>④ <span style="color:#791F1F">0xAttackContract.receive() → kembali panggil withdraw(1 ETH)!</span></div>
+    <div>⑤ 0xVictimDeFi mengirim 1 ETH lagi (belum update balance!)</div>
+    <div>⑥ Loop ④-⑤ terjadi 10 kali</div>
+    <div>Total ETH keluar: <span style="color:#791F1F">10 ETH</span> dengan modal 1 ETH deposit</div>
+  </div>
+  <p style="color:#085041;font-size:12px">Pertanyaan: (1) Jenis exploit apa? (2) Bagaimana cara kerjanya? (3) Trace dana post-exploit!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="sc-prev" onclick="prevStep('sc')" disabled>Prev</button>
+  <div class="step-dots" id="sc-dots"></div>
+  <span class="step-label" id="sc-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="sc-next" onclick="nextStep('sc')">Next</button>
+</div>
+
+<!-- SC STEP 0 -->
+<div class="step-panel active" id="sc-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi jenis exploit: Reentrancy Attack</div>
+    <h3>Reentrancy = memanggil kembali fungsi sebelum state di-update</h3>
+    <p style="margin-bottom:.75rem">Dari pola internal calls: withdraw → transfer ETH → (receive) → withdraw lagi → ini adalah <strong>reentrancy attack</strong> — serangan paling terkenal di Ethereum (DAO Hack 2016: $60M).</p>
+    <div class="code-block">
+<span class="cm">// Kode VictimDeFi yang VULNERABLE:</span>
+<span class="ck">mapping</span>(address => uint) <span class="ck">public</span> balances;
+
+<span class="ck">function</span> withdraw(<span class="ck">uint</span> amount) <span class="ck">public</span> {
+    require(balances[msg.sender] >= amount);
+
+    <span class="cm">// 1. Transfer dulu ← BAHAYA! external call sebelum state update</span>
+    (bool sent,) = msg.sender.call{value: amount}("");
+    require(sent);
+
+    <span class="cm">// 2. Update balance SETELAH transfer ← terlambat!</span>
+    balances[msg.sender] -= amount; <span class="hi">// ← attacker sudah re-enter sebelum ini!</span>
+}
+    </div>
+    <div class="danger">CEI (Checks-Effects-Interactions) pattern harus diikuti: dulu Check (require), lalu Effects (update state), baru Interactions (external call). Kode di atas melanggar ini!</div>
+  </div>
+</div>
+
+<!-- SC STEP 1 -->
+<div class="step-panel" id="sc-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Trace seluruh internal transaction</div>
+    <h3>Decode call stack dari TX exploit</h3>
+    <p style="margin-bottom:.75rem">Di Ethereum, satu transaksi bisa menghasilkan ratusan internal transactions. Tools: Tenderly, Etherscan Debug, Phalcon (Blocksec).</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0;font-family:monospace;font-size:11px">
+      <div class="tx-cell tx-plain"><span>CALL attack() from 0xAttacker to 0xAttackContract</span></div>
+      <div style="padding-left:16px;display:flex;flex-direction:column;gap:2px">
+        <div class="tx-cell tx-warn"><span>CALL withdraw(1 ETH) to 0xVictimDeFi [balance[attacker]=1ETH ✓]</span></div>
+        <div style="padding-left:16px;display:flex;flex-direction:column;gap:2px">
+          <div class="tx-cell tx-sus"><span>CALL value=1ETH to 0xAttackContract (transfer)</span></div>
+          <div style="padding-left:16px;display:flex;flex-direction:column;gap:2px">
+            <div class="tx-cell tx-sus"><span>CALL withdraw(1ETH) to 0xVictimDeFi [balance masih 1ETH!] ← REENTRY</span></div>
+            <div style="padding-left:16px">
+              <div class="tx-cell tx-sus"><span>CALL value=1ETH (lagi!) ... loop 10x total</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tx-cell tx-ok"><span>balance[attacker] -= 1ETH (update, tapi sudah terlambat!)</span></div>
+      </div>
+    </div>
+    <div class="eq-danger">10 × withdraw(1ETH) sukses meski deposit hanya 1 ETH → 10 ETH keluar dari contract!</div>
+  </div>
+</div>
+
+<!-- SC STEP 2 -->
+<div class="step-panel" id="sc-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung kerugian dan aset yang dicuri</div>
+    <h3>Analisis perubahan state sebelum dan sesudah exploit</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Metric</th><th>Sebelum Exploit</th><th>Setelah Exploit</th><th>Delta</th></tr>
+      <tr class="hi-row"><td>ETH di VictimDeFi</td><td>50 ETH</td><td>41 ETH</td><td>-9 ETH (dicuri, net dari 1 deposit)</td></tr>
+      <tr class="ok-row"><td>ETH di AttackContract</td><td>0 ETH</td><td>10 ETH</td><td>+10 ETH</td></tr>
+      <tr><td>Balance attacker di contract</td><td>1 ETH</td><td>0 ETH</td><td>State di-reset</td></tr>
+      <tr class="warn-row"><td>Gas cost exploit</td><td>—</td><td>~0.05 ETH</td><td>Biaya serangan</td></tr>
+    </table>
+    <span class="eq-ok">Net profit attacker = 10 ETH (keluar) - 1 ETH (deposit) - 0.05 ETH (gas)
+                       = 8.95 ETH
+Total kerugian protocol = 9 ETH bersih dari likuiditas</span>
+    <div class="note" style="margin-top:.5rem">Di Ethereum, semua perubahan state ini bisa dilihat dengan: <code>eth_getStorageAt</code> sebelum dan sesudah block exploit.</div>
+  </div>
+</div>
+
+<!-- SC STEP 3 -->
+<div class="step-panel" id="sc-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Trace dana post-exploit di Ethereum</div>
+    <h3>Ikuti ETH dari AttackContract ke destinasi akhir</h3>
+    <div class="code-block">
+<span class="cm">## Post-exploit transactions dari 0xAttacker:</span>
+
+<span class="cm"># Block 18,500,001:</span>
+0xAttackContract → 0xAttacker: 10 ETH  <span class="cm"># withdraw dari attack contract</span>
+
+<span class="cm"># Block 18,500,050:</span>
+0xAttacker → 0xTornadoCash: 10 ETH     <span class="cm"># masuk mixer!</span>
+
+<span class="cm"># Beberapa hari kemudian, banyak TX keluar dari Tornado:</span>
+0xTornadoCash → 0xNew1: 1 ETH
+0xTornadoCash → 0xNew2: 1 ETH
+...   (10 transaksi @ 1 ETH)
+
+<span class="cm"># Akhirnya beberapa ke exchange:</span>
+0xNew3 → 0xBinanceHotWallet: 2 ETH
+0xNew7 → 0xCoinbaseHotWallet: 1.5 ETH
+    </div>
+    <div class="warn">Tornado Cash (ETH mixer berbasis zk-SNARK) digunakan untuk memutus trail. OFAC AS sudah sanctioned Tornado Cash pada 2022, tapi smart contract-nya masih berjalan di blockchain (tidak bisa dihentikan!).</div>
+  </div>
+</div>
+
+<!-- SC STEP 4 -->
+<div class="step-panel" id="sc-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Smart Contract Recovery: Decode storage</div>
+    <h3>Baca storage contract untuk recovery data</h3>
+    <p style="margin-bottom:.75rem">Smart contract menyimpan data di "storage slots". Kita bisa baca semua storage bahkan dari contract tanpa source code!</p>
+    <div class="code-block">
+<span class="cm">## Baca storage contract di block SEBELUM exploit untuk forensic:</span>
+<span class="ck">from</span> web3 <span class="ck">import</span> Web3
+
+w3 = Web3(Web3.HTTPProvider(<span class="cs">'https://mainnet.infura.io/v3/KEY'</span>))
+
+contract = <span class="cs">"0xVictimDeFi"</span>
+block_before = <span class="cn">18499999</span>  <span class="cm"># block sebelum exploit</span>
+
+<span class="cm"># Baca mapping balances (slot 0)</span>
+<span class="cm"># Storage slot untuk mapping[key] = keccak256(abi.encode(key, slot_number))</span>
+<span class="ck">import</span> eth_abi
+<span class="ck">from</span> eth_hash.auto <span class="ck">import</span> keccak
+
+attacker = <span class="cs">"0xAttacker"</span>
+slot_key = keccak(eth_abi.encode([<span class="cs">'address'</span>, <span class="cs">'uint256'</span>],
+                                  [attacker, <span class="cn">0</span>]))
+
+balance_at_slot = w3.eth.get_storage_at(
+    contract, slot_key, block_identifier=block_before)
+
+print(<span class="cs">f"Balance attacker sebelum exploit: {int(balance_at_slot.hex(), 16) / 1e18} ETH"</span>)
+<span class="cm"># Output: Balance attacker sebelum exploit: 1.0 ETH</span>
+
+<span class="cm"># Baca total ETH di contract:</span>
+balance = w3.eth.get_balance(contract, block_identifier=block_before)
+print(<span class="cs">f"Total ETH sebelum exploit: {balance / 1e18} ETH"</span>)
+<span class="cm"># Output: Total ETH sebelum exploit: 50.0 ETH</span>
+    </div>
+    <div class="ok">Storage forensic berguna untuk: membuktikan state sebelum exploit, hitung kerugian tepat, dan bisa jadi bukti di pengadilan.</div>
+  </div>
+</div>
+
+<!-- SC STEP 5 -->
+<div class="step-panel" id="sc-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Analisis bytecode attack contract</div>
+    <h3>Reverse engineer attack contract untuk pahami metode exploit</h3>
+    <div class="code-block">
+<span class="cm">## Dapatkan bytecode attack contract:</span>
+bytecode = w3.eth.get_code(<span class="cs">"0xAttackContract"</span>)
+
+<span class="cm">## Decompile dengan Panoramix atau Heimdall:</span>
+$ heimdall decompile 0xAttackContract --rpc-url https://mainnet.infura.io/...
+
+<span class="cm">## Hasil decompile (simplified):</span>
+<span class="yl">function attack() payable {</span>
+<span class="yl">    victim.deposit{value: 1 ether}();</span>
+<span class="yl">    victim.withdraw(1 ether);</span>
+<span class="yl">}</span>
+
+<span class="yl">receive() external payable {</span>
+<span class="yl">    if (address(victim).balance >= 1 ether) {</span>
+<span class="yl">        victim.withdraw(1 ether);  // ← reentrancy!</span>
+<span class="yl">    }</span>
+<span class="yl">}</span>
+
+<span class="cm">## Signature fungsi (4 byte selector):</span>
+attack()     = 0x9e5faafc
+withdraw(uint256) = 0x2e1a7d4d  <span class="cm">← terlihat di calldata TX exploit</span>
+    </div>
+    <div class="note">Bahkan tanpa source code, bytecode bisa di-decompile untuk mendapatkan logic exploit. Ini penting untuk: memahami vektor serangan, menulis patch, dan laporan forensik.</div>
+  </div>
+</div>
+
+<!-- SC STEP 6 -->
+<div class="step-panel" id="sc-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Ringkasan Smart Contract Forensic</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">(1) Reentrancy Attack (2) 9 ETH kerugian bersih</div>
+      <div class="big-ans" style="margin-top:4px">(3) Attacker → TornadoCash → Exchange</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #0F6E56">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Smart Contract Forensic</p>
+      <p style="font-size:12px">1. Identifikasi exploit dari pola internal TX: reentrancy, flash loan, oracle manip</p>
+      <p style="font-size:12px">2. Trace internal transactions dengan Tenderly atau Phalcon</p>
+      <p style="font-size:12px">3. Hitung kerugian: compare storage sebelum dan sesudah exploit</p>
+      <p style="font-size:12px">4. Trace post-exploit: ETH/token → mixer → exchange</p>
+      <p style="font-size:12px">5. Decompile bytecode attack contract untuk pahami metode</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Jenis exploit SC lain: flash loan attack, oracle manipulation, integer overflow, access control bypass</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sc -->
+
+<!-- ============================================================ -->
+<!-- TOOLS & RINGKASAN -->
+<!-- ============================================================ -->
+<div id="sec-tools" class="sec">
+  <div class="card">
+    <div class="step-title">Tools blockchain forensic</div>
+    <h3>Toolkit lengkap untuk investigasi</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Tool</th><th>Fungsi</th><th>Gratis?</th></tr>
+      <tr><td style="font-weight:500">Etherscan / Blockchair</td><td>Block explorer, lihat TX detail</td><td>Ya</td></tr>
+      <tr><td style="font-weight:500">Tenderly</td><td>Simulate & debug TX, trace internal calls</td><td>Freemium</td></tr>
+      <tr><td style="font-weight:500">Phalcon (Blocksec)</td><td>Attack analysis, fund flow visualizer</td><td>Ya</td></tr>
+      <tr><td style="font-weight:500">Metasleuth</td><td>Fund flow tracing, address labeling</td><td>Ya</td></tr>
+      <tr><td style="font-weight:500">ROSgraph / Maltego</td><td>Graph analysis untuk tx network</td><td>Trial</td></tr>
+      <tr><td style="font-weight:500">Heimdall / Panoramix</td><td>Bytecode decompiler untuk EVM</td><td>Ya</td></tr>
+      <tr><td style="font-weight:500">Chainalysis / Elliptic</td><td>Enterprise tracing, sanction check</td><td>Tidak</td></tr>
+      <tr><td style="font-weight:500">web3.py / ethers.js</td><td>Programmatic blockchain query</td><td>Ya</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Checklist mengerjakan soal blockchain forensic</div>
+    <div style="display:flex;flex-direction:column;gap:.35rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><strong>Transaction Forensic:</strong><br>1. Bangun flow graph (alamat = node, TX = edge berbobot)<br>2. Identifikasi pola: mixer (fan-out equal), exchange (KYC), darknet<br>3. Hitung total dana ke setiap destinasi<br>4. Cari titik masuk ke exchange sebagai lead investigasi</div>
+      <div class="step-box"><strong>Address Clustering:</strong><br>1. Common input ownership: semua input satu TX = satu pemilik<br>2. Change detection: output kecil/tidak bulat = kembalian = pengirim<br>3. Merge cluster iteratif sampai tidak ada penggabungan baru<br>4. Link satu alamat ke identitas → seluruh cluster terdeanonymize</div>
+      <div class="step-box"><strong>Smart Contract Forensic:</strong><br>1. Identifikasi exploit dari pola call (reentrancy, flash loan, dll)<br>2. Decode internal TX dengan Tenderly/Phalcon<br>3. Bandingkan storage sebelum/sesudah untuk hitung kerugian<br>4. Trace post-exploit: contract → mixer → exchange<br>5. Decompile bytecode jika source tidak tersedia</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Pola money laundering di crypto yang harus dikenali</div>
+    <table class="tbl">
+      <tr><th>Pola</th><th>Ciri</th><th>Jenis</th></tr>
+      <tr class="warn-row"><td>Peeling chain</td><td>A→B→C→D→E satu per satu nilai menurun</td><td>Bertahap pindah dana sambil bayar fee</td></tr>
+      <tr class="warn-row"><td>Fan-out</td><td>Satu input, banyak output nilai sama</td><td>Mixer atau splitting</td></tr>
+      <tr class="warn-row"><td>Fan-in</td><td>Banyak input, satu output</td><td>Konsolidasi dari banyak sumber</td></tr>
+      <tr class="hi-row"><td>Cross-chain hop</td><td>ETH→BTC→XMR→BTC→ETH</td><td>Lintas blockchain untuk mempersulit trace</td></tr>
+      <tr class="hi-row"><td>DeFi laundering</td><td>Swap di DEX, provide liquidity, withdraw</td><td>Memanfaatkan DeFi untuk obfuscate</td></tr>
+    </table>
+    <div class="note" style="margin-top:.5rem">Monero (XMR) adalah coin paling sulit dilacak karena menggunakan ring signature dan stealth address. Banyak darknet market menerima XMR karena alasan ini.</div>
+  </div>
+</div>
+
+<script>
+const state={
+  tx:{cur:0,total:7},
+  cl:{cur:0,total:5},
+  sc:{cur:0,total:7}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#5DCAA5':i===s.cur?'background:#0F6E56;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('tx');renderDots('cl');renderDots('sc');
+</script>
+</body>
+</html>

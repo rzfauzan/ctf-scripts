@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#534AB7;color:#fff;border-color:#534AB7}
+.btn-next:hover{background:#3C3489}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#26215C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:8px}
+.badge-purple{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#EEEDFE;color:#3C3489}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace;color:#534AB7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.blk{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:5px;font-family:monospace;font-size:11px;font-weight:500;min-width:32px}
+.bp{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.bk{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.bc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.bw{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.bx{background:#f5f5f5;color:#888;border:0.5px solid #ddd;font-size:14px}
+.bt{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.flow-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.35rem 0}
+.arr{color:#888;font-size:14px;margin:0 2px}
+.poly-box{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;color:#a8ff78;line-height:1.9;margin:.4rem 0}
+.component-box{padding:.6rem .85rem;border-radius:8px;border:0.5px solid #ddd;background:#f5f5f5;font-size:12px;margin:.4rem 0;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge-purple">GCM Attack — Forbidden Attack</div>
+  <h2>Ketika nonce GCM dipakai ulang, autentikasi runtuh total</h2>
+  <p style="margin-top:4px">GCM menambahkan <strong>authentication tag</strong> ke CTR untuk menjamin integritas. Tapi kalau nonce dipakai dua kali, attacker bisa memulihkan <strong>authentication key H</strong> — dan dari situ bisa <em>memalsukan tag valid untuk pesan apapun</em>. Inilah yang disebut <strong>Forbidden Attack</strong> (Joux, 2006).</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('fa')">Forbidden Attack</button>
+  <button class="nav-btn" onclick="showSec('bf')">Bit-flipping + Tag Forgery</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- FORBIDDEN ATTACK -->
+<!-- ============================================================ -->
+<div id="sec-fa" class="sec active">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal — GCM Forbidden Attack (Nonce Reuse)</div>
+  <h2 style="color:#26215C">Pulihkan H dan palsukan authentication tag!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Server menggunakan AES-128-GCM. Karena restart sistem, nonce yang sama terpakai dua kali. Eve menyadap dua sesi enkripsi. Gunakan ini untuk memulihkan H (GHASH key) dan pahami kenapa seluruh sistem autentikasi runtuh!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Sesi 1 — pesan M₁, nonce N:</div>
+    <div>Ciphertext C₁ = A3 F2 11 4D 89 C7 50 2E (1 blok)</div>
+    <div style="margin-top:3px">Auth Tag  T₁ = 6B 8C 3F A1 D2 45 09 E7 B3 1A 6C 2D 84 F5 37 9E</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Sesi 2 — pesan M₂ BERBEDA, nonce N SAMA:</div>
+    <div>Ciphertext C₂ = 7E 19 C8 B3 24 5A 9D 61 (1 blok)</div>
+    <div style="margin-top:3px">Auth Tag  T₂ = 2F 4A 87 1C 63 B9 E5 30 7D 2E 91 48 C6 0A 5B F3</div>
+    <div style="color:#888;margin-top:8px;font-size:11px">AAD = kosong (null) untuk kedua sesi.</div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Tujuan: pahami bagaimana H bisa dipulihkan dan kenapa ini membuat seluruh sistem GCM hancur.</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="fa-prev" onclick="prevStep('fa')" disabled>Prev</button>
+  <div class="step-dots" id="fa-dots"></div>
+  <span class="step-label" id="fa-counter">1 / 8</span>
+  <button class="btn-nav btn-next" id="fa-next" onclick="nextStep('fa')">Next</button>
+</div>
+
+<!-- FA STEP 0 -->
+<div class="step-panel active" id="fa-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami komponen GCM</div>
+    <h3>GCM = CTR enkripsi + GHASH autentikasi</h3>
+    <p style="margin-bottom:.75rem">GCM menghasilkan dua output sekaligus dari satu enkripsi:</p>
+    <div class="component-box">
+      <div style="font-weight:500;color:#1a1a1a;margin-bottom:4px">Output GCM = (Ciphertext, Auth Tag)</div>
+      <div style="color:#555">Ciphertext = CTR_K(Nonce, Plaintext)  ← enkripsi biasa</div>
+      <div style="color:#555">Auth Tag   = GHASH(H, AAD, Ciphertext) ⊕ E(K, Nonce‖0)  ← integritas</div>
+    </div>
+    <p style="margin:.5rem 0">Dua variabel kunci dalam GCM:</p>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#26215C;margin-bottom:4px">H = AES_K(0¹²⁸)</p>
+        <p style="font-size:11px;color:#3C3489">GHASH key — dihitung sekali dari kunci K. Sama untuk semua pesan yang pakai K yang sama.</p>
+      </div>
+      <div style="padding:.6rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#26215C;margin-bottom:4px">EK(J₀) = AES_K(Nonce‖1)</p>
+        <p style="font-size:11px;color:#3C3489">Counter block awal — bergantung pada nonce. Kalau nonce sama, EK(J₀) sama!</p>
+      </div>
+    </div>
+    <div class="danger">Kalau nonce dipakai dua kali: EK(J₀) sama untuk kedua pesan. Ini menciptakan persamaan yang bisa dipakai untuk memulihkan H!</div>
+  </div>
+</div>
+
+<!-- FA STEP 1 -->
+<div class="step-panel" id="fa-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Formula GHASH dan auth tag</div>
+    <h3>Apa itu GHASH dan bagaimana tag dihitung?</h3>
+    <p style="margin-bottom:.75rem">GHASH adalah fungsi hash berbasis <strong>Galois Field GF(2¹²⁸)</strong> — aritmetika polinomial modulo 2. Untuk satu blok ciphertext C dan AAD kosong:</p>
+    <span class="eq">GHASH(H, C) = C · H² ⊕ len(C)‖len(AAD) · H</span>
+    <p style="margin:.5rem 0">Auth tag dihitung sebagai:</p>
+    <span class="eq-hi">T = GHASH(H, AAD, C) ⊕ EK(J₀)</span>
+    <p style="margin:.75rem 0 .4rem">Untuk dua pesan dengan nonce sama, EK(J₀) identik. Sebut EK(J₀) = S. Maka:</p>
+    <span class="eq">T₁ = GHASH₁(H) ⊕ S
+T₂ = GHASH₂(H) ⊕ S</span>
+    <p style="margin:.5rem 0">XOR kedua tag:</p>
+    <span class="eq-hi">T₁ ⊕ T₂ = GHASH₁(H) ⊕ GHASH₂(H)</span>
+    <div class="note">S hilang! Kita punya persamaan yang hanya mengandung H. Ini adalah persamaan polinomial dalam GF(2¹²⁸) — dan H adalah akarnya!</div>
+  </div>
+</div>
+
+<!-- FA STEP 2 -->
+<div class="step-panel" id="fa-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Turunkan persamaan polinomial untuk H</div>
+    <h3>H adalah akar dari polinomial yang bisa kita bentuk</h3>
+    <p style="margin-bottom:.75rem">Untuk satu blok ciphertext dan AAD kosong, GHASH menjadi:</p>
+    <span class="eq">GHASH(H, C) = C·H² ⊕ len·H
+(di mana len = panjang C dalam bit, di-encode sebagai 128-bit)</span>
+    <p style="margin:.5rem 0">Substitusi ke T₁ ⊕ T₂ = GHASH₁ ⊕ GHASH₂:</p>
+    <span class="eq">T₁ ⊕ T₂ = (C₁·H² ⊕ len₁·H) ⊕ (C₂·H² ⊕ len₂·H)</span>
+    <p style="margin:.5rem 0">Karena len₁ = len₂ (sama-sama 1 blok 128-bit), len₁·H ⊕ len₂·H = 0:</p>
+    <span class="eq">T₁ ⊕ T₂ = (C₁ ⊕ C₂)·H²</span>
+    <p style="margin:.5rem 0">Isolasi H²:</p>
+    <span class="eq-hi">H² = (T₁ ⊕ T₂) · (C₁ ⊕ C₂)⁻¹  dalam GF(2¹²⁸)</span>
+    <p style="margin:.5rem 0">Dari H², ambil akar kuadrat dalam GF(2¹²⁸) untuk dapat H:</p>
+    <span class="eq-hi">H = sqrt(H²) dalam GF(2¹²⁸)</span>
+    <div class="warn" style="margin-top:.5rem">Operasi ini (perkalian dan invers dalam GF(2¹²⁸)) adalah aritmetika polinomial — kompleks secara matematis, tapi bisa dikomputasi. Tools seperti pwntools atau SageMath bisa melakukannya.</div>
+  </div>
+</div>
+
+<!-- FA STEP 3 -->
+<div class="step-panel" id="fa-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung T₁ ⊕ T₂ dan C₁ ⊕ C₂</div>
+    <h3>Langkah konkret yang bisa dihitung manual</h3>
+    <p style="margin-bottom:.75rem">Data yang kita punya:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #ddd;margin:.4rem 0;line-height:1.8">
+      <div>T₁ = 6B 8C 3F A1 D2 45 09 E7 B3 1A 6C 2D 84 F5 37 9E</div>
+      <div>T₂ = 2F 4A 87 1C 63 B9 E5 30 7D 2E 91 48 C6 0A 5B F3</div>
+      <div>C₁ = A3 F2 11 4D 89 C7 50 2E</div>
+      <div>C₂ = 7E 19 C8 B3 24 5A 9D 61</div>
+    </div>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">T₁ ⊕ T₂ (XOR byte per byte):</p>
+    <table class="tbl">
+      <tr><th>Byte</th><th>T₁</th><th>T₂</th><th>T₁ ⊕ T₂</th></tr>
+      <tr><td>0</td><td>6B</td><td>2F</td><td style="color:#534AB7;font-weight:500">44</td></tr>
+      <tr><td>1</td><td>8C</td><td>4A</td><td style="color:#534AB7;font-weight:500">C6</td></tr>
+      <tr><td>2</td><td>3F</td><td>87</td><td style="color:#534AB7;font-weight:500">B8</td></tr>
+      <tr><td>3</td><td>A1</td><td>1C</td><td style="color:#534AB7;font-weight:500">BD</td></tr>
+      <tr><td>4</td><td>D2</td><td>63</td><td style="color:#534AB7;font-weight:500">B1</td></tr>
+      <tr><td>5</td><td>45</td><td>B9</td><td style="color:#534AB7;font-weight:500">FC</td></tr>
+      <tr><td>6</td><td>09</td><td>E5</td><td style="color:#534AB7;font-weight:500">EC</td></tr>
+      <tr><td>7</td><td>E7</td><td>30</td><td style="color:#534AB7;font-weight:500">D7</td></tr>
+      <tr><td>8-15</td><td colspan="2" style="color:#888">... (sisa 8 byte)</td><td style="color:#534AB7;font-weight:500">CE 34 FD 65 42 FF 68 6D</td></tr>
+    </table>
+    <span class="eq-hi">T₁ ⊕ T₂ = 44 C6 B8 BD B1 FC EC D7 CE 34 FD 65 42 FF 68 6D</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">C₁ ⊕ C₂ (padded ke 128-bit dengan zero):</p>
+    <span class="eq-hi">C₁ ⊕ C₂ = DD EB D9 FE AD 9D CD 4F 00 00 00 00 00 00 00 00</span>
+  </div>
+</div>
+
+<!-- FA STEP 4 -->
+<div class="step-panel" id="fa-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Operasi GF(2¹²⁸): gambaran konseptual</div>
+    <h3>Mengapa GF(2¹²⁸) dibutuhkan dan apa yang terjadi</h3>
+    <p style="margin-bottom:.75rem">Untuk mendapatkan H, kita perlu menyelesaikan persamaan polinomial dalam <strong>Galois Field GF(2¹²⁸)</strong>. Ini adalah field matematika dimana semua operasi dilakukan modulo polinomial ireducible:</p>
+    <span class="eq">Polinomial GCM: x¹²⁸ + x⁷ + x² + x + 1</span>
+    <p style="margin:.5rem 0">Langkah-langkah yang dilakukan tools/script:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;font-size:12px;line-height:1.9">
+      <div style="font-family:monospace">
+        <div style="color:#888"># Python dengan library galois atau SageMath</div>
+        <div style="color:#0C447C">GF = GF(2^128, modulus=gcm_poly)</div>
+        <div style="color:#0C447C">delta_T = GF(T1_xor_T2)   <span style="color:#888"># T₁ ⊕ T₂</span></div>
+        <div style="color:#0C447C">delta_C = GF(C1_xor_C2)   <span style="color:#888"># C₁ ⊕ C₂</span></div>
+        <div style="color:#0C447C">H_squared = delta_T * delta_C.inverse()</div>
+        <div style="color:#0C447C">H = H_squared.sqrt()       <span style="color:#888"># akar di GF(2¹²⁸)</span></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:.5rem">Di ujian, biasanya tidak diminta melakukan komputasi GF(2¹²⁸) manual. Yang penting dipahami: <strong>H bisa dipulihkan secara matematis</strong> karena persamaannya terbentuk dari nonce reuse. Fokus soal biasanya pada konsep dan langkah logisnya.</div>
+    <div class="danger" style="margin-top:.4rem">Begitu H diketahui, S = EK(J₀) bisa dihitung dari T₁ ⊕ GHASH₁(H). Dan dengan H + S, attacker bisa buat auth tag valid untuk PESAN APAPUN!</div>
+  </div>
+</div>
+
+<!-- FA STEP 5 -->
+<div class="step-panel" id="fa-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Setelah H diketahui: tag forgery</div>
+    <h3>Attacker bisa forge tag untuk pesan sembarangan</h3>
+    <p style="margin-bottom:.75rem">Dengan H dan S = EK(J₀) diketahui, attacker bisa membuat pasangan (C*, T*) yang valid untuk pesan APAPUN:</p>
+    <span class="eq">Hitung S dari sesi yang sudah ada:
+S = T₁ ⊕ GHASH(H, C₁)</span>
+    <span class="eq">Untuk pesan palsu C* (ciphertext baru yang diinginkan):
+T* = GHASH(H, C*) ⊕ S</span>
+    <span class="eq-danger">Server akan menerima (C*, T*) sebagai valid!
+Padahal isinya adalah pesan yang DIPALSUKAN attacker.</span>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Yang bisa dilakukan attacker</p>
+        <p style="font-size:11px;color:#A32D2D">Buat token, perintah, transaksi palsu yang lolos verifikasi server. Ubah "amount=100" menjadi "amount=99999" dan buat tag valid.</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Kenapa ini sangat fatal</p>
+        <p style="font-size:11px;color:#A32D2D">GCM dipakai karena dianggap memberikan AEAD (autentikasi + enkripsi). Kalau autentikasi bisa dipalsukan, seluruh tujuan GCM gagal.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FA STEP 6 -->
+<div class="step-panel" id="fa-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Perbandingan: CTR vs GCM nonce reuse</div>
+    <h3>GCM nonce reuse jauh lebih parah dari CTR nonce reuse</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Aspek</th><th>CTR Nonce Reuse</th><th>GCM Nonce Reuse</th></tr>
+      <tr><td>Plaintext bocor?</td><td style="color:#791F1F">Ya (two-time pad)</td><td style="color:#791F1F">Ya (two-time pad)</td></tr>
+      <tr><td>Integritas?</td><td style="color:#888">Tidak ada (CTR tidak punya)</td><td style="color:#791F1F">HANCUR TOTAL</td></tr>
+      <tr><td>H (auth key) bocor?</td><td style="color:#888">Tidak ada H di CTR</td><td style="color:#791F1F">Ya — H terbongkar</td></tr>
+      <tr><td>Bisa forge pesan?</td><td style="color:#888">Tidak (no auth)</td><td style="color:#791F1F">Ya — tag sembarangan</td></tr>
+      <tr><td>Bisa dekripsi?</td><td style="color:#791F1F">Ya</td><td style="color:#791F1F">Ya</td></tr>
+      <tr><td>Dampak</td><td>Kehilangan kerahasiaan</td><td style="color:#791F1F;font-weight:500">Kehilangan kerahasiaan + integritas</td></tr>
+    </table>
+    <div class="danger">GCM dirancang untuk memberikan KEDUANYA: kerahasiaan DAN integritas. Nonce reuse menghancurkan KEDUANYA sekaligus — ini jauh lebih buruk dari CTR atau OFB nonce reuse yang hanya kehilangan kerahasiaan.</div>
+  </div>
+</div>
+
+<!-- FA STEP 7 -->
+<div class="step-panel" id="fa-step-7">
+  <div class="card">
+    <div class="step-title">Langkah 8 — Kesimpulan dan cara mitigasi</div>
+    <h3>Mengapa ini disebut "Forbidden Attack"</h3>
+    <p style="margin-bottom:.75rem">Serangan ini pertama kali dipublikasikan oleh Antoine Joux pada 2006 dengan judul <em>"Authentication Failures in NIST version of GCM"</em>. Disebut "Forbidden" karena:</p>
+    <div class="component-box" style="border-left:3px solid #534AB7">
+      <div style="font-weight:500;margin-bottom:4px">Nonce reuse adalah hal yang secara eksplisit DILARANG dalam spesifikasi GCM.</div>
+      <div>Tapi karena mudah terjadi secara tidak sengaja (restart sistem, RNG yang buruk, counter overflow), serangan ini tetap relevan.</div>
+    </div>
+
+    <div style="margin:.75rem 0">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Cara mitigasi:</p>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <div style="padding:.5rem .85rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px;font-size:12px;color:#27500A">
+          <strong>Terbaik:</strong> Gunakan <strong>AES-GCM-SIV</strong> (RFC 8452) — nonce reuse resistance, aman bahkan kalau nonce tidak sengaja sama selama plaintextnya berbeda.
+        </div>
+        <div style="padding:.5rem .85rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px;font-size:12px;color:#27500A">
+          <strong>Untuk GCM biasa:</strong> Gunakan counter deterministik yang tidak pernah reset — bukan random nonce. Random 96-bit berisiko collision setelah 2³² (~4 miliar) pesan.
+        </div>
+        <div style="padding:.5rem .85rem;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;font-size:12px;color:#633806">
+          <strong>Alternatif:</strong> ChaCha20-Poly1305 — nonce 96-bit, lebih toleran terhadap nonce management yang kurang ketat.
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Kesimpulan Forbidden Attack</div>
+      <div class="big-ans">H terbongkar → forge tag apapun</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Nonce reuse = kehilangan kerahasiaan + integritas sekaligus</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan GCM Forbidden Attack</p>
+      <p style="font-size:12px">1. Nonce sama → EK(J₀) sama untuk kedua pesan</p>
+      <p style="font-size:12px">2. T₁ ⊕ T₂ = GHASH₁(H) ⊕ GHASH₂(H) — S hilang</p>
+      <p style="font-size:12px">3. Bentuk persamaan polinomial: H² = (T₁⊕T₂)·(C₁⊕C₂)⁻¹ dalam GF(2¹²⁸)</p>
+      <p style="font-size:12px">4. Selesaikan untuk dapat H (akar kuadrat di GF(2¹²⁸))</p>
+      <p style="font-size:12px">5. Hitung S = T₁ ⊕ GHASH(H, C₁)</p>
+      <p style="font-size:12px">6. Forge tag: T* = GHASH(H, C*) ⊕ S untuk pesan apapun</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-fa -->
+
+<!-- ============================================================ -->
+<!-- BIT FLIPPING + TAG FORGERY -->
+<!-- ============================================================ -->
+<div id="sec-bf" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 2 — GCM Bit-flipping + Auth Tag Kadaluarsa</div>
+  <h2 style="color:#26215C">Kenapa bit-flipping di GCM selalu gagal (tanpa nonce reuse)?</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Eve mencoba melakukan bit-flipping seperti di CTR. Tapi GCM punya auth tag yang melindungi integritas. Pahami mengapa bit-flipping gagal di GCM <em>normal</em>, dan hanya bisa dilakukan kalau dikombinasikan dengan Forbidden Attack.</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Token GCM yang valid:</div>
+    <div>Ciphertext C  = 3A 8F 51 C2 97 04 B6 2D 7E F3 41 88 5C 09 D4 B1</div>
+    <div style="margin-top:3px">Auth Tag   T  = 6B 8C 3F A1 D2 45 09 E7 B3 1A 6C 2D 84 F5 37 9E</div>
+    <div style="color:#888;margin-top:8px;font-size:11px">Plaintext = "role=user&uid=99" (tidak diketahui Eve secara langsung)</div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Eve mencoba flip bit di ciphertext. Apa yang terjadi?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="bf-prev" onclick="prevStep('bf')" disabled>Prev</button>
+  <div class="step-dots" id="bf-dots"></div>
+  <span class="step-label" id="bf-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="bf-next" onclick="nextStep('bf')">Next</button>
+</div>
+
+<!-- BF STEP 0 -->
+<div class="step-panel active" id="bf-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Percobaan bit-flipping di GCM</div>
+    <h3>Eve flip byte ke-5 ciphertext: 0x04 → ubah "user" jadi "admin"</h3>
+    <p style="margin-bottom:.75rem">Proses bit-flipping identik dengan CTR (karena GCM pakai CTR untuk enkripsi):</p>
+    <span class="eq">C'[j] = C[j] ⊕ original_byte ⊕ target_byte</span>
+    <p style="margin:.5rem 0">Misalkan Eve berhasil flip satu byte dan mengirim (C', T) ke server.</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;font-size:12px;line-height:1.9;margin:.5rem 0">
+      <div>Server menerima: (C', T)</div>
+      <div>Server hitung tag baru: T_check = GHASH(H, C') ⊕ EK(J₀)</div>
+      <div>Server bandingkan: T_check == T ?</div>
+    </div>
+    <div class="danger">T_check ≠ T karena C' berbeda dari C yang dipakai untuk hitung T asli. Server langsung TOLAK pesan — "authentication failed"!</div>
+    <div class="ok" style="margin-top:.4rem">Inilah keunggulan GCM atas CTR murni: setiap modifikasi ciphertext akan terdeteksi oleh auth tag. Bit-flipping TIDAK bisa dilakukan tanpa tag yang valid.</div>
+  </div>
+</div>
+
+<!-- BF STEP 1 -->
+<div class="step-panel" id="bf-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Kenapa tidak bisa "update" tag?</div>
+    <h3>GHASH bergantung pada H yang tidak diketahui</h3>
+    <p style="margin-bottom:.75rem">Eve ingin buat tag baru T* yang valid untuk C*. Tapi untuk itu:</p>
+    <span class="eq">T* = GHASH(H, C*) ⊕ EK(J₀)</span>
+    <p style="margin:.5rem 0">Eve tidak tahu H dan tidak tahu EK(J₀). Tanpa keduanya, T* tidak bisa dihitung.</p>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Eve tidak tahu H</p>
+        <p style="font-size:11px;color:#A32D2D">H = AES_K(0¹²⁸) — butuh kunci K yang rahasia.</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Eve tidak tahu EK(J₀)</p>
+        <p style="font-size:11px;color:#A32D2D">EK(J₀) = AES_K(Nonce‖1) — juga butuh kunci K.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:.4rem">KECUALI: Eve sudah melakukan Forbidden Attack dan memulihkan H + S dari nonce reuse. Dalam kasus itu, bit-flipping + tag forgery BISA dilakukan!</div>
+  </div>
+</div>
+
+<!-- BF STEP 2 -->
+<div class="step-panel" id="bf-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Skenario kombinasi: Forbidden Attack + Bit-flipping</div>
+    <h3>Kalau Eve sudah punya H dan S dari Forbidden Attack</h3>
+    <p style="margin-bottom:.75rem">Misalkan Eve sudah berhasil Forbidden Attack dan punya H dan S. Sekarang bisa lakukan bit-flipping dengan tag forgery:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;font-size:12px;line-height:1.9">
+      <div style="font-weight:500;margin-bottom:4px">Langkah kombinasi serangan:</div>
+      <div>1. Forbidden Attack → dapat H dan S = EK(J₀)</div>
+      <div>2. Hitung keystream: KS = C ⊕ P (kalau P diketahui dari two-time pad)</div>
+      <div>3. Buat ciphertext baru: C* = P* ⊕ KS (dari plaintext yang diinginkan)</div>
+      <div>4. Buat tag palsu: T* = GHASH(H, C*) ⊕ S</div>
+      <div>5. Kirim (C*, T*) ke server → diterima sebagai valid!</div>
+    </div>
+    <div class="danger" style="margin-top:.5rem">Dengan kombinasi Forbidden Attack + tag forgery, attacker bisa membuat PESAN APAPUN dengan tag yang valid — enkripsi dan autentikasi GCM keduanya hancur.</div>
+  </div>
+</div>
+
+<!-- BF STEP 3 -->
+<div class="step-panel" id="bf-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — AAD (Additional Authenticated Data)</div>
+    <h3>GCM juga melindungi data yang tidak dienkripsi</h3>
+    <p style="margin-bottom:.75rem">GCM bisa mengautentikasi data yang tidak dienkripsi — disebut <strong>AAD</strong>. Contoh: header jaringan, IP address, sequence number.</p>
+    <span class="eq">T = GHASH(H, AAD, Ciphertext) ⊕ EK(J₀)</span>
+    <div class="component-box">
+      <div style="font-weight:500;margin-bottom:4px">Contoh penggunaan AAD:</div>
+      <div>AAD = "destinationIP=192.168.1.1" (tidak dienkripsi, tapi diautentikasi)</div>
+      <div>Kalau attacker ubah destination IP, tag akan gagal → perubahan terdeteksi!</div>
+    </div>
+    <div class="warn" style="margin-top:.5rem">Kalau H sudah bocor via Forbidden Attack, AAD juga bisa dipalsukan — attacker bisa buat tag valid untuk AAD yang dimodifikasi juga.</div>
+    <div class="ok" style="margin-top:.4rem">GCM dengan AAD dipakai di: TLS 1.3 (header record), IPsec (IP header), SSH (sequence number). AAD melindungi metadata tanpa enkripsi overhead.</div>
+  </div>
+</div>
+
+<!-- BF STEP 4 -->
+<div class="step-panel" id="bf-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Tabel final semua serangan AES</div>
+    <h3>Ringkasan lengkap semua mode dan serangannya</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Mode</th><th>Serangan</th><th>Syarat</th><th>Hasil</th></tr>
+      <tr><td style="font-weight:500">ECB</td><td>Pattern analysis</td><td>Ciphertext saja</td><td>Pola bocor, Chosen PT attack</td></tr>
+      <tr><td style="font-weight:500">CBC</td><td>Padding Oracle</td><td>Oracle (error msg)</td><td>Dekripsi penuh</td></tr>
+      <tr><td style="font-weight:500">CBC</td><td>Bit-flipping</td><td>Known PT</td><td>Modif PT, blok sblm rusak</td></tr>
+      <tr><td style="font-weight:500">OFB</td><td>Nonce reuse</td><td>Known PT + 2 CT</td><td>Semua blok bocor</td></tr>
+      <tr><td style="font-weight:500">CFB</td><td>Bit-flipping</td><td>Known PT</td><td>Modif PT, blok ssdk rusak</td></tr>
+      <tr><td style="font-weight:500">CFB</td><td>IV reuse</td><td>Known PT + 2 CT</td><td>Hanya blok 1 bocor</td></tr>
+      <tr><td style="font-weight:500">CTR</td><td>Nonce reuse</td><td>Known PT + 2 CT</td><td>Semua blok bocor</td></tr>
+      <tr><td style="font-weight:500">CTR</td><td>Bit-flipping</td><td>Known PT</td><td>Modif PT, tanpa efek samping</td></tr>
+      <tr class="hi-row"><td style="font-weight:500">GCM</td><td>Forbidden Attack</td><td>2 CT + nonce sama</td><td>H bocor → forge tag apapun</td></tr>
+      <tr class="hi-row"><td style="font-weight:500">GCM</td><td>BF + Tag Forgery</td><td>H + S diketahui</td><td>Enkripsi + autentikasi hancur</td></tr>
+    </table>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Rekomendasi untuk sistem baru</div>
+      <div class="big-ans">AES-GCM-SIV atau ChaCha20-Poly1305</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Nonce-misuse resistant — aman meski nonce tidak sengaja sama</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Kamu sudah menyelesaikan seluruh Attack on AES!</p>
+      <p style="font-size:12px">ECB → CBC → OFB → CFB → CTR → GCM</p>
+      <p style="font-size:12px;margin-top:4px">Setiap mode punya kelemahan yang berbeda, tapi satu benang merah: <strong>AES sendiri tidak pernah rusak — yang rusak selalu cara penggunaannya</strong>.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-bf -->
+
+<script>
+const state={fa:{cur:0,total:8},bf:{cur:0,total:5}};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#AFA9EC':i===s.cur?'background:#534AB7;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('fa');
+renderDots('bf');
+</script>
+</body>
+</html>

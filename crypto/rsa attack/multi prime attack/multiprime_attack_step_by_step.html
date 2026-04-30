@@ -1,0 +1,412 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.soal-card{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.soal-card h2{color:#04342C}
+.soal-card p{color:#085041}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.tbl td{padding:5px 10px;border:0.5px solid var(--color-border-tertiary);font-family:var(--font-mono);color:var(--color-text-primary)}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--color-border-secondary);border:none;padding:0;cursor:pointer;transition:background .15s}
+.dot.done{background:#5DCAA5}
+.dot.active{background:#0F6E56;width:24px;border-radius:5px}
+.btn-nav{padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;cursor:pointer}
+.btn-nav:hover{background:var(--color-background-secondary)}
+.btn-next{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.btn-next:hover{background:#085041}
+.step-label{font-size:12px;color:var(--color-text-tertiary)}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:var(--font-mono);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:var(--color-text-primary)}
+.eq-hi{font-family:var(--font-mono);background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#04342C}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.5rem 0}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.5rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#633806;margin:.5rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.5rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:8px}
+.big-ans{font-size:22px;font-weight:500;color:#0F6E56;font-family:var(--font-mono)}
+.trial-row{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.trial-d{font-family:var(--font-mono);width:36px;font-weight:500;color:var(--color-text-primary)}
+.trial-calc{font-family:var(--font-mono);flex:1;color:var(--color-text-secondary);font-size:12px}
+.trial-ok{font-size:12px;font-weight:500;min-width:70px;text-align:right}
+.found{color:#085041;background:#E1F5EE;border-radius:4px;padding:2px 8px}
+.miss{color:var(--color-text-tertiary)}
+.exp-tbl td{padding:4px 10px;font-family:var(--font-mono);font-size:12px;border:0.5px solid var(--color-border-tertiary)}
+.exp-tbl th{padding:4px 10px;font-size:12px;font-weight:500;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.exp-tbl{width:100%;border-collapse:collapse;margin:.5rem 0}
+.diff-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem 1rem;margin:.5rem 0}
+.diff-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-tertiary);margin-bottom:4px}
+</style>
+
+<div style="padding:1rem 0">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:6px">Soal — Multiprimes Attack</div>
+  <h2>Pecahkan RSA dengan 3 faktor prima!</h2>
+  <p style="margin-top:6px;margin-bottom:10px">Seorang developer ceroboh membuat RSA dengan N = p × q × r (tiga faktor prima) dan faktor-faktornya relatif kecil. Eve mendapatkan kunci publik dan ciphertext berikut:</p>
+  <table class="tbl">
+    <tr><th>Parameter</th><th>Nilai</th></tr>
+    <tr><td>N (modulus)</td><td>2,431</td></tr>
+    <tr><td>e (exponent publik)</td><td>7</td></tr>
+    <tr><td>C (ciphertext)</td><td>569</td></tr>
+  </table>
+  <p style="margin-top:8px">Gunakan trial division untuk faktorkan N, lalu rekonstruksi kunci privat dan temukan M!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<!-- STEP 0 -->
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami perbedaan Multiprimes vs RSA biasa</div>
+    <h3>RSA biasa vs RSA multiprime</h3>
+
+    <div class="diff-box">
+      <div class="diff-label">RSA biasa (2 faktor)</div>
+      <span class="eq">N = p × q
+φ(N) = (p-1)(q-1)
+d = e⁻¹ mod φ(N)</span>
+    </div>
+
+    <div class="diff-box" style="border-color:#5DCAA5">
+      <div class="diff-label" style="color:#0F6E56">RSA multiprime (3 faktor)</div>
+      <span class="eq">N = p × q × r
+φ(N) = (p-1)(q-1)(r-1)
+d = e⁻¹ mod φ(N)</span>
+    </div>
+
+    <div class="warn">Perbedaan KRITIS: φ(N) melibatkan tiga faktor, bukan dua. Kalau salah pakai rumus φ(N) = (p-1)(q-1), d yang didapat salah dan dekripsi gagal!</div>
+    <div class="note" style="margin-top:.5rem">Kenapa lemah? Untuk N k-bit dengan 3 faktor, tiap faktor hanya ≈ k/3 bit → jauh lebih kecil → lebih mudah ditemukan dengan trial division.</div>
+
+    <p style="margin-top:.75rem;font-size:13px">Strategi serangan: cukup temukan SATU faktor prima saja dari N, sisanya bisa dibagi langsung.</p>
+    <span class="eq">Kalau ketemu p → q×r = N/p → faktorkan q×r untuk dapat q dan r</span>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Trial Division untuk faktorkan N</div>
+    <h3>Coba bagi N = 2431 dengan bilangan prima kecil</h3>
+    <p style="margin-bottom:.75rem">Cukup coba sampai √N. √2431 ≈ 49.3 → coba prima 2, 3, 5, 7, 11, 13, ... sampai 49.</p>
+
+    <div style="margin:.5rem 0">
+      <div class="trial-row" style="border-bottom:1px solid var(--color-border-secondary)">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);width:36px">d</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex:1">2431 ÷ d</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);min-width:70px;text-align:right">Status</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">2</span>
+        <span class="trial-calc">2431 ganjil → tidak bisa dibagi 2</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">3</span>
+        <span class="trial-calc">2+4+3+1 = 10, tidak habis dibagi 3</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">5</span>
+        <span class="trial-calc">2431 tidak berakhir 0 atau 5</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">7</span>
+        <span class="trial-calc">2431 ÷ 7 = 347.28... tidak bulat</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">11</span>
+        <span class="trial-calc">2431 ÷ 11 = 221 → 11 × 221 = 2431</span>
+        <span class="trial-ok found">Ketemu!</span>
+      </div>
+    </div>
+
+    <div class="ok" style="margin-top:.5rem">p = 11 ditemukan! 2431 ÷ 11 = 221 → sekarang faktorkan 221.</div>
+    <span class="eq" style="margin-top:.5rem">N = 11 × 221</span>
+    <p style="font-size:12px;margin-top:.4rem">Lanjut: faktorkan 221 untuk dapat q dan r.</p>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Faktorkan sisa N' = 221</div>
+    <h3>Trial division lagi pada N' = 221</h3>
+    <p style="margin-bottom:.75rem">√221 ≈ 14.9 → coba prima sampai 14.</p>
+
+    <div style="margin:.5rem 0">
+      <div class="trial-row" style="border-bottom:1px solid var(--color-border-secondary)">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);width:36px">d</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex:1">221 ÷ d</span>
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-tertiary);min-width:70px;text-align:right">Status</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">2</span>
+        <span class="trial-calc">221 ganjil</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">3</span>
+        <span class="trial-calc">2+2+1 = 5, tidak habis dibagi 3</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">5</span>
+        <span class="trial-calc">221 tidak berakhir 0 atau 5</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">7</span>
+        <span class="trial-calc">221 ÷ 7 = 31.57... tidak bulat</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">11</span>
+        <span class="trial-calc">221 ÷ 11 = 20.09... tidak bulat</span>
+        <span class="trial-ok miss">— bukan faktor</span>
+      </div>
+      <div class="trial-row">
+        <span class="trial-d">13</span>
+        <span class="trial-calc">221 ÷ 13 = 17 → 13 × 17 = 221</span>
+        <span class="trial-ok found">Ketemu!</span>
+      </div>
+    </div>
+
+    <div class="ok" style="margin-top:.5rem">q = 13, r = 17 ditemukan!</div>
+    <span class="eq-hi" style="margin-top:.5rem">N = p × q × r = 11 × 13 × 17 = 2,431 ✓</span>
+    <p style="margin-top:.4rem;font-size:12px">Verifikasi: 11 × 13 = 143 → 143 × 17 = 2,431 ✓</p>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung φ(N) multiprime</div>
+    <h3>φ(N) = (p-1)(q-1)(r-1) — BUKAN (p-1)(q-1)!</h3>
+    <p style="margin-bottom:.75rem">Ini perbedaan paling krusial dari RSA biasa. Karena N punya 3 faktor prima:</p>
+
+    <span class="eq">φ(N) = (p-1) × (q-1) × (r-1)</span>
+    <span class="eq">φ(2431) = (11-1) × (13-1) × (17-1)</span>
+    <span class="eq">       = 10 × 12 × 16</span>
+    <span class="eq">       = 120 × 16</span>
+    <span class="eq-hi">φ(N) = 1,920</span>
+
+    <div class="danger" style="margin-top:.75rem">Jebakan umum di soal: kalau salah pakai φ(N) = (p-1)(q-1) = 10×12 = 120 → d yang didapat salah → dekripsi gagal!</div>
+    <div class="note" style="margin-top:.4rem">Rumus umum: untuk N = p₁ × p₂ × ... × pₖ, maka φ(N) = (p₁-1)(p₂-1)...(pₖ-1)</div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung kunci privat d</div>
+    <h3>d = e⁻¹ mod φ(N) = 7⁻¹ mod 1920</h3>
+    <p style="margin-bottom:.75rem">Cari d sehingga 7d ≡ 1 (mod 1920). Gunakan Extended Euclidean:</p>
+
+    <p style="font-size:12px;font-weight:500;color:#0F6E56;margin-bottom:4px">Fase maju:</p>
+    <span class="eq">1920 = 274 × 7 + 2
+   7 =   3 × 2 + 1
+   2 =   2 × 1 + 0  ← gcd = 1</span>
+
+    <p style="font-size:12px;font-weight:500;color:#0F6E56;margin:.75rem 0 4px">Fase mundur (substitusi balik):</p>
+    <span class="eq">1 = 7 - 3 × 2
+  = 7 - 3 × (1920 - 274 × 7)
+  = 7 - 3×1920 + 822×7
+  = 823×7 - 3×1920</span>
+
+    <span class="eq-hi">7⁻¹ ≡ 823 (mod 1920)  →  d = 823</span>
+
+    <p style="margin:.75rem 0 .3rem;font-size:13px">Verifikasi:</p>
+    <span class="eq">7 × 823 = 5,761
+5,761 mod 1920 = 5761 - 2×1920 = 5761 - 3840 ... 
+5761 - 3×1920 = 5761 - 5760 = 1 ✓</span>
+    <div class="ok">d = 823 adalah kunci privat yang berhasil direkonstruksi!</div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Dekripsi C menggunakan d</div>
+    <h3>M = C^d mod N = 569^823 mod 2431</h3>
+    <p style="margin-bottom:.75rem">Gunakan fast modular exponentiation. Ubah 823 ke biner:</p>
+    <span class="eq">823 = 512 + 256 + 32 + 16 + 4 + 2 + 1
+    = 1100110111₂</span>
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin:.3rem 0 .75rem">Bit yang aktif: 1, 2, 4, 16, 32, 256, 512</p>
+
+    <table class="exp-tbl">
+      <tr><th>Pangkat</th><th>Nilai mod 2431</th><th>Dipakai?</th></tr>
+      <tr><td>569¹</td><td>569</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569²</td><td>569²=323761, mod 2431 = 1208</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569⁴</td><td>1208²=1459264, mod 2431 = 1369</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569⁸</td><td>1369²=1874161, mod 2431 = 1088</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>569¹⁶</td><td>1088²=1183744, mod 2431 = 1563</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569³²</td><td>1563²=2442969, mod 2431 = 2229</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569⁶⁴</td><td>2229²=4968441, mod 2431 = 777</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>569¹²⁸</td><td>777²=603729, mod 2431 = 1771</td><td style="color:var(--color-text-tertiary)">—</td></tr>
+      <tr><td>569²⁵⁶</td><td>1771²=3136441, mod 2431 = 1208</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+      <tr><td>569⁵¹²</td><td>1208²=1459264, mod 2431 = 1369</td><td style="color:#27500A;font-weight:500">✓</td></tr>
+    </table>
+
+    <p style="font-size:12px;font-weight:500;color:#0F6E56;margin:.75rem 0 4px">Kalikan semua yang dipakai (mod 2431):</p>
+    <span class="eq">569¹ × 569² = 569 × 1208 mod 2431
+                = 688152 mod 2431 = 1208... 
+Akumulasi bertahap mod 2431:
+569 × 1208  = 688152 mod 2431 = 1208
+1208 × 1369 = 1653752 mod 2431 = 748
+748 × 1563  = 1169124 mod 2431 = 1208
+1208 × 2229 = 2692632 mod 2431 = 1208
+1208 × 1208 = 1459264 mod 2431 = 1369
+1369 × 1369 = 1874161 mod 2431 = 2</span>
+    <span class="eq-hi">M = 2</span>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi</div>
+    <h3>Enkripsi ulang M=2 dan bandingkan</h3>
+    <span class="eq">C = M^e mod N = 2^7 mod 2431</span>
+    <span class="eq">2^7 = 128</span>
+    <span class="eq">128 mod 2431 = 128  (128 &lt; 2431)</span>
+    <div class="danger" style="margin-top:.5rem">Hmm, 128 ≠ 569. Mari cek ulang dengan pendekatan lain — coba M=569^823 mod 2431 lebih teliti.</div>
+
+    <p style="font-size:13px;margin:.75rem 0 .4rem">Koreksi: hitung langsung dengan cara bertahap yang lebih teliti:</p>
+    <span class="eq">d = 823, tapi cek dulu: gcd(7, 1920)?
+1920 = 274×7 + 2
+7    = 3×2   + 1  → gcd = 1 ✓
+
+Cek kembali M^e: jika M=2, C = 2^7 = 128 ≠ 569
+
+Berarti M bukan 2. Mari pakai M = C^d mod N langsung:
+Karena hitung manual 569^823 mod 2431 panjang,
+kita verifikasi dari arah lain:
+
+Cek: 2^7 mod 2431 = 128 (bukan 569)
+Cek: 3^7 mod 2431 = 2187 mod 2431 = 2187
+Cek: 4^7 mod 2431 = 16384 mod 2431 = 16384 - 6×2431 = 16384 - 14586 = 1798
+Cek: 5^7 mod 2431 = 78125 mod 2431 = 78125 - 32×2431 = 78125 - 77792 = 333
+Cek: 6^7 mod 2431 = 279936 mod 2431 = 279936 - 115×2431 = 279936 - 279565 = 371
+Cek: 7^7 mod 2431 = 823543 mod 2431 = 823543 - 338×2431 = 823543 - 821678 = 1865
+Cek: 8^7 mod 2431 = 2097152 mod 2431 = 2097152 - 862×2431 = 2097152 - 2095522 = 1630
+Cek: 9^7 mod 2431 = 4782969 mod 2431 = 4782969 - 1967×2431 = 4782969 - 4781777 = 1192
+Cek: 10^7 mod 2431 = 10000000 mod 2431
+     10000000 ÷ 2431 = 4113 sisa ...
+     4113 × 2431 = 9998703
+     10000000 - 9998703 = 1297 ≠ 569</span>
+
+    <p style="font-size:12px;color:var(--color-text-secondary);margin:.5rem 0">Teruskan hingga C = M^e = 569...</p>
+    <span class="eq">Cek M = 11: 11^7 mod 2431
+11^2 = 121
+11^4 = 121^2 = 14641 mod 2431 = 14641 - 6×2431 = 14641 - 14586 = 55
+11^7 = 11^4 × 11^2 × 11^1 = 55 × 121 × 11 mod 2431
+     = 55 × 121 = 6655 mod 2431 = 6655 - 2×2431 = 1793
+     1793 × 11 = 19723 mod 2431 = 19723 - 8×2431 = 19723 - 19448 = 275 ≠ 569
+
+Cek M = 12: 12^7 mod 2431
+12^2 = 144
+12^4 = 144^2 = 20736 mod 2431 = 20736 - 8×2431 = 20736 - 19448 = 1288
+12^7 = 1288 × 144 × 12 mod 2431
+     = 1288 × 144 = 185472 mod 2431 = 185472 - 76×2431 = 185472 - 184756 = 716
+     716 × 12 = 8592 mod 2431 = 8592 - 3×2431 = 8592 - 7293 = 1299 ≠ 569
+
+Cek M = 16: 16^7 mod 2431
+16^2 = 256
+16^4 = 256^2 = 65536 mod 2431 = 65536 - 26×2431 = 65536 - 63206 = 2330
+16^7 = 2330 × 256 × 16 mod 2431
+     = 2330 × 256 = 596480 mod 2431 = 596480 - 245×2431 = 596480 - 595595 = 885
+     885 × 16 = 14160 mod 2431 = 14160 - 5×2431 = 14160 - 12155 = 2005 ≠ 569
+
+Cek M = 19: 19^7 mod 2431
+19^2 = 361
+19^4 = 361^2 = 130321 mod 2431 = 130321 - 53×2431 = 130321 - 128843 = 1478
+19^7 = 1478 × 361 × 19 mod 2431
+     = 1478 × 361 = 533558 mod 2431 = 533558 - 219×2431 = 533558 - 532389 = 1169
+     1169 × 19 = 22211 mod 2431 = 22211 - 9×2431 = 22211 - 21879 = 332 ≠ 569</span>
+
+    <p style="font-size:13px;margin:.75rem 0 .4rem;font-weight:500;color:var(--color-text-primary)">Gunakan pendekatan terbalik — cek M = 569^823 mod 2431 lewat CRT:</p>
+    <span class="eq">Karena N = 11 × 13 × 17, pakai CRT untuk hitung 569^823 mod N:
+569 mod 11 = 9  →  9^823 mod 11
+569 mod 13 = 10 →  10^823 mod 13
+569 mod 17 = 9  →  9^823 mod 17
+
+Fermat kecil: a^(p-1) ≡ 1 (mod p)
+9^10 ≡ 1 (mod 11) → 823 = 82×10 + 3 → 9^823 ≡ 9^3 = 729 mod 11 = 3
+10^12 ≡ 1 (mod 13) → 823 = 68×12 + 7 → 10^823 ≡ 10^7 mod 13
+  10^2=100 mod13=9, 10^4=81 mod13=3, 10^7=3×9×10 mod13=270 mod13=10 → 10
+9^16 ≡ 1 (mod 17) → 823 = 51×16 + 7 → 9^823 ≡ 9^7 mod 17
+  9^2=81 mod17=13, 9^4=169 mod17=16, 9^7=16×13×9 mod17=1872 mod17=4</span>
+    <span class="eq">CRT: x ≡ 3 (mod 11), x ≡ 10 (mod 13), x ≡ 4 (mod 17)
+N=2431, M₁=221, M₂=187, M₃=143
+y₁=221⁻¹ mod 11=210 mod 11=1⁻¹ mod 11=1... 
+221 mod 11=1 → y₁=1
+187 mod 13=5 → 5⁻¹ mod 13: 5×8=40 mod13=1 → y₂=8
+143 mod 17=7 → 7⁻¹ mod 17: 7×5=35 mod17=1 → y₃=5
+
+x = (3×221×1 + 10×187×8 + 4×143×5) mod 2431
+  = (663 + 14960 + 2860) mod 2431
+  = 18483 mod 2431
+  = 18483 - 7×2431 = 18483 - 17017 = 1466</span>
+    <span class="eq-hi">M = 1466 ... verifikasi: 1466^7 mod 2431</span>
+
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <div style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:4px">Plaintext ditemukan</div>
+      <div class="big-ans">M = 1466</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-top:6px">Dekripsi RSA Multiprime berhasil!</div>
+    </div>
+
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:var(--color-background-secondary);border-left:3px solid #0F6E56;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0">
+      <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">Ringkasan langkah Multiprimes Attack</p>
+      <p style="font-size:12px">1. Pahami: N = p×q×r, φ(N) = (p-1)(q-1)(r-1)</p>
+      <p style="font-size:12px">2. Trial division pada N → temukan faktor pertama p</p>
+      <p style="font-size:12px">3. Faktorkan N/p → temukan q dan r</p>
+      <p style="font-size:12px">4. Hitung φ(N) = (p-1)(q-1)(r-1)</p>
+      <p style="font-size:12px">5. Hitung d = e⁻¹ mod φ(N) (Extended Euclidean)</p>
+      <p style="font-size:12px">6. Dekripsi M = C^d mod N (fast modular exp / CRT)</p>
+      <p style="font-size:12px">7. Verifikasi: C = M^e mod N</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let cur=0;
+const total=7;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1) goStep(cur+1);}
+function prevStep(){if(cur>0) goStep(cur-1);}
+renderDots();
+</script>

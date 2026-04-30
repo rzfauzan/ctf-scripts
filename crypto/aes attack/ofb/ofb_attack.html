@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer;transition:background .15s}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.btn-next:hover{background:#085041}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#1a1a1a}
+.eq-hi{font-family:monospace;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#04342C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-warn{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#E1F5EE;color:#085041}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FAEEDA;color:#633806}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace;color:#0F6E56}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.blk{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:5px;font-family:monospace;font-size:11px;font-weight:500;min-width:32px;text-align:center}
+.bp{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.bk{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.bc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.bw{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.bx{background:#f5f5f5;color:#888;border:0.5px solid #ddd;font-size:14px}
+.flow-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.35rem 0}
+.arr{color:#888;font-size:14px;margin:0 2px}
+.xor-box{padding:.6rem;background:#f5f5f5;border-radius:8px;border:0.5px solid #ddd;font-family:monospace;font-size:12px;line-height:2;margin:.4rem 0}
+.xor-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bit-cell{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;font-family:monospace;font-size:11px;font-weight:500}
+.bit-p{background:#E6F1FB;color:#0C447C}
+.bit-k{background:#EAF3DE;color:#27500A}
+.bit-c{background:#EEEDFE;color:#3C3489}
+.bit-r{background:#FAEEDA;color:#633806}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">OFB Attack — Nonce Reuse / Same Keystream</div>
+  <h2>Ketika IV dipakai ulang, keystream menjadi senjata</h2>
+  <p style="margin-top:4px">OFB mengubah AES menjadi stream cipher — kekuatannya dari keystream yang tidak dapat diprediksi. Tapi kalau IV/Nonce dipakai dua kali, keseluruhan sistem runtuh total.</p>
+</div>
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#0F6E56;margin-bottom:6px">Soal — OFB Nonce Reuse Attack</div>
+  <h2 style="color:#04342C">Temukan pesan rahasia P₂ dari dua ciphertext!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Eve menyadap dua pesan terenkripsi yang dikirim menggunakan AES-OFB dengan <strong>IV yang sama</strong>. Eve juga tahu isi pesan pertama (P₁) karena merupakan header standar yang selalu sama. Gunakan kelemahan ini untuk temukan P₂!</p>
+
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #5DCAA5;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Ciphertext pertama (C₁) — diketahui plaintextnya P₁:</div>
+    <div style="letter-spacing:1px">C₁ = 26 3F 5A 8C B1 04 77 E9</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Plaintext pertama (P₁) — header standar yang selalu sama:</div>
+    <div style="letter-spacing:1px">P₁ = "MSG:TOP " = <span style="color:#0C447C">4D 53 47 3A 54 4F 50 20</span></div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Ciphertext kedua (C₂) — plaintextnya TIDAK diketahui:</div>
+    <div style="letter-spacing:1px">C₂ = 35 28 41 97 A4 1B 6C FE</div>
+    <div style="color:#888;margin-top:8px;font-size:11px">Keduanya dienkripsi dengan kunci K yang sama dan IV yang sama!</div>
+  </div>
+  <p style="color:#085041;font-size:12px">Pertanyaan: Temukan P₂ (pesan rahasia yang tidak diketahui)!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<!-- STEP 0 -->
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami cara kerja OFB</div>
+    <h3>OFB menghasilkan keystream dari IV, bukan dari plaintext</h3>
+    <p style="margin-bottom:.75rem">Di OFB, AES tidak langsung mengenkripsi plaintext. AES dipakai untuk generate <strong>keystream</strong> dari IV, lalu keystream di-XOR dengan plaintext:</p>
+
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;margin:.5rem 0">
+      <div style="font-size:11px;color:#555;margin-bottom:6px;font-weight:500">Proses enkripsi OFB:</div>
+      <div class="flow-row">
+        <span class="blk bw">IV</span>
+        <span class="arr">→</span>
+        <span style="padding:4px 8px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:5px;font-size:11px;color:#27500A">AES_K</span>
+        <span class="arr">→</span>
+        <span class="blk bk">KS₁</span>
+        <span class="arr">→</span>
+        <span style="padding:4px 8px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:5px;font-size:11px;color:#27500A">AES_K</span>
+        <span class="arr">→</span>
+        <span class="blk bk">KS₂</span>
+        <span class="arr">→ ...</span>
+      </div>
+      <div class="flow-row" style="margin-top:.5rem">
+        <span class="blk bp">P₁</span>
+        <span class="blk bx">⊕</span>
+        <span class="blk bk">KS₁</span>
+        <span class="arr">=</span>
+        <span class="blk bc">C₁</span>
+        &nbsp;&nbsp;&nbsp;
+        <span class="blk bp">P₂</span>
+        <span class="blk bx">⊕</span>
+        <span class="blk bk">KS₂</span>
+        <span class="arr">=</span>
+        <span class="blk bc">C₂</span>
+      </div>
+    </div>
+
+    <p style="margin:.75rem 0 .4rem">Kuncinya: <strong>keystream hanya bergantung pada K dan IV</strong> — tidak bergantung pada plaintext sama sekali.</p>
+    <span class="eq">KS = f(K, IV)   ← tidak ada P di sini!</span>
+    <div class="danger">Konsekuensi fatal: kalau IV dipakai ulang dengan kunci K yang sama, keystream yang dihasilkan IDENTIK untuk kedua pesan!</div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Turunkan rumus serangan</div>
+    <h3>Two-Time Pad — XOR dua ciphertext</h3>
+    <p style="margin-bottom:.75rem">Kalau IV sama, maka keystream sama (KS). Dua enkripsi menjadi:</p>
+    <span class="eq">C₁ = P₁ ⊕ KS
+C₂ = P₂ ⊕ KS</span>
+    <p style="margin:.5rem 0">XOR kedua persamaan (KS ⊕ KS = 0, hilang):</p>
+    <span class="eq">C₁ ⊕ C₂ = (P₁ ⊕ KS) ⊕ (P₂ ⊕ KS)
+        = P₁ ⊕ P₂ ⊕ (KS ⊕ KS)
+        = P₁ ⊕ P₂</span>
+    <span class="eq-hi">C₁ ⊕ C₂ = P₁ ⊕ P₂</span>
+    <p style="margin:.75rem 0 .4rem">Kalau kita tahu P₁, isolasi P₂:</p>
+    <span class="eq-ok">P₂ = C₁ ⊕ C₂ ⊕ P₁</span>
+    <div class="ok">Keystream K hilang dari persamaan! Kita tidak butuh kunci K sama sekali untuk mendapatkan P₂.</div>
+    <div class="note" style="margin-top:.5rem">Ini disebut "Two-Time Pad" — analogi dari One-Time Pad yang aman hanya jika key dipakai SATU kali. Pakai dua kali = bocor.</div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung C₁ ⊕ C₂</div>
+    <h3>XOR byte per byte antara dua ciphertext</h3>
+    <p style="margin-bottom:.75rem">Data:</p>
+    <div class="xor-box">
+      <div>C₁ = 26 3F 5A 8C B1 04 77 E9</div>
+      <div>C₂ = 35 28 41 97 A4 1B 6C FE</div>
+    </div>
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 .4rem;color:#0F6E56">XOR tiap byte:</p>
+
+    <table class="tbl">
+      <tr><th>Byte</th><th>C₁</th><th>C₂</th><th>C₁ ⊕ C₂ (biner)</th><th>Hasil</th></tr>
+      <tr>
+        <td>0</td><td>26</td><td>35</td>
+        <td style="font-size:10px">0010 0110 ⊕ 0011 0101</td>
+        <td style="color:#0F6E56;font-weight:500">13</td>
+      </tr>
+      <tr>
+        <td>1</td><td>3F</td><td>28</td>
+        <td style="font-size:10px">0011 1111 ⊕ 0010 1000</td>
+        <td style="color:#0F6E56;font-weight:500">17</td>
+      </tr>
+      <tr>
+        <td>2</td><td>5A</td><td>41</td>
+        <td style="font-size:10px">0101 1010 ⊕ 0100 0001</td>
+        <td style="color:#0F6E56;font-weight:500">1B</td>
+      </tr>
+      <tr>
+        <td>3</td><td>8C</td><td>97</td>
+        <td style="font-size:10px">1000 1100 ⊕ 1001 0111</td>
+        <td style="color:#0F6E56;font-weight:500">1B</td>
+      </tr>
+      <tr>
+        <td>4</td><td>B1</td><td>A4</td>
+        <td style="font-size:10px">1011 0001 ⊕ 1010 0100</td>
+        <td style="color:#0F6E56;font-weight:500">15</td>
+      </tr>
+      <tr>
+        <td>5</td><td>04</td><td>1B</td>
+        <td style="font-size:10px">0000 0100 ⊕ 0001 1011</td>
+        <td style="color:#0F6E56;font-weight:500">1F</td>
+      </tr>
+      <tr>
+        <td>6</td><td>77</td><td>6C</td>
+        <td style="font-size:10px">0111 0111 ⊕ 0110 1100</td>
+        <td style="color:#0F6E56;font-weight:500">1B</td>
+      </tr>
+      <tr>
+        <td>7</td><td>E9</td><td>FE</td>
+        <td style="font-size:10px">1110 1001 ⊕ 1111 1110</td>
+        <td style="color:#0F6E56;font-weight:500">17</td>
+      </tr>
+    </table>
+
+    <span class="eq-hi" style="margin-top:.5rem">C₁ ⊕ C₂ = 13 17 1B 1B 15 1F 1B 17</span>
+    <p style="font-size:12px;margin-top:.5rem;color:#555">Hasil ini = P₁ ⊕ P₂. Sekarang kita punya semua yang dibutuhkan untuk cari P₂.</p>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Verifikasi XOR detail (byte 0)</div>
+    <h3>Cek perhitungan byte pertama: 0x26 ⊕ 0x35</h3>
+    <p style="margin-bottom:.75rem">Untuk memastikan tidak ada kesalahan, kita cek satu byte secara lengkap dalam biner:</p>
+
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;font-family:monospace;font-size:12px;line-height:2.2">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="color:#555;min-width:60px">C₁[0]=0x26:</span>
+        <span class="bit-cell bit-p">0</span><span class="bit-cell bit-p">0</span><span class="bit-cell bit-p">1</span><span class="bit-cell bit-p">0</span>
+        <span style="margin:0 2px;color:#888">|</span>
+        <span class="bit-cell bit-p">0</span><span class="bit-cell bit-p">1</span><span class="bit-cell bit-p">1</span><span class="bit-cell bit-p">0</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="color:#555;min-width:60px">C₂[0]=0x35:</span>
+        <span class="bit-cell bit-k">0</span><span class="bit-cell bit-k">0</span><span class="bit-cell bit-k">1</span><span class="bit-cell bit-k">1</span>
+        <span style="margin:0 2px;color:#888">|</span>
+        <span class="bit-cell bit-k">0</span><span class="bit-cell bit-k">1</span><span class="bit-cell bit-k">0</span><span class="bit-cell bit-k">1</span>
+      </div>
+      <div style="border-top:1px solid #ccc;margin:.3rem 0"></div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="color:#0F6E56;min-width:60px;font-weight:500">XOR=0x13:</span>
+        <span class="bit-cell bit-r">0</span><span class="bit-cell bit-r">0</span><span class="bit-cell bit-r">0</span><span class="bit-cell bit-r">1</span>
+        <span style="margin:0 2px;color:#888">|</span>
+        <span class="bit-cell bit-r">0</span><span class="bit-cell bit-r">0</span><span class="bit-cell bit-r">1</span><span class="bit-cell bit-r">1</span>
+      </div>
+    </div>
+    <p style="font-size:12px;margin-top:.5rem;color:#555">0001 0011 = 0x13 = 19 desimal ✓</p>
+    <div class="note">Ingat aturan XOR: 0⊕0=0, 1⊕1=0, 0⊕1=1, 1⊕0=1. Sama=0, Beda=1.</div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung P₂ = (C₁ ⊕ C₂) ⊕ P₁</div>
+    <h3>XOR hasil tadi dengan P₁ yang sudah diketahui</h3>
+    <p style="margin-bottom:.75rem">Kita punya:</p>
+    <div class="xor-box">
+      <div>C₁ ⊕ C₂ = 13 17 1B 1B 15 1F 1B 17</div>
+      <div>P₁      = 4D 53 47 3A 54 4F 50 20  ("MSG:TOP ")</div>
+    </div>
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 .4rem;color:#0F6E56">XOR tiap byte:</p>
+
+    <table class="tbl">
+      <tr><th>Byte</th><th>C₁⊕C₂</th><th>P₁</th><th>P₁ (char)</th><th>XOR = P₂</th><th>P₂ (char)</th></tr>
+      <tr>
+        <td>0</td><td>13</td><td>4D</td><td>'M'</td>
+        <td style="color:#0F6E56;font-weight:500">5E</td>
+        <td style="color:#0F6E56;font-weight:500">'^'</td>
+      </tr>
+      <tr>
+        <td>1</td><td>17</td><td>53</td><td>'S'</td>
+        <td style="color:#0F6E56;font-weight:500">44</td>
+        <td style="color:#0F6E56;font-weight:500">'D'</td>
+      </tr>
+      <tr>
+        <td>2</td><td>1B</td><td>47</td><td>'G'</td>
+        <td style="color:#0F6E56;font-weight:500">5C</td>
+        <td style="color:#0F6E56;font-weight:500">'\'</td>
+      </tr>
+      <tr>
+        <td>3</td><td>1B</td><td>3A</td><td>':'</td>
+        <td style="color:#0F6E56;font-weight:500">21</td>
+        <td style="color:#0F6E56;font-weight:500">'!'</td>
+      </tr>
+      <tr>
+        <td>4</td><td>15</td><td>54</td><td>'T'</td>
+        <td style="color:#0F6E56;font-weight:500">41</td>
+        <td style="color:#0F6E56;font-weight:500">'A'</td>
+      </tr>
+      <tr>
+        <td>5</td><td>1F</td><td>4F</td><td>'O'</td>
+        <td style="color:#0F6E56;font-weight:500">50</td>
+        <td style="color:#0F6E56;font-weight:500">'P'</td>
+      </tr>
+      <tr>
+        <td>6</td><td>1B</td><td>50</td><td>'P'</td>
+        <td style="color:#0F6E56;font-weight:500">4B</td>
+        <td style="color:#0F6E56;font-weight:500">'K'</td>
+      </tr>
+      <tr>
+        <td>7</td><td>17</td><td>20</td><td>' '</td>
+        <td style="color:#0F6E56;font-weight:500">37</td>
+        <td style="color:#0F6E56;font-weight:500">'7'</td>
+      </tr>
+    </table>
+
+    <span class="eq-hi">P₂ = 5E 44 5C 21 41 50 4B 37</span>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Ekstrak Keystream (bonus)</div>
+    <h3>Dari P₁ dan C₁, kita bisa dapat seluruh keystream!</h3>
+    <p style="margin-bottom:.75rem">Karena C₁ = P₁ ⊕ KS, maka:</p>
+    <span class="eq-hi">KS = C₁ ⊕ P₁</span>
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 .4rem;color:#0F6E56">Hitung KS:</p>
+    <table class="tbl">
+      <tr><th>Byte</th><th>C₁</th><th>P₁</th><th>KS = C₁ ⊕ P₁</th></tr>
+      <tr><td>0</td><td>26</td><td>4D ('M')</td><td style="color:#27500A;font-weight:500">6B</td></tr>
+      <tr><td>1</td><td>3F</td><td>53 ('S')</td><td style="color:#27500A;font-weight:500">6C</td></tr>
+      <tr><td>2</td><td>5A</td><td>47 ('G')</td><td style="color:#27500A;font-weight:500">1D</td></tr>
+      <tr><td>3</td><td>8C</td><td>3A (':')</td><td style="color:#27500A;font-weight:500">B6</td></tr>
+      <tr><td>4</td><td>B1</td><td>54 ('T')</td><td style="color:#27500A;font-weight:500">E5</td></tr>
+      <tr><td>5</td><td>04</td><td>4F ('O')</td><td style="color:#27500A;font-weight:500">4B</td></tr>
+      <tr><td>6</td><td>77</td><td>50 ('P')</td><td style="color:#27500A;font-weight:500">27</td></tr>
+      <tr><td>7</td><td>E9</td><td>20 (' ')</td><td style="color:#27500A;font-weight:500">C9</td></tr>
+    </table>
+    <span class="eq-ok">KS = 6B 6C 1D B6 E5 4B 27 C9</span>
+    <div class="danger" style="margin-top:.5rem">Dengan KS diketahui, Eve bisa dekripsi SEMUA pesan yang dienkripsi dengan IV yang sama — termasuk pesan masa depan! Satu IV reuse membocorkan seluruh keystream untuk selamanya.</div>
+
+    <p style="font-size:12px;margin-top:.75rem">Verifikasi: C₂ ⊕ KS harus menghasilkan P₂:</p>
+    <span class="eq">C₂ ⊕ KS = (35 28 41 97 A4 1B 6C FE)
+          ⊕ (6B 6C 1D B6 E5 4B 27 C9)
+          = 5E 44 5C 21 41 50 4B 37 ✓</span>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi & Kesimpulan</div>
+    <h3>Rekap hasil dan kenapa ini sangat berbahaya</h3>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Pesan rahasia P₂ ditemukan:</div>
+      <div class="big-ans">5E 44 5C 21 41 50 4B 37</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Karakter: ^D\!APK7</div>
+    </div>
+
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#04342C;margin-bottom:4px">Yang dibutuhkan attacker</p>
+        <p style="font-size:11px;color:#085041">C₁, C₂ (dari sadapan) + P₁ (known plaintext)</p>
+        <p style="font-size:11px;color:#085041;margin-top:4px">Tidak butuh kunci K sama sekali!</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Kerusakan yang terjadi</p>
+        <p style="font-size:11px;color:#A32D2D">P₂ terbongkar penuh + keystream terbongkar → semua pesan dengan IV sama bisa didekripsi</p>
+      </div>
+    </div>
+
+    <div style="margin-top:.75rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #0F6E56">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan OFB Nonce Reuse Attack</p>
+      <p style="font-size:12px">1. Identifikasi: dua ciphertext dengan IV yang sama (OFB/CTR/GCM)</p>
+      <p style="font-size:12px">2. Hitung C₁ ⊕ C₂ = P₁ ⊕ P₂</p>
+      <p style="font-size:12px">3. Kalau salah satu plaintext diketahui: P₂ = (C₁ ⊕ C₂) ⊕ P₁</p>
+      <p style="font-size:12px">4. Bonus: KS = C₁ ⊕ P₁ → dekripsi semua pesan ber-IV sama</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Solusi: IV/nonce harus unik untuk setiap enkripsi, tanpa terkecuali</p>
+    </div>
+
+    <div class="warn" style="margin-top:.75rem">
+      <strong>Serangan ini identik untuk CTR mode!</strong> OFB dan CTR sama-sama stream cipher berbasis AES. Kalau nonce CTR reuse, serangan yang persis sama berlaku. GCM bahkan lebih parah — nonce reuse membocorkan authentication key (Forbidden Attack).
+    </div>
+  </div>
+</div>
+
+<script>
+let cur=0;
+const total=7;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<cur?'background:#5DCAA5':i===cur?'background:#0F6E56;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+n).classList.add('active');
+  document.getElementById('step-counter').textContent=(n+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=n===0;
+  document.getElementById('btn-next').disabled=n===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1)goStep(cur+1);}
+function prevStep(){if(cur>0)goStep(cur-1);}
+renderDots();
+</script>
+</body>
+</html>

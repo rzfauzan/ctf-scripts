@@ -1,0 +1,36 @@
+Perbedaan utama antara `send()` dan `sendline()` terletak pada penanganan karakter **newline** (`\n` atau `0x0a`) di akhir data yang dikirimkan.
+
+Berikut adalah rincian perbedaannya:
+
+### 1. `send(data)`
+* **Mekanisme**: Mengirimkan data **persis** seperti yang kamu tulis tanpa tambahan apa pun.
+* **Kapan digunakan?**: 
+    * Saat kamu menggunakan fungsi `read()` di C yang membaca jumlah byte tertentu secara presisi (misal: `read(0, buf, 32)`).
+    * Sangat penting dalam teknik **Partial Overwrite**. Jika kamu hanya ingin menimpa 1 byte terakhir, menggunakan `send()` memastikan tidak ada byte "sampah" (`\n`) yang merusak byte berikutnya di stack.
+    * Digunakan saat mengirim shellcode mentah agar instruksi mesin tidak rusak oleh karakter tambahan.
+
+### 2. `sendline(data)`
+* **Mekanisme**: Mengirimkan data pilihanmu, lalu **otomatis menambahkan karakter newline** (`\n`) di akhirnya.
+* **Kapan digunakan?**:
+    * Saat program menggunakan fungsi seperti `gets()`, `fgets()`, atau `scanf()`, yang biasanya berhenti membaca ketika menemui karakter *newline*.
+    * Digunakan saat kamu berinteraksi dengan menu atau memberikan input teks biasa di mana menekan "Enter" diperlukan agar program memproses input tersebut.
+
+---
+
+### Tabel Perbandingan Byte
+
+| Fungsi | Input | Data yang Sampai ke Server (Hex) |
+| :--- | :--- | :--- |
+| `p.send(b"A")` | `b"A"` | `\x41` |
+| `p.sendline(b"A")` | `b"A"` | `\x41\x0a` |
+
+### Kenapa Ini Krusial dalam Pwn?
+Dalam eksploitasi memori, satu byte sangatlah berharga. 
+* **Contoh Fatal**: Jika kamu melakukan *buffer overflow* pada 64-bit dan ingin menimpa *Return Address* dengan `p64(0x400600)`, menggunakan `sendline()` akan mengirimkan `\x00\x06\x40\x00\x00\x00\x00\x00` **ditambah** `\x0a`. 
+* Karakter `\x0a` ini bisa menimpa data penting di stack setelah *Return Address*, yang mungkin menyebabkan program *crash* sebelum sempat mengeksekusi fungsi tujuanmu.
+
+
+
+**Saran**: Gunakan `send()` untuk payload eksploitasi yang sensitif terhadap ukuran byte (seperti *Partial Overwrite*), dan gunakan `sendline()` hanya untuk navigasi menu atau input teks biasa.
+
+Sudah jelas perbedaannya, Bos, atau ada kasus tertentu yang bikin kamu bingung kapan harus pakai salah satunya?

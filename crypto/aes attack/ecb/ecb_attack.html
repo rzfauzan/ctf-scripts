@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer;transition:background .15s}
+.dot.done{background:#F09595}
+.dot.active{background:#E24B4A;width:24px;border-radius:5px}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#A32D2D;color:#fff;border-color:#A32D2D}
+.btn-next:hover{background:#791F1F}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#1a1a1a}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#A32D2D;margin-bottom:8px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;color:#1a1a1a;font-family:monospace;font-size:11px}
+.dup-row td{background:#FCEBEB;color:#791F1F}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:460px){.grid2{grid-template-columns:1fr}}
+.big-ans{font-size:20px;font-weight:500;color:#A32D2D;font-family:monospace}
+</style>
+</head>
+<body>
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#854F0B;margin-bottom:6px">Soal — ECB Attack (Pattern Analysis)</div>
+  <h2 style="color:#412402">Analisis database terenkripsi — siapa yang gajinya sama?</h2>
+  <p style="color:#633806;margin-top:6px;margin-bottom:10px">Sebuah database gaji dienkripsi AES-ECB dengan blok 8-byte. Eve mencuri ciphertext berikut. Tanpa kunci, tentukan: blok mana yang plaintextnya sama, dan kesimpulan apa yang bisa diambil?</p>
+  <table class="tbl" style="background:#fff">
+    <tr><th>Karyawan</th><th>Ciphertext Blok 1 (nama)</th><th>Ciphertext Blok 2 (gaji)</th></tr>
+    <tr><td>A</td><td style="color:#888">3F A2 9C 01 E7 48 BB F3</td><td style="color:#791F1F;font-weight:500">D4 11 C3 88 5A 7F 02 E9</td></tr>
+    <tr><td>B</td><td style="color:#888">8B 44 1D 76 C2 93 5E 0A</td><td style="color:#27500A;font-weight:500">A1 B2 C3 D4 E5 F6 07 18</td></tr>
+    <tr><td>C</td><td style="color:#888">F1 20 6E B9 3A D5 47 CC</td><td style="color:#791F1F;font-weight:500">D4 11 C3 88 5A 7F 02 E9</td></tr>
+    <tr><td>D</td><td style="color:#888">0D 7B 52 E4 19 A8 6F 3C</td><td style="color:#27500A;font-weight:500">A1 B2 C3 D4 E5 F6 07 18</td></tr>
+    <tr><td>E</td><td style="color:#888">6C 38 D1 05 84 F7 2B 91</td><td style="color:#3C3489;font-weight:500">77 E3 4A 9D 12 56 CB 80</td></tr>
+  </table>
+  <p style="color:#633806;margin-top:8px;font-size:12px">Pertanyaan: (1) Siapa gajinya sama? (2) Berapa kelompok gaji berbeda? (3) Siapa gajinya paling unik?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<!-- STEP 0 -->
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami prinsip ECB</div>
+    <h3>Satu kunci, tiap blok dienkripsi independen</h3>
+    <p style="margin-bottom:.75rem">Di ECB, rumus enkripsinya sederhana:</p>
+    <span class="eq">C_i = AES_K(P_i)</span>
+    <p style="margin:.5rem 0">Artinya: kalau dua blok plaintext sama (P_i = P_j), maka ciphertextnya pasti sama (C_i = C_j), karena kunci K dan fungsi AES-nya identik.</p>
+    <span class="eq">Jika P_i = P_j  →  C_i = C_j  (selalu, tanpa terkecuali)</span>
+    <div class="danger">Ini kebalikan dari yang kita inginkan! Dua plaintext sama seharusnya menghasilkan ciphertext BERBEDA agar pola tidak bocor.</div>
+    <p style="margin-top:.75rem">Strategi serangan ECB:</p>
+    <div style="padding:.6rem .85rem;background:#f5f5f5;border-radius:8px;font-size:12px;line-height:1.9;border:0.5px solid #ddd">
+      1. Kumpulkan semua ciphertext blok<br>
+      2. Cari blok yang nilainya identik (byte-per-byte sama)<br>
+      3. Blok yang identik = plaintext yang sama<br>
+      4. Tarik kesimpulan dari pola yang terlihat
+    </div>
+    <div class="note">Tidak perlu tahu kunci K. Tidak perlu dekripsi apapun. Cukup bandingkan ciphertext!</div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Fokus pada kolom yang relevan</div>
+    <h3>Pisahkan dan fokus ke blok gaji saja</h3>
+    <p style="margin-bottom:.75rem">Blok nama pasti berbeda (tiap orang namanya beda). Yang kita analisis hanya <strong>blok gaji</strong>.</p>
+    <table class="tbl">
+      <tr><th>Karyawan</th><th>Ciphertext Blok Gaji</th><th>Warna penanda</th></tr>
+      <tr><td>A</td><td>D4 11 C3 88 5A 7F 02 E9</td><td style="background:#FCEBEB;color:#791F1F">Merah</td></tr>
+      <tr><td>B</td><td>A1 B2 C3 D4 E5 F6 07 18</td><td style="background:#EAF3DE;color:#27500A">Hijau</td></tr>
+      <tr><td>C</td><td>D4 11 C3 88 5A 7F 02 E9</td><td style="background:#FCEBEB;color:#791F1F">Merah</td></tr>
+      <tr><td>D</td><td>A1 B2 C3 D4 E5 F6 07 18</td><td style="background:#EAF3DE;color:#27500A">Hijau</td></tr>
+      <tr><td>E</td><td>77 E3 4A 9D 12 56 CB 80</td><td style="background:#EEEDFE;color:#3C3489">Ungu</td></tr>
+    </table>
+    <div class="note">Sudah terlihat pola visual: A=C (merah), B=D (hijau), E sendiri (ungu). Langkah berikut: verifikasi byte per byte secara formal.</div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Bandingkan semua pasangan</div>
+    <h3>C(5,2) = 10 pasangan dicek byte per byte</h3>
+    <table class="tbl">
+      <tr><th>Pasangan</th><th>Hasil perbandingan</th><th>Kesimpulan</th></tr>
+      <tr class="dup-row"><td>A vs C</td><td>D4 11 C3... = D4 11 C3... ✓</td><td>Gaji A = Gaji C</td></tr>
+      <tr class="dup-row"><td>B vs D</td><td>A1 B2 C3... = A1 B2 C3... ✓</td><td>Gaji B = Gaji D</td></tr>
+      <tr><td>A vs B</td><td>D4 11 ≠ A1 B2</td><td>Berbeda</td></tr>
+      <tr><td>A vs D</td><td>D4 11 ≠ A1 B2</td><td>Berbeda</td></tr>
+      <tr><td>A vs E</td><td>D4 11 ≠ 77 E3</td><td>Berbeda</td></tr>
+      <tr><td>B vs C</td><td>A1 B2 ≠ D4 11</td><td>Berbeda</td></tr>
+      <tr><td>B vs E</td><td>A1 B2 ≠ 77 E3</td><td>Berbeda</td></tr>
+      <tr><td>C vs D</td><td>D4 11 ≠ A1 B2</td><td>Berbeda</td></tr>
+      <tr><td>C vs E</td><td>D4 11 ≠ 77 E3</td><td>Berbeda</td></tr>
+      <tr><td>D vs E</td><td>A1 B2 ≠ 77 E3</td><td>Berbeda</td></tr>
+    </table>
+    <div class="danger">Dua pasangan identik ditemukan: (A,C) dan (B,D). Gaji A = Gaji C, Gaji B = Gaji D — tanpa dekripsi satu byte pun!</div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Kelompokkan berdasarkan pola</div>
+    <h3>3 kelompok ciphertext berbeda ditemukan</h3>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.75rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <div style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:6px">Kelompok 1</div>
+        <div style="font-family:monospace;font-size:11px;color:#501313;margin-bottom:6px">D4 11 C3 88 5A 7F 02 E9</div>
+        <div style="font-size:12px;color:#791F1F">Karyawan A dan C</div>
+        <div style="font-size:11px;color:#A32D2D;margin-top:4px">→ Gaji A = Gaji C</div>
+      </div>
+      <div style="padding:.75rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <div style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:6px">Kelompok 2</div>
+        <div style="font-family:monospace;font-size:11px;color:#173404;margin-bottom:6px">A1 B2 C3 D4 E5 F6 07 18</div>
+        <div style="font-size:12px;color:#27500A">Karyawan B dan D</div>
+        <div style="font-size:11px;color:#3B6D11;margin-top:4px">→ Gaji B = Gaji D</div>
+      </div>
+    </div>
+    <div style="padding:.75rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;margin-top:.4rem">
+      <div style="font-size:11px;font-weight:500;color:#3C3489;margin-bottom:6px">Kelompok 3</div>
+      <div style="font-family:monospace;font-size:11px;color:#26215C;margin-bottom:6px">77 E3 4A 9D 12 56 CB 80</div>
+      <div style="font-size:12px;color:#3C3489">Karyawan E saja</div>
+      <div style="font-size:11px;color:#534AB7;margin-top:4px">→ Gaji E unik, berbeda dari semua karyawan lain</div>
+    </div>
+    <div class="ok" style="margin-top:.75rem">3 kelompok gaji berbeda: {A,C}, {B,D}, {E} — hanya dari analisis pola ciphertext!</div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Tarik kesimpulan maksimal</div>
+    <h3>Apa saja yang bisa Eve simpulkan?</h3>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0">
+      <div style="padding:.6rem .85rem;background:#f5f5f5;border-left:3px solid #E24B4A;font-size:12px">
+        <div style="font-weight:500;margin-bottom:3px">Kesimpulan 1 — Kesamaan gaji</div>
+        <div style="color:#555">Gaji A = Gaji C. Gaji B = Gaji D. (ciphertext identik)</div>
+      </div>
+      <div style="padding:.6rem .85rem;background:#f5f5f5;border-left:3px solid #E24B4A;font-size:12px">
+        <div style="font-weight:500;margin-bottom:3px">Kesimpulan 2 — Jumlah tingkatan gaji</div>
+        <div style="color:#555">Ada tepat 3 level gaji berbeda di perusahaan ini.</div>
+      </div>
+      <div style="padding:.6rem .85rem;background:#f5f5f5;border-left:3px solid #E24B4A;font-size:12px">
+        <div style="font-weight:500;margin-bottom:3px">Kesimpulan 3 — Outlier</div>
+        <div style="color:#555">Karyawan E punya gaji yang benar-benar unik.</div>
+      </div>
+      <div style="padding:.6rem .85rem;background:#f5f5f5;border-left:3px solid #E24B4A;font-size:12px">
+        <div style="font-weight:500;margin-bottom:3px">Kesimpulan 4 — Inferensi jabatan</div>
+        <div style="color:#555">Kemungkinan besar A dan C satu level jabatan. B dan D satu level jabatan berbeda. E mungkin manajer/direktur karena gajinya unik sendiri.</div>
+      </div>
+    </div>
+    <div class="danger">Semua ini TANPA mendekripsi apapun. Pure pattern matching. Inilah bahaya ECB — structural information bocor total!</div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Bonus: Chosen Plaintext Attack</div>
+    <h3>Kalau attacker bisa enkripsi plaintext pilihannya sendiri</h3>
+    <p style="margin-bottom:.75rem">Kalau Eve punya akses ke sistem enkripsi (bisa kirim plaintext, dapat ciphertext), ia bisa konfirmasi nilai gaji pastinya:</p>
+    <table class="tbl">
+      <tr><th>Plaintext yang dicoba Eve</th><th>Ciphertext hasil</th><th>Cocok dengan siapa?</th></tr>
+      <tr><td>salary=3000</td><td>BB 91 2F A3...</td><td style="color:#888">—</td></tr>
+      <tr><td>salary=5000</td><td>D4 11 C3 88 5A 7F 02 E9</td><td style="background:#FCEBEB;color:#791F1F">A dan C !</td></tr>
+      <tr><td>salary=7000</td><td>A1 B2 C3 D4 E5 F6 07 18</td><td style="background:#EAF3DE;color:#27500A">B dan D !</td></tr>
+      <tr><td>salary=9000</td><td>44 C7 81 F2...</td><td style="color:#888">—</td></tr>
+      <tr><td>salary=12000</td><td>77 E3 4A 9D 12 56 CB 80</td><td style="background:#EEEDFE;color:#3C3489">E !</td></tr>
+    </table>
+    <div class="danger">Dengan Chosen Plaintext Attack, Eve tahu nilai pastinya: Gaji A=C=5000, B=D=7000, E=12000.</div>
+    <div class="warn" style="margin-top:.4rem">Sangat realistis di web app: kalau ada form yang mengenkripsi data user (profil, setting), attacker bisa kirim plaintext yang dirancang khusus.</div>
+  </div>
+
+  <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+    <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+    <div class="big-ans">A=C, B=D, E unik — 3 kelompok gaji</div>
+    <div style="font-size:12px;color:#555;margin-top:6px">Tanpa mendekripsi satu byte pun</div>
+  </div>
+
+  <div style="margin-top:1rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #E24B4A">
+    <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan cara kerja ECB Attack</p>
+    <p style="font-size:12px">1. Kumpulkan ciphertext yang ada</p>
+    <p style="font-size:12px">2. Bagi menjadi blok-blok sesuai ukuran (8 atau 16 byte)</p>
+    <p style="font-size:12px">3. Bandingkan semua blok — cari yang byte-per-byte identik</p>
+    <p style="font-size:12px">4. Blok identik = plaintext yang sama</p>
+    <p style="font-size:12px">5. Tarik kesimpulan dari pola yang bocor</p>
+    <p style="font-size:12px">6. (Opsional) Chosen Plaintext: enkripsi nilai yang dicurigai untuk konfirmasi nilai pasti</p>
+  </div>
+</div>
+
+<script>
+let cur=0;
+const total=6;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1)goStep(cur+1);}
+function prevStep(){if(cur>0)goStep(cur-1);}
+renderDots();
+</script>
+</body>
+</html>

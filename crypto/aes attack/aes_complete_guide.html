@@ -1,0 +1,688 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px;color:var(--color-text-primary)}
+p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+strong{font-weight:500;color:var(--color-text-primary)}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.nav-btn{padding:6px 13px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.sec{display:none}.sec.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:.75rem}
+.eq{font-family:var(--font-mono);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:.45rem .9rem;margin:.35rem 0;font-size:12px;line-height:1.8;display:block;color:var(--color-text-primary)}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:var(--border-radius-md);padding:.45rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-md);padding:.45rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-md);padding:.45rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-md);padding:.45rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px}
+.bp{background:#EEEDFE;color:#3C3489}
+.bb{background:#E6F1FB;color:#0C447C}
+.bt{background:#E1F5EE;color:#085041}
+.ba{background:#FAEEDA;color:#633806}
+.br{background:#FCEBEB;color:#791F1F}
+.bg{background:#EAF3DE;color:#27500A}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.mode-header{display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
+.security-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sec-ok{background:#639922}.sec-warn{background:#EF9F27}.sec-bad{background:#E24B4A}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.tbl td{padding:6px 10px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+.block-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.4rem 0}
+.blk{width:38px;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;font-family:var(--font-mono);flex-shrink:0}
+.blk-plain{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.blk-enc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.blk-key{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.blk-iv{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.blk-same{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.blk-xor{background:var(--color-background-secondary);color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary);font-size:14px}
+.arrow-right{color:var(--color-text-tertiary);font-size:16px;line-height:1}
+.step-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-tertiary);margin-bottom:4px}
+.impl-row{display:flex;gap:8px;align-items:flex-start;padding:.5rem 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.impl-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+</style>
+
+<div style="padding:1rem 0">
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('dasar')">AES itu apa?</button>
+  <button class="nav-btn" onclick="showSec('cara')">Cara kerja</button>
+  <button class="nav-btn" onclick="showSec('ecb')">ECB</button>
+  <button class="nav-btn" onclick="showSec('cbc')">CBC</button>
+  <button class="nav-btn" onclick="showSec('ofb')">OFB</button>
+  <button class="nav-btn" onclick="showSec('cfb')">CFB</button>
+  <button class="nav-btn" onclick="showSec('ctr')">CTR</button>
+  <button class="nav-btn" onclick="showSec('gcm')">GCM</button>
+  <button class="nav-btn" onclick="showSec('ringkasan')">Ringkasan</button>
+</div>
+
+<!-- AES DASAR -->
+<div id="sec-dasar" class="sec active">
+  <div class="badge bp">Fondasi</div>
+  <h2>AES — Advanced Encryption Standard</h2>
+  <p style="margin:.4rem 0 .75rem">AES adalah algoritma enkripsi <strong>simetris</strong> — artinya kunci yang sama dipakai untuk enkripsi DAN dekripsi. Ini berbeda dari RSA yang asimetris (kunci publik/privat berbeda).</p>
+
+  <div class="card">
+    <h3>Analogi: AES seperti brankas dengan kombinasi</h3>
+    <p style="margin-bottom:.75rem">Bayangkan kamu punya sebuah brankas. Siapapun yang tahu kombinasinya bisa buka dan tutup brankas itu. Tidak ada "kunci buka" dan "kunci tutup" yang berbeda.</p>
+    <div style="display:flex;gap:8px;align-items:center;padding:.6rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);flex-wrap:wrap">
+      <div style="text-align:center;padding:.5rem .75rem;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;font-size:12px">
+        <div style="font-weight:500;margin-bottom:2px">Plaintext</div>
+        <div style="color:var(--color-text-tertiary)">Pesan asli</div>
+      </div>
+      <span style="color:var(--color-text-tertiary);font-size:18px">+</span>
+      <div style="text-align:center;padding:.5rem .75rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px;font-size:12px">
+        <div style="font-weight:500;color:#27500A;margin-bottom:2px">Kunci (K)</div>
+        <div style="color:#3B6D11">128/192/256 bit</div>
+      </div>
+      <span style="color:var(--color-text-tertiary);font-size:18px">→</span>
+      <div style="text-align:center;padding:.5rem .75rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;font-size:12px">
+        <div style="font-weight:500;color:#3C3489;margin-bottom:2px">Ciphertext</div>
+        <div style="color:#534AB7">Acak, tidak terbaca</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>AES dipakai di mana saja?</h3>
+    <div class="impl-row">
+      <div class="impl-icon" style="background:#E6F1FB;color:#0C447C">TLS</div>
+      <div><p style="font-size:12px;color:var(--color-text-primary);font-weight:500">HTTPS / TLS</p><p style="font-size:12px">Setiap kali kamu buka website dengan "https://", browsermu pakai AES untuk enkripsi data yang dikirim ke server. Cek gembok di browser — AES-256-GCM ada di sana.</p></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-icon" style="background:#EAF3DE;color:#27500A">WPA</div>
+      <div><p style="font-size:12px;color:var(--color-text-primary);font-weight:500">WiFi (WPA2/WPA3)</p><p style="font-size:12px">Password WiFi yang kamu masukkan dipakai sebagai bagian dari kunci AES untuk enkripsi semua traffic di jaringan WiFi.</p></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-icon" style="background:#FAEEDA;color:#633806">MSG</div>
+      <div><p style="font-size:12px;color:var(--color-text-primary);font-weight:500">WhatsApp / Signal</p><p style="font-size:12px">End-to-end encryption di messaging app menggunakan AES untuk enkripsi pesan sehingga hanya pengirim dan penerima yang bisa baca.</p></div>
+    </div>
+    <div class="impl-row" style="border-bottom:none">
+      <div class="impl-icon" style="background:#EEEDFE;color:#534AB7">HDD</div>
+      <div><p style="font-size:12px;color:var(--color-text-primary);font-weight:500">Full disk encryption</p><p style="font-size:12px">BitLocker (Windows) dan FileVault (Mac) pakai AES untuk enkripsi seluruh hardisk. Kalau laptopmu dicuri, data tidak bisa dibaca tanpa password.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>AES vs RSA — kapan dipakai?</h3>
+    <div class="grid2">
+      <div style="padding:.6rem;background:#EEEDFE;border-radius:8px;border:0.5px solid #AFA9EC">
+        <p style="font-size:12px;font-weight:500;color:#26215C;margin-bottom:4px">RSA</p>
+        <p style="font-size:12px;color:#3C3489">Lambat, cocok untuk data kecil (kunci, tanda tangan). Tidak butuh bertemu dulu untuk berbagi kunci.</p>
+      </div>
+      <div style="padding:.6rem;background:#E1F5EE;border-radius:8px;border:0.5px solid #5DCAA5">
+        <p style="font-size:12px;font-weight:500;color:#04342C;margin-bottom:4px">AES</p>
+        <p style="font-size:12px;color:#085041">Cepat, cocok untuk data besar (file, stream). Butuh kunci yang sama di kedua pihak.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:.75rem">Di dunia nyata, keduanya dipakai bersama: RSA untuk menukar kunci AES secara aman, lalu AES untuk enkripsi data besar. Ini disebut <strong>hybrid encryption</strong>.</div>
+  </div>
+</div>
+
+<!-- CARA KERJA -->
+<div id="sec-cara" class="sec">
+  <div class="badge bp">Cara Kerja</div>
+  <h2>Bagaimana AES bekerja?</h2>
+
+  <div class="card">
+    <h3>Konsep 1: AES bekerja dalam blok 128-bit</h3>
+    <p style="margin-bottom:.75rem">AES adalah <strong>block cipher</strong> — ia mengenkripsi data sepotong-sepotong. Setiap potongan disebut <strong>blok</strong>, ukurannya selalu <strong>128 bit = 16 byte</strong>.</p>
+    <div class="step-lbl">Contoh: pesan "HELLO WORLD 1234" (16 karakter = 1 blok)</div>
+    <div class="block-row">
+      <div class="blk blk-plain">H</div>
+      <div class="blk blk-plain">E</div>
+      <div class="blk blk-plain">L</div>
+      <div class="blk blk-plain">L</div>
+      <div class="blk blk-plain">O</div>
+      <div class="blk blk-plain"> </div>
+      <div class="blk blk-plain">W</div>
+      <div class="blk blk-plain">O</div>
+      <div class="blk blk-plain">R</div>
+      <div class="blk blk-plain">L</div>
+      <div class="blk blk-plain">D</div>
+      <div class="blk blk-plain"> </div>
+      <div class="blk blk-plain">1</div>
+      <div class="blk blk-plain">2</div>
+      <div class="blk blk-plain">3</div>
+      <div class="blk blk-plain">4</div>
+    </div>
+    <div class="step-lbl" style="margin-top:.75rem">Setelah dienkripsi dengan kunci K (1 blok = 16 byte acak)</div>
+    <div class="block-row">
+      <div class="blk blk-enc">3F</div>
+      <div class="blk blk-enc">A2</div>
+      <div class="blk blk-enc">9C</div>
+      <div class="blk blk-enc">01</div>
+      <div class="blk blk-enc">E7</div>
+      <div class="blk blk-enc">48</div>
+      <div class="blk blk-enc">BB</div>
+      <div class="blk blk-enc">F3</div>
+      <div class="blk blk-enc">2D</div>
+      <div class="blk blk-enc">77</div>
+      <div class="blk blk-enc">5A</div>
+      <div class="blk blk-enc">C9</div>
+      <div class="blk blk-enc">11</div>
+      <div class="blk blk-enc">6E</div>
+      <div class="blk blk-enc">D4</div>
+      <div class="blk blk-enc">82</div>
+    </div>
+    <div class="warn" style="margin-top:.5rem">Masalah: kalau pesan lebih panjang dari 16 byte, harus dipotong jadi banyak blok. Cara blok-blok ini diproses disebut <strong>mode operasi</strong> — inilah inti pelajaran kita!</div>
+  </div>
+
+  <div class="card">
+    <h3>Konsep 2: Di dalam AES — 10 putaran transformasi</h3>
+    <p style="margin-bottom:.5rem">AES (128-bit key) menjalankan <strong>10 putaran</strong> operasi matematika pada blok 4×4 byte. Tiap putaran melakukan 4 langkah:</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:.5rem 0">
+      <div style="padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;font-size:12px;font-weight:500">SubBytes</div>
+      <div style="color:var(--color-text-tertiary);display:flex;align-items:center">→</div>
+      <div style="padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;font-size:12px;font-weight:500">ShiftRows</div>
+      <div style="color:var(--color-text-tertiary);display:flex;align-items:center">→</div>
+      <div style="padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;font-size:12px;font-weight:500">MixColumns</div>
+      <div style="color:var(--color-text-tertiary);display:flex;align-items:center">→</div>
+      <div style="padding:5px 10px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:12px;font-weight:500;color:#27500A">AddRoundKey</div>
+    </div>
+    <p style="font-size:12px">Kita tidak perlu hafal ini untuk memahami serangan AES. Yang penting: <strong>satu blok masuk → satu blok keluar, selalu terlihat acak</strong>.</p>
+    <div class="note" style="margin-top:.5rem">Kelemahan AES bukan di dalam algoritmanya, melainkan di <strong>cara blok-blok dirangkai</strong> (mode operasi). Inilah yang kita pelajari selanjutnya.</div>
+  </div>
+
+  <div class="card">
+    <h3>Konsep 3: IV dan Nonce — apa itu?</h3>
+    <p style="margin-bottom:.5rem"><strong>IV (Initialization Vector)</strong> atau <strong>Nonce</strong> adalah nilai acak yang ditambahkan agar enkripsi pesan yang sama menghasilkan ciphertext berbeda setiap kali.</p>
+    <div class="step-lbl">Tanpa IV — enkripsi dua kali dapat hasil sama:</div>
+    <div class="block-row" style="margin-bottom:.5rem">
+      <div class="blk blk-plain" style="width:52px;font-size:9px">M = "HI"</div>
+      <span class="arrow-right">→</span>
+      <div class="blk blk-enc" style="width:52px;font-size:9px">C = A3F2</div>
+    </div>
+    <div class="block-row" style="margin-bottom:.75rem">
+      <div class="blk blk-plain" style="width:52px;font-size:9px">M = "HI"</div>
+      <span class="arrow-right">→</span>
+      <div class="blk blk-same" style="width:52px;font-size:9px">C = A3F2</div>
+      <span style="font-size:11px;color:#791F1F;margin-left:4px">Sama! Berbahaya</span>
+    </div>
+    <div class="step-lbl">Dengan IV acak — hasil selalu berbeda:</div>
+    <div class="block-row" style="margin-bottom:.5rem">
+      <div class="blk blk-plain" style="width:52px;font-size:9px">M = "HI"</div>
+      <span class="arrow-right">+</span>
+      <div class="blk blk-iv" style="width:52px;font-size:9px">IV=5C3A</div>
+      <span class="arrow-right">→</span>
+      <div class="blk blk-enc" style="width:52px;font-size:9px">C = A3F2</div>
+    </div>
+    <div class="block-row">
+      <div class="blk blk-plain" style="width:52px;font-size:9px">M = "HI"</div>
+      <span class="arrow-right">+</span>
+      <div class="blk blk-iv" style="width:52px;font-size:9px">IV=7B11</div>
+      <span class="arrow-right">→</span>
+      <div class="blk blk-enc" style="width:52px;font-size:9px">C = D9C1</div>
+      <span style="font-size:11px;color:#27500A;margin-left:4px">Berbeda! Aman</span>
+    </div>
+    <div class="ok" style="margin-top:.5rem">IV boleh diketahui publik — ia tidak perlu dirahasiakan, hanya harus <strong>unik setiap sesi</strong>. Yang rahasia tetap hanya kunci K.</div>
+  </div>
+</div>
+
+<!-- ECB -->
+<div id="sec-ecb" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-bad"></div>
+    <div><div class="badge br">Mode Paling Lemah</div><h2 style="margin-bottom:0">ECB — Electronic Codebook</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja ECB</h3>
+    <p style="margin-bottom:.75rem">ECB adalah mode paling sederhana — setiap blok dienkripsi <strong>secara independen</strong> dengan kunci yang sama. Tidak ada koneksi antar blok sama sekali.</p>
+    <div class="step-lbl">Enkripsi 3 blok pesan</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin:.5rem 0">
+      <div class="block-row">
+        <div class="blk blk-plain" style="width:56px;font-size:10px">Blok 1</div>
+        <span class="arrow-right">+</span>
+        <div class="blk blk-key" style="width:40px;font-size:10px">K</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 8px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;font-weight:500;color:#3C3489">AES_K(Blok 1)</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:56px;font-size:10px">C₁</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-plain" style="width:56px;font-size:10px">Blok 2</div>
+        <span class="arrow-right">+</span>
+        <div class="blk blk-key" style="width:40px;font-size:10px">K</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 8px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;font-weight:500;color:#3C3489">AES_K(Blok 2)</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:56px;font-size:10px">C₂</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-plain" style="width:56px;font-size:10px">Blok 3</div>
+        <span class="arrow-right">+</span>
+        <div class="blk blk-key" style="width:40px;font-size:10px">K</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 8px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;font-weight:500;color:#3C3489">AES_K(Blok 3)</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:56px;font-size:10px">C₃</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan: Pattern Analysis</h3>
+    <div class="danger">Kelemahan FATAL: blok plaintext yang sama selalu menghasilkan ciphertext yang sama!</div>
+    <div class="step-lbl" style="margin-top:.75rem">Contoh nyata — enkripsi tabel database gaji:</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0">
+      <div style="flex:1;min-width:120px">
+        <div class="step-lbl">Plaintext (tabel asli)</div>
+        <div style="background:var(--color-background-secondary);border-radius:8px;padding:.5rem;font-family:var(--font-mono);font-size:11px;border:0.5px solid var(--color-border-tertiary)">
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Alice | 5jt</div>
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Bob   | 5jt</div>
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Carol | 8jt</div>
+          <div style="padding:3px 0;color:var(--color-text-secondary)">Dave  | 5jt</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div class="step-lbl">Ciphertext ECB</div>
+        <div style="background:var(--color-background-secondary);border-radius:8px;padding:.5rem;font-family:var(--font-mono);font-size:11px;border:0.5px solid var(--color-border-tertiary)">
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">???? | <span style="background:#FCEBEB;color:#791F1F;padding:1px 4px;border-radius:3px">A3F2</span></div>
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">???? | <span style="background:#FCEBEB;color:#791F1F;padding:1px 4px;border-radius:3px">A3F2</span></div>
+          <div style="padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">???? | <span style="background:#EAF3DE;color:#27500A;padding:1px 4px;border-radius:3px">C9B1</span></div>
+          <div style="padding:3px 0;color:var(--color-text-secondary)">???? | <span style="background:#FCEBEB;color:#791F1F;padding:1px 4px;border-radius:3px">A3F2</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="danger" style="margin-top:.4rem">Eve tidak tahu isi datanya, tapi langsung tahu: Alice, Bob, Dave gajinya sama karena ciphertext-nya identik. Carol berbeda karena gajinya berbeda!</div>
+    <div class="warn" style="margin-top:.4rem">Contoh paling terkenal: "ECB Penguin" — gambar Linux Tux dienkripsi ECB masih terlihat siluetnya karena pola warna yang berulang menghasilkan ciphertext yang berulang juga.</div>
+  </div>
+
+  <div class="card">
+    <h3>Solusi & penggunaan</h3>
+    <div class="danger">Jangan pernah gunakan ECB untuk data apapun yang memiliki pola berulang.</div>
+    <p style="margin-top:.5rem;font-size:12px">ECB hanya aman untuk mengenkripsi satu blok tunggal yang tidak berulang, misalnya enkripsi satu kunci kriptografi. Di luar itu, selalu gunakan mode lain.</p>
+  </div>
+</div>
+
+<!-- CBC -->
+<div id="sec-cbc" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-warn"></div>
+    <div><div class="badge ba">Standar lama</div><h2 style="margin-bottom:0">CBC — Cipher Block Chaining</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja CBC</h3>
+    <p style="margin-bottom:.75rem">CBC memperbaiki ECB dengan cara <strong>XOR-kan setiap blok plaintext dengan ciphertext blok sebelumnya</strong> sebelum dienkripsi. Blok pertama di-XOR dengan IV.</p>
+    <div class="step-lbl">Proses enkripsi CBC</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:.5rem 0">
+      <div class="block-row">
+        <div class="blk blk-iv" style="width:44px;font-size:10px">IV</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₁</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;color:#3C3489">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₂</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;color:#3C3489">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₂</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₂</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₃</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;font-size:10px;color:#3C3489">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₃</div>
+      </div>
+    </div>
+    <div class="ok">Blok plaintext yang sama (P₁=P₂) akan menghasilkan ciphertext berbeda karena di-XOR dengan C sebelumnya yang berbeda. Masalah ECB teratasi!</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan 1: Padding Oracle Attack</h3>
+    <p style="margin-bottom:.5rem">Karena blok harus 16 byte, kalau pesan tidak pas 16 byte maka ditambah <strong>padding</strong>. Padding Oracle Attack memanfaatkan error message dari server saat padding salah.</p>
+    <div class="step-lbl">Cara kerja dekripsi CBC:</div>
+    <span class="eq">P_i = AES_K⁻¹(C_i) ⊕ C_{i-1}</span>
+    <div class="step-lbl" style="margin-top:.5rem">Eksploitasi:</div>
+    <div style="padding:.5rem .75rem;background:var(--color-background-secondary);border-radius:8px;border:0.5px solid var(--color-border-tertiary);font-size:12px;line-height:1.8">
+      <div>1. Attacker kirim ciphertext yang dimodifikasi ke server</div>
+      <div>2. Modify byte terakhir C_{i-1}, satu per satu (256 kemungkinan)</div>
+      <div>3. Server merespons: "padding valid" atau "padding error"</div>
+      <div>4. Kalau valid: attacker tahu byte plaintext P_i!</div>
+      <div>5. Ulangi untuk tiap byte → seluruh plaintext terkuak</div>
+    </div>
+    <div class="danger" style="margin-top:.5rem">Dengan 256 × 16 byte = 4096 request, satu blok bisa didekripsi. Serangan ini pernah menghancurkan SSL 3.0 (POODLE attack, 2014).</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan 2: Bit-flipping Attack</h3>
+    <p style="margin-bottom:.5rem">Karena P_i = AES_K⁻¹(C_i) ⊕ C_{i-1}, mengubah 1 bit di C_{i-1} akan <strong>membalik bit yang sama persis di P_i</strong>.</p>
+    <span class="eq">Jika flip bit ke-j di C_{i-1}:
+→ bit ke-j di P_i ikut terflip
+→ attacker bisa ubah plaintext tanpa tahu kunci!</span>
+    <div class="warn" style="margin-top:.4rem">Contoh: payload "amount=0100" → attacker flip satu bit di ciphertext → jadi "amount=9100". Server mendekripsi nilai yang sudah dimanipulasi!</div>
+  </div>
+</div>
+
+<!-- OFB -->
+<div id="sec-ofb" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-warn"></div>
+    <div><div class="badge ba">Stream cipher mode</div><h2 style="margin-bottom:0">OFB — Output Feedback</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja OFB</h3>
+    <p style="margin-bottom:.75rem">OFB mengubah AES dari block cipher menjadi <strong>stream cipher</strong>. AES dipakai untuk generate keystream, lalu keystream di-XOR dengan plaintext. Plaintext tidak pernah masuk langsung ke AES.</p>
+    <div class="step-lbl">Generate keystream dulu, baru XOR</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:.5rem 0">
+      <div class="block-row">
+        <div class="blk blk-iv" style="width:44px;font-size:10px">IV</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₁</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₁</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₁</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₂</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₂</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₂</div>
+      </div>
+    </div>
+    <div class="note">KS = Keystream. Perhatikan: keystream dihasilkan dari AES(IV) → AES(KS₁) → ... Keystream independen dari plaintext — ini yang memungkinkan pre-computation.</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan: IV/Nonce Reuse (Same Keystream Attack)</h3>
+    <p style="margin-bottom:.5rem">Karena keystream hanya bergantung pada K dan IV, kalau IV dipakai ulang, <strong>keystream-nya identik</strong>.</p>
+    <span class="eq">Enkripsi pertama:  C₁ = P₁ ⊕ KS
+Enkripsi kedua:    C₂ = P₂ ⊕ KS  (IV sama!)
+
+XOR keduanya: C₁ ⊕ C₂ = P₁ ⊕ P₂</span>
+    <div class="danger" style="margin-top:.4rem">Kalau attacker punya dua ciphertext dengan IV sama, C₁ ⊕ C₂ = P₁ ⊕ P₂. Kalau salah satu plaintext diketahui (misalnya format header yang standar), yang lain langsung terbongkar!</div>
+    <div class="step-lbl" style="margin-top:.75rem">Contoh eksploitasi two-time pad:</div>
+    <span class="eq">Diketahui: C₁, C₂, dan P₁ = "Transfer: $100"
+C₁ ⊕ C₂ = P₁ ⊕ P₂
+→ P₂ = (C₁ ⊕ C₂) ⊕ P₁   ← P₂ terbongkar!</span>
+    <div class="warn" style="margin-top:.4rem">Solusi: pastikan IV selalu unik dan acak untuk setiap enkripsi. Jangan pernah reuse IV.</div>
+  </div>
+</div>
+
+<!-- CFB -->
+<div id="sec-cfb" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-warn"></div>
+    <div><div class="badge ba">Self-synchronizing</div><h2 style="margin-bottom:0">CFB — Cipher Feedback</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja CFB</h3>
+    <p style="margin-bottom:.75rem">CFB mirip OFB, tapi <strong>ciphertext sebelumnya</strong> (bukan output keystream) yang dimasukkan kembali ke AES. Sehingga keystream bergantung pada ciphertext.</p>
+    <div class="step-lbl">Proses enkripsi CFB</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:.5rem 0">
+      <div class="block-row">
+        <div class="blk blk-iv" style="width:44px;font-size:10px">IV</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₁</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₁</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+      </div>
+      <div class="block-row">
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₂</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₂</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₂</div>
+      </div>
+    </div>
+    <div class="note">Perbedaan OFB vs CFB: OFB feedback dari output AES (KS), CFB feedback dari ciphertext (C). Akibatnya: di CFB, error di C_i memengaruhi 2 blok; di OFB error hanya memengaruhi 1 blok.</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan: Bit-flipping Attack</h3>
+    <p style="margin-bottom:.5rem">Sama seperti CBC, CFB rentan terhadap bit-flipping. Mengubah bit ke-j di C_i mengubah bit ke-j di P_{i+1} secara terprediksi.</p>
+    <span class="eq">Dekripsi: P_i = AES_K(C_{i-1}) ⊕ C_i
+
+Jika flip bit ke-j di C_i:
+→ bit ke-j di P_{i+1} ikut terflip (karena C_i jadi input AES)
+→ P_i sendiri rusak total (efek di 2 blok)</span>
+    <div class="warn" style="margin-top:.4rem">Attacker bisa modifikasi ciphertext untuk mengubah plaintext di posisi yang diinginkan — meski blok sumber menjadi sampah.</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan: IV Reuse</h3>
+    <p style="margin-bottom:.5rem">Seperti OFB, kalau IV dipakai ulang dengan plaintext yang diketahui attacker, keystream blok pertama terbongkar.</p>
+    <span class="eq">KS₁ = AES_K(IV)
+C₁ = P₁ ⊕ KS₁
+→ KS₁ = P₁ ⊕ C₁  (kalau P₁ diketahui)</span>
+    <div class="danger" style="margin-top:.4rem">Dengan KS₁ diketahui, attacker bisa dekripsi atau modifikasi blok pertama dari semua pesan yang punya IV sama.</div>
+  </div>
+</div>
+
+<!-- CTR -->
+<div id="sec-ctr" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-warn"></div>
+    <div><div class="badge bb">Parallelizable</div><h2 style="margin-bottom:0">CTR — Counter Mode</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja CTR</h3>
+    <p style="margin-bottom:.75rem">CTR mengenkripsi <strong>counter yang terus bertambah</strong> (bukan plaintext langsung) untuk menghasilkan keystream, lalu di-XOR dengan plaintext.</p>
+    <div class="step-lbl">Nonce + Counter sebagai input AES</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:.5rem 0">
+      <div class="block-row">
+        <div style="padding:4px 6px;background:#FAEEDA;border:0.5px solid #EF9F27;border-radius:6px;font-size:10px;color:#412402">Nonce‖0</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₁</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₁</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₁</div>
+      </div>
+      <div class="block-row">
+        <div style="padding:4px 6px;background:#FAEEDA;border:0.5px solid #EF9F27;border-radius:6px;font-size:10px;color:#412402">Nonce‖1</div>
+        <span class="arrow-right">→</span>
+        <div style="padding:4px 6px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:6px;font-size:10px;color:#27500A">AES_K</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-key" style="width:48px;font-size:10px">KS₂</div>
+        <div class="blk blk-xor">⊕</div>
+        <div class="blk blk-plain" style="width:44px;font-size:10px">P₂</div>
+        <span class="arrow-right">→</span>
+        <div class="blk blk-enc" style="width:44px;font-size:10px">C₂</div>
+      </div>
+    </div>
+    <div class="ok">Keunggulan CTR: bisa diparalelkan (tiap blok bisa dihitung independent), bisa random access (langsung ke blok ke-1000 tanpa hitung blok sebelumnya).</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan 1: Nonce Reuse (Same Keystream)</h3>
+    <p style="margin-bottom:.5rem">Sama persis dengan OFB — kalau nonce dipakai ulang, keystream identik dan serangan two-time pad berlaku.</p>
+    <span class="eq">C₁ = P₁ ⊕ KS  (nonce N)
+C₂ = P₂ ⊕ KS  (nonce N sama!)
+C₁ ⊕ C₂ = P₁ ⊕ P₂  → plaintext bocor</span>
+    <div class="danger" style="margin-top:.4rem">Ini sangat serius di CTR karena nonce mudah sekali reuse jika tidak dikelola dengan benar — terutama setelah restart atau di sistem terdistribusi.</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan 2: Bit-flipping Attack</h3>
+    <p style="margin-bottom:.5rem">Seperti OFB, modifikasi C_i langsung membalik bit yang sama di P_i (karena XOR).</p>
+    <span class="eq">P_i = C_i ⊕ KS_i
+Flip bit ke-j di C_i → bit ke-j di P_i ikut flip</span>
+    <div class="warn" style="margin-top:.4rem">Tidak ada chaining di CTR, jadi efeknya hanya di satu blok — lebih "bersih" dari CBC, tapi tetap berbahaya untuk integritas data.</div>
+    <p style="margin-top:.5rem;font-size:12px">Solusi untuk bit-flipping di CTR (dan mode stream lainnya): tambahkan <strong>authentication tag</strong> — inilah yang dilakukan GCM.</p>
+  </div>
+</div>
+
+<!-- GCM -->
+<div id="sec-gcm" class="sec">
+  <div class="mode-header">
+    <div class="security-dot sec-ok"></div>
+    <div><div class="badge bg">Rekomendasi saat ini</div><h2 style="margin-bottom:0">GCM — Galois/Counter Mode</h2></div>
+  </div>
+
+  <div class="card">
+    <h3>Cara kerja GCM</h3>
+    <p style="margin-bottom:.75rem">GCM = CTR + <strong>GHASH authentication</strong>. Ia memberikan dua hal sekaligus: <strong>kerahasiaan</strong> (dari CTR) dan <strong>integritas/autentikasi</strong> (dari GHASH).</p>
+    <div class="step-lbl">Komponen GCM</div>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:8px">
+        <p style="font-size:12px;font-weight:500;color:#04342C;margin-bottom:4px">CTR part (enkripsi)</p>
+        <p style="font-size:12px;color:#085041">Plaintext dienkripsi pakai CTR mode biasa. Menghasilkan ciphertext.</p>
+      </div>
+      <div style="padding:.6rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px">
+        <p style="font-size:12px;font-weight:500;color:#26215C;margin-bottom:4px">GHASH part (autentikasi)</p>
+        <p style="font-size:12px;color:#3C3489">Ciphertext + AAD diolah GHASH → menghasilkan Auth Tag 128-bit.</p>
+      </div>
+    </div>
+    <span class="eq">Output GCM = (Ciphertext || Auth Tag)
+Auth Tag = GHASH(H, AAD, Ciphertext) ⊕ AES_K(J₀)</span>
+    <div class="ok">Auth Tag menjamin: kalau ada 1 bit ciphertext yang berubah (oleh attacker), tag verifikasi akan gagal dan pesan ditolak. Bit-flipping attack tidak bisa lagi!</div>
+  </div>
+
+  <div class="card">
+    <h3>Serangan: Nonce Reuse — "Forbidden Attack"</h3>
+    <p style="margin-bottom:.5rem">Ini serangan paling dahsyat di GCM. Kalau nonce dipakai dua kali, attacker tidak hanya bisa baca plaintext — tapi juga bisa <strong>memalsukan auth tag</strong>!</p>
+    <span class="eq">Dua enkripsi dengan nonce N sama:
+(C₁, T₁) = GCM_K(P₁, N)
+(C₂, T₂) = GCM_K(P₂, N)
+
+Dari T₁ dan T₂, attacker bisa hitung H (GHASH key):
+T₁ ⊕ T₂ = GHASH(H, ...) ⊕ GHASH(H, ...)
+→ H bisa diperoleh dari persamaan polinomial</span>
+    <div class="danger" style="margin-top:.4rem">Dengan H diketahui, attacker bisa membuat auth tag yang valid untuk PESAN APAPUN. Seluruh sistem autentikasi GCM runtuh total — inilah "Forbidden Attack" (2012).</div>
+    <div class="note" style="margin-top:.4rem">Nonce GCM hanya 96-bit. Kalau di-generate secara acak, ada risiko collision setelah 2³² (~4 miliar) pesan. Solusi: gunakan counter deterministik, bukan random nonce.</div>
+  </div>
+
+  <div class="card">
+    <h3>AAD — Additional Authenticated Data</h3>
+    <p style="margin-bottom:.5rem">GCM bisa mengautentikasi data yang tidak dienkripsi (misalnya header paket jaringan).</p>
+    <span class="eq">AAD = data yang DIAUTENTIKASI tapi tidak dienkripsi
+Contoh: IP header, sequence number, metadata</span>
+    <div class="ok" style="margin-top:.4rem">Kalau attacker mengubah AAD (misalnya alamat tujuan paket), auth tag akan gagal dan perubahan terdeteksi. Ini yang membuat GCM menjadi AEAD (Authenticated Encryption with Associated Data).</div>
+  </div>
+</div>
+
+<!-- RINGKASAN -->
+<div id="sec-ringkasan" class="sec">
+  <div class="badge bp">Ringkasan</div>
+  <h2>Perbandingan semua mode AES</h2>
+
+  <div class="card" style="overflow-x:auto">
+    <table class="tbl">
+      <tr>
+        <th>Mode</th><th>Enkripsi</th><th>Integritas</th><th>IV/Nonce</th><th>Serangan utama</th>
+      </tr>
+      <tr>
+        <td style="font-weight:500">ECB</td>
+        <td style="color:#791F1F">Lemah</td>
+        <td style="color:#791F1F">Tidak ada</td>
+        <td style="color:#888">Tidak perlu</td>
+        <td>Pattern analysis</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">CBC</td>
+        <td style="color:#27500A">Baik</td>
+        <td style="color:#791F1F">Tidak ada</td>
+        <td style="color:#27500A">Wajib, acak</td>
+        <td>Padding oracle, bit-flipping</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">OFB</td>
+        <td style="color:#27500A">Baik</td>
+        <td style="color:#791F1F">Tidak ada</td>
+        <td style="color:#27500A">Wajib, unik</td>
+        <td>Nonce reuse → same keystream</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">CFB</td>
+        <td style="color:#27500A">Baik</td>
+        <td style="color:#791F1F">Tidak ada</td>
+        <td style="color:#27500A">Wajib, unik</td>
+        <td>Bit-flipping, IV reuse</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">CTR</td>
+        <td style="color:#27500A">Baik</td>
+        <td style="color:#791F1F">Tidak ada</td>
+        <td style="color:#27500A">Wajib, unik</td>
+        <td>Nonce reuse, bit-flipping</td>
+      </tr>
+      <tr style="background:var(--color-background-secondary)">
+        <td style="font-weight:500;color:#27500A">GCM</td>
+        <td style="color:#27500A">Baik</td>
+        <td style="color:#27500A">Auth Tag</td>
+        <td style="color:#27500A">Wajib, unik</td>
+        <td>Nonce reuse → Forbidden Attack</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>3 pola serangan yang perlu diingat</h3>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.25rem">
+      <div style="padding:.6rem .85rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-md)">
+        <p style="font-size:12px;font-weight:500;color:#791F1F;margin-bottom:3px">Pattern Analysis (ECB saja)</p>
+        <p style="font-size:12px;color:#A32D2D">Blok plaintext sama → ciphertext sama. Pola data bocor meski konten tidak terbaca.</p>
+      </div>
+      <div style="padding:.6rem .85rem;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-md)">
+        <p style="font-size:12px;font-weight:500;color:#633806;margin-bottom:3px">Nonce/IV Reuse (OFB, CTR, GCM)</p>
+        <p style="font-size:12px;color:#854F0B">Keystream identik → XOR dua ciphertext = XOR dua plaintext. GCM lebih parah: auth key terbongkar.</p>
+      </div>
+      <div style="padding:.6rem .85rem;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-md)">
+        <p style="font-size:12px;font-weight:500;color:#26215C;margin-bottom:3px">Bit-flipping (CBC, CFB, CTR, OFB)</p>
+        <p style="font-size:12px;color:#3C3489">Flip bit di ciphertext → flip bit terprediksi di plaintext. Integritas tidak terjamin tanpa auth tag.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Rekomendasi penggunaan</h3>
+    <div class="ok" style="margin-bottom:.4rem">Gunakan <strong>AES-GCM</strong> dengan nonce unik (counter, bukan random) untuk keamanan terbaik. Ini standar di TLS 1.3, WPA3, dan Signal Protocol.</div>
+    <div class="danger">Jangan pernah gunakan ECB untuk lebih dari satu blok data.</div>
+    <div class="warn" style="margin-top:.4rem">CBC masih ada di legacy system tapi hindari untuk sistem baru — gunakan GCM.</div>
+  </div>
+
+  <div style="margin-top:.75rem;padding:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)">
+    <p style="font-size:12px;font-weight:500;margin-bottom:8px;color:var(--color-text-primary)">Mau lanjut ke mana?</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button style="padding:6px 12px;font-size:12px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;color:var(--color-text-primary)" onclick="sendPrompt('Jelaskan lebih detail tentang Padding Oracle Attack pada CBC beserta soal dan cara kerjainnya')">Padding Oracle Attack detail ↗</button>
+      <button style="padding:6px 12px;font-size:12px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;color:var(--color-text-primary)" onclick="sendPrompt('Jelaskan Forbidden Attack pada GCM beserta contoh soal')">Forbidden Attack GCM detail ↗</button>
+      <button style="padding:6px 12px;font-size:12px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;color:var(--color-text-primary)" onclick="sendPrompt('Buatkan soal latihan attack on AES untuk semua mode beserta pembahasannya')">Soal latihan AES attack ↗</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

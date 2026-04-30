@@ -1,0 +1,44 @@
+Shellcode 32-bit (x86) tidak akan jalan di program 64-bit (x64), begitu juga sebaliknya
+
+Kadang program gets() atau scanf() akan berhenti membaca jika melihat byte tertentu (seperti \x00 untuk null byte, atau \x0a untuk newline).
+Kamu harus cari shellcode yang "Null-free" agar payload kamu tidak terpotong di tengah jalan
+
+Cara Menentukan Shellcode yang Dipakai?
+Pemilihan shellcode tergantung pada target sistemnya:
+
+Arsitektur: Apakah x86 (32-bit) atau x64 (64-bit)? Shellcode 32-bit tidak akan jalan di program 64-bit karena perbedaan register dan nomor syscall.
+
+Kebutuhan: Biasanya yang paling umum adalah execve("/bin/sh", NULL, NULL) untuk mendapatkan akses terminal (shell).
+
+Batasan: Jika program memfilter karakter tertentu (seperti \x00 atau \x0a), kamu harus menggunakan shellcode yang "alphanumeric" atau yang sudah di-encode
+
+Shell-Storm atau Exploit-DB: Cari di database online dengan kata kunci "linux x64 execve /bin/sh shellcode"
+
+
+Berikut adalah cara-cara untuk mengetahui dan memperkirakan posisi buffer:
+1. Menggunakan GDB (Cara Paling Akurat)
+Jika kamu memiliki akses ke binary, kamu bisa menjalankan program di dalam debugger untuk melihat alamat register saat input diminta:
+Breakpoint: Pasang breakpoint pada fungsi input (seperti gets, read, atau scanf).
+Cek Register: Saat program berhenti, lihat register yang menampung alamat buffer.
+32-bit: Biasanya ada di register EAX atau di atas stack (cek dengan x/s $esp).
+64-bit: Lihat register RSI atau RAX (cek dengan i r rsi).
+Lihat Dump Stack: Gunakan perintah stack 20 atau x/20gx $rsp untuk melihat struktur memori di sekitar buffer.
+
+2. Mengamati Nilai Leak (Bypass PIE/ASLR)
+Jika program memiliki celah Format String atau mencetak alamat fungsi tertentu, kamu bisa menghitung posisi buffer secara relatif:
+Leak Alamat: Misalnya program mencetak alamat fungsi main().
+Hitung Offset: Alamat buffer biasanya memiliki jarak (offset) yang tetap terhadap alamat fungsi atau alamat stack lainnya dalam satu sesi eksekusi.
+Rumus: $\text{Perkiraan Buffer} = \text{Alamat Leak} \pm \text{Offset yang Ditemukan di GDB}$.
+
+3. Teknik NOP Sled (Jika Alamat Tidak Pasti)
+Ketika ASLR aktif namun "ringan" (stack hanya bergeser sedikit), kita menggunakan teknik NOP Sled untuk memperbesar target pendaratan:
+Tentukan Range: Jika kamu tahu buffer biasanya ada di sekitar 0xbffff400 dengan pergeseran $\pm 128$ byte.
+Target Tengah: Pilih alamat di titik tengah perkiraan tersebut, misalnya 0xbffff480.
+Gunakan Padding NOP: Isi bagian awal buffer dengan instruksi \x90 (NOP) sebanyak mungkin. 
+Dengan begini, jika alamat yang kamu tuju meleset sedikit namun masih mendarat di area NOP, CPU akan terus mengeksekusi hingga sampai ke shellcode kamu.
+
+4. Melalui Perhitungan Manual (Source Code)
+Berdasarkan gambar yang kamu unggah, kamu bisa melihat alokasi variabel:
+Jika di kode tertulis char buf[32], maka buffer berukuran 32 byte.
+Di atasnya akan ada Saved EBP (4/8 byte) dan Return Address (4/8 byte).
+Jika kamu mendapatkan satu alamat stack dari leak, kamu bisa menebak posisi buf[0] dengan melihat struktur fungsi tersebut di disassembler (lea rax, [rbp-0x20]).

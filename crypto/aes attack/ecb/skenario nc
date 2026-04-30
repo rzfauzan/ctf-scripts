@@ -1,0 +1,12 @@
+from pwn import *
+
+# Hubungkan ke server
+io = remote('10.10.1.5', 1337)
+
+def oracle(payload):
+    io.sendlineafter(b"Masukkan input: ", payload.encode())
+    response = io.recvline().decode().strip()
+    return response
+
+# Di akhir script, jangan lupa tutup koneksi
+# io.close()

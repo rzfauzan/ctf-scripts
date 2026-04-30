@@ -1,0 +1,249 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p,li{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+.mono{font-family:var(--font-mono);font-size:13px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.soal-card{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.soal-card h2{color:#26215C}
+.soal-card p{color:#3C3489}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:5px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.tbl td{padding:5px 10px;border:0.5px solid var(--color-border-tertiary);font-family:var(--font-mono);color:var(--color-text-primary)}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--color-border-secondary);border:none;padding:0;cursor:pointer;transition:background .15s}
+.dot.done{background:#AFA9EC}
+.dot.active{background:#534AB7;width:24px;border-radius:5px}
+.btn-nav{padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;cursor:pointer}
+.btn-nav:hover{background:var(--color-background-secondary)}
+.btn-next{background:#534AB7;color:#fff;border-color:#534AB7}
+.btn-next:hover{background:#3C3489}
+.step-label{font-size:12px;color:var(--color-text-tertiary)}
+.steps-wrap{}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:var(--font-mono);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:var(--color-text-primary)}
+.eq-hi{font-family:var(--font-mono);background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#26215C}
+.note{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#633806;margin:.5rem 0}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:var(--border-radius-md);padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.5rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:8px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:120px}
+.big-ans{font-size:22px;font-weight:500;color:#534AB7;font-family:var(--font-mono)}
+</style>
+
+<div style="padding:1rem 0">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal — Hastad's Broadcast Attack</div>
+  <h2>Temukan plaintext M yang disembunyikan!</h2>
+  <p style="margin-top:6px;margin-bottom:10px">Sebuah pesan rahasia M dikirim ke 3 penerima berbeda menggunakan RSA dengan exponent publik e = 3. Berikut data yang berhasil disadap:</p>
+  <table class="tbl">
+    <tr><th>Penerima</th><th>Modulus (N)</th><th>Ciphertext (C)</th></tr>
+    <tr><td>Alice</td><td>33</td><td>26</td></tr>
+    <tr><td>Bob</td><td>85</td><td>40</td></tr>
+    <tr><td>Carol</td><td>91</td><td>34</td></tr>
+  </table>
+  <p style="margin-top:8px">e = 3 &nbsp;|&nbsp; Cᵢ = M³ mod Nᵢ &nbsp;|&nbsp; Cari M!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<div class="steps-wrap">
+
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Verifikasi syarat serangan</div>
+    <h3>Cek apakah semua syarat terpenuhi</h3>
+    <p style="margin-bottom:.75rem">Hastad Attack hanya bisa dilakukan jika 3 syarat ini terpenuhi:</p>
+    <div class="ok">Syarat 1: Exponent publik kecil → e = 3 ✓</div>
+    <div class="ok">Syarat 2: Pesan M yang sama dikirim ke 3 penerima (Alice, Bob, Carol) ✓</div>
+    <p style="margin:.6rem 0 .3rem">Syarat 3: gcd(Nᵢ, Nⱼ) = 1 untuk semua pasangan (CRT memerlukan ini)</p>
+    <span class="eq">gcd(N₁, N₂) = gcd(33, 85) = ?</span>
+    <p style="font-size:12px;color:var(--color-text-tertiary)">33 = 3 × 11 &nbsp;&nbsp; 85 = 5 × 17 → tidak ada faktor sama</p>
+    <span class="eq">gcd(33, 85) = 1 ✓</span>
+    <span class="eq">gcd(N₁, N₃) = gcd(33, 91) = ?</span>
+    <p style="font-size:12px;color:var(--color-text-tertiary)">33 = 3 × 11 &nbsp;&nbsp; 91 = 7 × 13 → tidak ada faktor sama</p>
+    <span class="eq">gcd(33, 91) = 1 ✓</span>
+    <span class="eq">gcd(N₂, N₃) = gcd(85, 91) = ?</span>
+    <p style="font-size:12px;color:var(--color-text-tertiary)">85 = 5 × 17 &nbsp;&nbsp; 91 = 7 × 13 → tidak ada faktor sama</p>
+    <span class="eq">gcd(85, 91) = 1 ✓</span>
+    <div class="ok" style="margin-top:.75rem">Semua syarat terpenuhi! Serangan bisa dilakukan.</div>
+  </div>
+</div>
+
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Hitung N gabungan</div>
+    <h3>Hitung N = N₁ × N₂ × N₃</h3>
+    <p style="margin-bottom:.75rem">Dalam CRT, kita butuh N (produk semua modulus). Ini adalah "ruang" dimana M³ berada secara eksak (bukan modular).</p>
+    <span class="eq">N = N₁ × N₂ × N₃</span>
+    <span class="eq">N = 33 × 85 × 91</span>
+    <span class="eq">N = 33 × 85 = 2,805</span>
+    <span class="eq">N = 2,805 × 91 = 255,255</span>
+    <span class="eq-hi">N = 255,255</span>
+    <div class="note" style="margin-top:.75rem">Kenapa N penting? Karena M³ &lt; N₁N₂N₃ = 255,255. Artinya M³ tidak "terpotong" oleh mod, dan CRT akan mengembalikan nilai M³ yang sebenarnya!</div>
+    <p style="margin-top:.5rem;font-size:12px">Syarat: M &lt; min(Nᵢ) = 33, jadi M³ &lt; 33³ = 35,937 &lt; 255,255 ✓</p>
+  </div>
+</div>
+
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung Mᵢ (faktor CRT)</div>
+    <h3>Hitung Mᵢ = N / Nᵢ untuk tiap penerima</h3>
+    <p style="margin-bottom:.75rem">Mᵢ adalah N dibagi dengan modulus penerima ke-i. Ini bagian dari formula CRT.</p>
+    <span class="eq">M₁ = N / N₁ = 255,255 / 33 = 7,735</span>
+    <span class="eq">M₂ = N / N₂ = 255,255 / 85 = 3,003</span>
+    <span class="eq">M₃ = N / N₃ = 255,255 / 91 = 2,805</span>
+    <div class="note">Mᵢ ini nanti akan di-mod dengan Nᵢ untuk mencari invers modularnya (yᵢ).</div>
+    <p style="margin-top:.5rem;font-size:13px">Formula CRT lengkap:</p>
+    <span class="eq">X = (C₁·M₁·y₁ + C₂·M₂·y₂ + C₃·M₃·y₃) mod N</span>
+    <p style="margin-top:.4rem;font-size:12px;color:var(--color-text-tertiary)">X adalah M³ yang sebenarnya. Langkah berikutnya adalah mencari yᵢ.</p>
+  </div>
+</div>
+
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung yᵢ (invers modular)</div>
+    <h3>Hitung yᵢ = Mᵢ⁻¹ mod Nᵢ menggunakan Extended Euclidean</h3>
+    <p style="margin-bottom:.75rem">Kita perlu mencari yᵢ sedemikian sehingga Mᵢ · yᵢ ≡ 1 (mod Nᵢ). Caranya: hitung Mᵢ mod Nᵢ dulu, baru cari inversnya.</p>
+
+    <h3 style="color:#534AB7">y₁ = M₁⁻¹ mod N₁ = 7735⁻¹ mod 33</h3>
+    <span class="eq">7735 mod 33 = 7735 - 234×33 = 7735 - 7,722 = 13</span>
+    <p style="font-size:12px;margin:.3rem 0">Jadi kita cari: 13⁻¹ mod 33 → Extended Euclidean:</p>
+    <span class="eq">33 = 2×13 + 7
+13 = 1×7  + 6
+ 7 = 1×6  + 1   ← gcd = 1
+Balik: 1 = 7 - 6
+           = 7 - (13 - 7)    = 2×7 - 13
+           = 2×(33-2×13) - 13 = 2×33 - 5×13
+→ 13⁻¹ ≡ -5 ≡ 28 (mod 33)</span>
+    <span class="eq-hi">y₁ = 28</span>
+
+    <h3 style="color:#534AB7;margin-top:1rem">y₂ = M₂⁻¹ mod N₂ = 3003⁻¹ mod 85</h3>
+    <span class="eq">3003 mod 85 = 3003 - 35×85 = 3003 - 2,975 = 28</span>
+    <span class="eq">85 = 3×28 + 1   ← gcd = 1
+→ 1 = 85 - 3×28
+→ 28⁻¹ ≡ -3 ≡ 82 (mod 85)</span>
+    <span class="eq-hi">y₂ = 82</span>
+
+    <h3 style="color:#534AB7;margin-top:1rem">y₃ = M₃⁻¹ mod N₃ = 2805⁻¹ mod 91</h3>
+    <span class="eq">2805 mod 91 = 2805 - 30×91 = 2805 - 2,730 = 75</span>
+    <span class="eq">91 = 1×75 + 16
+75 = 4×16 + 11
+16 = 1×11 + 5
+11 = 2×5  + 1   ← gcd = 1
+Balik: 1 = 11 - 2×5
+         = 11 - 2(16-11)   = 3×11 - 2×16
+         = 3(75-4×16) - 2×16 = 3×75 - 14×16
+         = 3×75 - 14(91-75)  = 17×75 - 14×91
+→ 75⁻¹ ≡ 17 (mod 91)</span>
+    <span class="eq-hi">y₃ = 17</span>
+  </div>
+</div>
+
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung X menggunakan CRT</div>
+    <h3>Susun dan hitung X = (C₁M₁y₁ + C₂M₂y₂ + C₃M₃y₃) mod N</h3>
+    <p style="margin-bottom:.75rem">Sekarang kita punya semua komponen. Masukkan ke formula CRT:</p>
+
+    <table class="tbl" style="margin-bottom:1rem">
+      <tr><th>i</th><th>Cᵢ</th><th>Mᵢ</th><th>yᵢ</th><th>Cᵢ × Mᵢ × yᵢ</th></tr>
+      <tr><td>1</td><td>26</td><td>7,735</td><td>28</td><td>26 × 7,735 × 28 = 5,631,080</td></tr>
+      <tr><td>2</td><td>40</td><td>3,003</td><td>82</td><td>40 × 3,003 × 82 = 9,849,840</td></tr>
+      <tr><td>3</td><td>34</td><td>2,805</td><td>17</td><td>34 × 2,805 × 17 = 1,621,290</td></tr>
+    </table>
+
+    <span class="eq">Jumlah = 5,631,080 + 9,849,840 + 1,621,290</span>
+    <span class="eq">       = 17,102,210</span>
+    <span class="eq">X = 17,102,210 mod 255,255</span>
+    <span class="eq">17,102,210 ÷ 255,255 = 67 sisa 125</span>
+    <span class="eq">67 × 255,255 = 17,102,085</span>
+    <span class="eq">17,102,210 - 17,102,085 = 125</span>
+    <span class="eq-hi">X = 125</span>
+    <div class="ok" style="margin-top:.5rem">X = 125 adalah nilai M³ yang sebenarnya (bukan modular)! Sekarang tinggal akar pangkat 3.</div>
+  </div>
+</div>
+
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Ambil akar pangkat e</div>
+    <h3>Hitung M = X^(1/e) = 125^(1/3)</h3>
+    <p style="margin-bottom:.75rem">Kita tahu X = M³ dan X = 125. Kita perlu mencari M dengan mengambil akar pangkat 3 secara integer (bukan float!).</p>
+    <span class="eq">X = M^e = M³ = 125</span>
+    <span class="eq">M = ³√125 = ?</span>
+    <span class="eq">Cek: 1³ = 1, 2³ = 8, 3³ = 27, 4³ = 64, 5³ = 125 ✓</span>
+    <span class="eq-hi">M = 5</span>
+    <div class="note">Penting: ini adalah integer cube root, bukan floating point! Gunakan binary search atau Newton's method untuk angka besar.</div>
+  </div>
+</div>
+
+<div class="step-panel" id="step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Verifikasi</div>
+    <h3>Cek: apakah M=5 benar?</h3>
+    <p style="margin-bottom:.75rem">Enkripsi ulang M=5 dengan kunci publik masing-masing penerima dan bandingkan dengan ciphertext asli:</p>
+    <span class="eq">C₁ = M³ mod N₁ = 5³ mod 33 = 125 mod 33</span>
+    <span class="eq">125 = 3×33 + 26 → C₁ = 26 ✓</span>
+    <span class="eq">C₂ = M³ mod N₂ = 5³ mod 85 = 125 mod 85</span>
+    <span class="eq">125 = 1×85 + 40 → C₂ = 40 ✓</span>
+    <span class="eq">C₃ = M³ mod N₃ = 5³ mod 91 = 125 mod 91</span>
+    <span class="eq">125 = 1×91 + 34 → C₃ = 34 ✓</span>
+    <div class="ok" style="margin-top:.75rem">Semua ciphertext cocok! Serangan berhasil.</div>
+
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)">
+      <div style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:4px">Plaintext ditemukan</div>
+      <div class="big-ans">M = 5</div>
+    </div>
+
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid #534AB7;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0">
+      <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Ringkasan langkah Hastad</p>
+      <p style="font-size:12px">1. Verifikasi syarat (e kecil, pesan sama, gcd=1)</p>
+      <p style="font-size:12px">2. Hitung N = N₁ × N₂ × N₃</p>
+      <p style="font-size:12px">3. Hitung Mᵢ = N / Nᵢ</p>
+      <p style="font-size:12px">4. Hitung yᵢ = Mᵢ⁻¹ mod Nᵢ (Extended Euclidean)</p>
+      <p style="font-size:12px">5. Hitung X = (ΣCᵢMᵢyᵢ) mod N</p>
+      <p style="font-size:12px">6. Hitung M = X^(1/e)</p>
+      <p style="font-size:12px">7. Verifikasi</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+let cur=0;
+const total=7;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1) goStep(cur+1);}
+function prevStep(){if(cur>0) goStep(cur-1);}
+renderDots();
+</script>

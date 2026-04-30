@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p,li{font-size:13px;line-height:1.75;color:#555}
+.mono{font-family:monospace;font-size:13px}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.soal-card{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.soal-card h2{color:#042C53}
+.soal-card p{color:#0C447C}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:5px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:5px 10px;border:0.5px solid #ddd;font-family:monospace;color:#1a1a1a}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer;transition:background .15s}
+.dot.done{background:#85B7EB}
+.dot.active{background:#185FA5;width:24px;border-radius:5px}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#185FA5;color:#fff;border-color:#185FA5}
+.btn-next:hover{background:#0C447C}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#1a1a1a}
+.eq-hi{font-family:monospace;background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:13px;line-height:1.9;display:block;color:#042C53}
+.note{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.5rem 0}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.5rem 0}
+.warn{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.5rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:8px}
+.big-ans{font-size:22px;font-weight:500;color:#185FA5;font-family:monospace}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+</style>
+</head>
+<body>
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:6px">Soal — Common Modulus Attack</div>
+  <h2>Temukan plaintext M!</h2>
+  <p style="margin-top:6px;margin-bottom:10px">Dua pengguna (Alice dan Bob) menggunakan <strong>modulus N yang sama</strong> tetapi exponent publik berbeda. Eve menyadap kedua ciphertext dari pesan M yang sama:</p>
+  <table class="tbl">
+    <tr><th>Pengguna</th><th>Modulus N</th><th>Exp. Publik (e)</th><th>Ciphertext (C)</th></tr>
+    <tr><td>Alice</td><td>55</td><td>e₁ = 3</td><td>C₁ = 8</td></tr>
+    <tr><td>Bob</td><td>55</td><td>e₂ = 7</td><td>C₂ = 18</td></tr>
+  </table>
+  <p style="margin-top:8px">N sama = 55 &nbsp;|&nbsp; C₁ = M^e₁ mod N &nbsp;|&nbsp; C₂ = M^e₂ mod N &nbsp;|&nbsp; Cari M!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="btn-prev" onclick="prevStep()" disabled>Prev</button>
+  <div class="step-dots" id="dots"></div>
+  <span class="step-label" id="step-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Next</button>
+</div>
+
+<!-- STEP 0 -->
+<div class="step-panel active" id="step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Verifikasi syarat serangan</div>
+    <h3>Cek semua syarat Common Modulus Attack</h3>
+    <p style="margin-bottom:.75rem">Ada 3 syarat yang harus terpenuhi:</p>
+    <div class="ok">Syarat 1: N sama untuk kedua penerima → N = 55 ✓</div>
+    <div class="ok">Syarat 2: Pesan M yang sama dienkripsi ke keduanya ✓</div>
+    <p style="margin:.6rem 0 .3rem">Syarat 3: gcd(e₁, e₂) = 1 → wajib coprime!</p>
+    <span class="eq">gcd(e₁, e₂) = gcd(3, 7) = ?</span>
+    <p style="font-size:12px;color:#888;margin:.3rem 0">3 prima, 7 prima, keduanya berbeda → tidak ada faktor persekutuan</p>
+    <span class="eq">gcd(3, 7) = 1 ✓</span>
+    <div class="ok">Semua syarat terpenuhi! Serangan bisa dilanjutkan.</div>
+    <div class="note" style="margin-top:.75rem">Kenapa gcd harus = 1? Karena kita butuh r dan s sehingga r·e₁ + s·e₂ = 1. Ini hanya mungkin jika gcd(e₁,e₂) = 1 (teorema Bezout).</div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-panel" id="step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Ide utama serangan</div>
+    <h3>Kenapa serangan ini bisa bekerja?</h3>
+    <p style="margin-bottom:.75rem">Kita punya dua persamaan:</p>
+    <span class="eq">C₁ = M^e₁ mod N  →  8  = M³ mod 55
+C₂ = M^e₂ mod N  →  18 = M⁷ mod 55</span>
+    <p style="margin:.75rem 0 .4rem">Karena gcd(e₁, e₂) = 1, ada bilangan bulat r dan s dimana:</p>
+    <span class="eq-hi">r·e₁ + s·e₂ = 1</span>
+    <p style="margin:.5rem 0 .4rem">Maka:</p>
+    <span class="eq">C₁ʳ · C₂ˢ mod N
+= (M^e₁)ʳ · (M^e₂)ˢ mod N
+= M^(r·e₁) · M^(s·e₂) mod N
+= M^(r·e₁ + s·e₂) mod N
+= M^1 mod N
+= M</span>
+    <div class="ok">Tanpa tahu kunci privat, kita bisa dapat M langsung dari C₁ dan C₂!</div>
+    <div class="note">Kunci langkah berikutnya: cari r dan s menggunakan Extended Euclidean Algorithm pada e₁ dan e₂.</div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Extended Euclidean Algorithm</div>
+    <h3>Cari r, s sehingga r·e₁ + s·e₂ = 1 &nbsp;&nbsp;(3r + 7s = 1)</h3>
+    <p style="margin-bottom:.75rem">Jalankan Extended Euclidean pada pasangan (e₁=3, e₂=7). Kita cari dari yang lebih besar:</p>
+
+    <p style="font-size:12px;font-weight:500;color:#185FA5;margin-bottom:4px">Fase maju (pembagian berulang):</p>
+    <span class="eq">7 = 2 × 3 + 1
+3 = 3 × 1 + 0  ← berhenti, gcd = 1</span>
+
+    <p style="font-size:12px;font-weight:500;color:#185FA5;margin:.75rem 0 4px">Fase mundur (substitusi balik):</p>
+    <span class="eq">Dari baris pertama:
+1 = 7 - 2×3</span>
+    <span class="eq">Tulis dalam bentuk r·e₁ + s·e₂:
+1 = (-2)×3 + (1)×7</span>
+    <span class="eq-hi">r = -2,  s = 1</span>
+
+    <p style="margin:.75rem 0 .3rem;font-size:13px">Verifikasi:</p>
+    <span class="eq">r·e₁ + s·e₂ = (-2)×3 + (1)×7 = -6 + 7 = 1 ✓</span>
+
+    <div class="warn" style="margin-top:.75rem">r = -2 (NEGATIF)! Ini masalah, karena C₁^(-2) tidak langsung bisa dihitung secara modular. Langkah berikutnya menangani ini.</div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Tangani eksponen negatif</div>
+    <h3>r negatif → gunakan invers modular C₁</h3>
+    <p style="margin-bottom:.75rem">Karena r = -2, kita tidak bisa langsung hitung C₁^(-2). Tapi secara modular:</p>
+    <span class="eq">C₁^(-2) mod N = (C₁⁻¹ mod N)² mod N</span>
+    <p style="margin:.5rem 0 .4rem">Jadi kita perlu hitung <strong>C₁⁻¹ mod N = 8⁻¹ mod 55</strong> dulu.</p>
+
+    <p style="font-size:12px;font-weight:500;color:#185FA5;margin-bottom:4px">Extended Euclidean untuk 8⁻¹ mod 55:</p>
+    <span class="eq">55 = 6×8 + 7
+ 8 = 1×7 + 1
+ 7 = 7×1 + 0  ← gcd = 1</span>
+
+    <p style="font-size:12px;font-weight:500;color:#185FA5;margin:.5rem 0 4px">Substitusi balik:</p>
+    <span class="eq">1 = 8 - 1×7
+  = 8 - 1×(55 - 6×8)
+  = 8 - 55 + 6×8
+  = 7×8 - 1×55</span>
+    <span class="eq-hi">8⁻¹ ≡ 7 (mod 55)</span>
+
+    <p style="margin:.5rem 0 .3rem;font-size:13px">Verifikasi:</p>
+    <span class="eq">8 × 7 = 56 = 1×55 + 1 → 56 mod 55 = 1 ✓</span>
+
+    <div class="ok">C₁⁻¹ mod 55 = 7. Sekarang C₁^(-2) = 7² = 49.</div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Hitung M</div>
+    <h3>M = C₁ʳ · C₂ˢ mod N</h3>
+    <p style="margin-bottom:.75rem">Semua komponen sudah siap. Masukkan r=-2, s=1, C₁=8, C₂=18, N=55:</p>
+
+    <table class="tbl" style="margin-bottom:1rem">
+      <tr><th>Komponen</th><th>Nilai</th><th>Cara hitung</th></tr>
+      <tr><td>r</td><td>-2</td><td>dari Extended Euclidean</td></tr>
+      <tr><td>s</td><td>1</td><td>dari Extended Euclidean</td></tr>
+      <tr><td>C₁^r = C₁^(-2)</td><td>(C₁⁻¹)² = 7² = 49</td><td>karena r negatif</td></tr>
+      <tr><td>C₂^s = C₂^1</td><td>18</td><td>langsung</td></tr>
+    </table>
+
+    <span class="eq">M = C₁^r · C₂^s mod N</span>
+    <span class="eq">M = 49 · 18 mod 55</span>
+    <span class="eq">49 × 18 = 882</span>
+    <span class="eq">882 ÷ 55 = 16 sisa 2  (16 × 55 = 880)</span>
+    <span class="eq">882 - 880 = 2</span>
+    <span class="eq-hi">M = 2</span>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Verifikasi</div>
+    <h3>Enkripsi ulang M=2 dan bandingkan</h3>
+    <span class="eq">C₁ = M^e₁ mod N = 2³ mod 55 = 8 mod 55 = 8 ✓</span>
+    <span class="eq">C₂ = M^e₂ mod N = 2⁷ mod 55 = 128 mod 55</span>
+    <span class="eq">128 = 2×55 + 18 → C₂ = 18 ✓</span>
+
+    <div class="ok" style="margin-top:.75rem">Kedua ciphertext cocok! Serangan berhasil.</div>
+
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+      <div style="font-size:12px;color:#999;margin-bottom:4px">Plaintext ditemukan</div>
+      <div class="big-ans">M = 2</div>
+    </div>
+
+    <div style="margin-top:1rem;padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #185FA5;border-radius:0 8px 8px 0">
+      <p style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:6px">Ringkasan langkah Common Modulus Attack</p>
+      <p style="font-size:12px">1. Verifikasi: N sama, gcd(e₁,e₂) = 1</p>
+      <p style="font-size:12px">2. Pahami ide: r·e₁ + s·e₂ = 1 → M = C₁ʳ·C₂ˢ mod N</p>
+      <p style="font-size:12px">3. Extended Euclidean pada (e₁, e₂) → dapat r dan s</p>
+      <p style="font-size:12px">4. Jika r atau s negatif → hitung invers modular Cᵢ⁻¹ mod N</p>
+      <p style="font-size:12px">5. Hitung M = C₁ʳ · C₂ˢ mod N</p>
+      <p style="font-size:12px">6. Verifikasi dengan enkripsi ulang</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let cur=0;
+const total=6;
+function renderDots(){
+  const d=document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');
+    b.onclick=(()=>{const j=i;return()=>goStep(j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+total;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===total-1;
+  renderDots();
+}
+function nextStep(){if(cur<total-1) goStep(cur+1);}
+function prevStep(){if(cur>0) goStep(cur-1);}
+renderDots();
+</script>
+</body>
+</html>

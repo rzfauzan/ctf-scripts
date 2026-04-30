@@ -1,0 +1,10 @@
+import requests
+
+def oracle(payload):
+    url = "http://tantangan-ctf.id/api/encrypt"
+    params = {'input': payload}
+    r = requests.get(url, params=params)
+    
+    # Ambil data hex dari response (sesuaikan dengan format outputnya)
+    data = r.json()
+    return data['ciphertext']

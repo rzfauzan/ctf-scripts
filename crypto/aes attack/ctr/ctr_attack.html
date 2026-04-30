@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#185FA5;color:#fff;border-color:#185FA5}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#185FA5;color:#fff;border-color:#185FA5}
+.btn-next:hover{background:#0C447C}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#042C53}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:8px}
+.badge-blue{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#E6F1FB;color:#0C447C}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace;color:#185FA5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.blk{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:5px;font-family:monospace;font-size:11px;font-weight:500;min-width:32px}
+.bp{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.bk{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.bc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.bw{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.bx{background:#f5f5f5;color:#888;border:0.5px solid #ddd;font-size:14px}
+.flow-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:.35rem 0}
+.arr{color:#888;font-size:14px;margin:0 2px}
+.ctr-box{background:#f5f5f5;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #ddd;margin:.4rem 0;line-height:1.9}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge-blue">CTR Attack</div>
+  <h2>Dua serangan pada AES-CTR</h2>
+  <p style="margin-top:4px">CTR mengenkripsi counter yang terus bertambah untuk menghasilkan keystream. Dua serangan utamanya: <strong>Nonce Reuse</strong> (identik dengan OFB, tapi lebih fatal karena semua blok bocor) dan <strong>Bit-flipping</strong> (lebih bersih dari CFB — tanpa efek samping ke blok lain).</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('nr')">Nonce Reuse Attack</button>
+  <button class="nav-btn" onclick="showSec('bf')">Bit-flipping Attack</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- NONCE REUSE CTR -->
+<!-- ============================================================ -->
+<div id="sec-nr" class="sec active">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:6px">Soal 1 — CTR Nonce Reuse Attack</div>
+  <h2 style="color:#042C53">Dekripsi dua pesan dengan nonce yang sama!</h2>
+  <p style="color:#0C447C;margin-top:6px;margin-bottom:.75rem">Sebuah sistem enkripsi file menggunakan AES-CTR. Karena bug di random number generator, dua file berbeda dienkripsi dengan <strong>nonce yang sama</strong>. Eve menyimpan kedua ciphertext dan tahu isi file pertama. Temukan isi file kedua!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #85B7EB;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">File 1 — plaintext P₁ diketahui (file header standar):</div>
+    <div style="color:#0C447C">P₁  = "FILESTART:IMG00" = 46 49 4C 45 53 54 41 52 54 3A 49 4D 47 30 30 00</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">File 1 — ciphertext C_A (2 blok, 32 byte):</div>
+    <div>Blok 1: B2 0F 3C 91 24 68 05 E7 43 5D 9A F1 28 4E 7C 55</div>
+    <div style="margin-top:3px">Blok 2: 7A C3 81 0B 9F 56 D4 22 E8 14 63 AE 5B 92 3F 0D</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">File 2 — ciphertext C_B (2 blok, nonce SAMA):</div>
+    <div>Blok 1: A5 1A 29 84 37 7D 10 F2 58 48 8F E4 3B 5B 69 42</div>
+    <div style="margin-top:3px">Blok 2: 6D D4 96 1E 8C 43 C1 35 FF 09 74 BB 4E 87 2A 18</div>
+  </div>
+  <p style="color:#0C447C;font-size:12px">Pertanyaan: Temukan plaintext P_B (kedua blok) dari file 2!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="nr-prev" onclick="prevStep('nr')" disabled>Prev</button>
+  <div class="step-dots" id="nr-dots"></div>
+  <span class="step-label" id="nr-counter">1 / 7</span>
+  <button class="btn-nav btn-next" id="nr-next" onclick="nextStep('nr')">Next</button>
+</div>
+
+<!-- NR STEP 0 -->
+<div class="step-panel active" id="nr-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Cara kerja CTR dan bedanya dari OFB</div>
+    <h3>CTR mengenkripsi Nonce‖Counter, bukan output sebelumnya</h3>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;margin:.5rem 0;font-size:12px">
+      <div style="font-weight:500;margin-bottom:6px;color:#555">Proses enkripsi CTR:</div>
+      <div class="flow-row">
+        <span class="blk bw" style="font-size:10px">Nonce‖0</span>
+        <span class="arr">→</span>
+        <span style="padding:3px 6px;background:#EAF3DE;border-radius:4px;font-size:10px;color:#27500A">AES_K</span>
+        <span class="arr">→</span>
+        <span class="blk bk" style="font-size:10px">KS₁</span>
+        <span class="blk bx" style="font-size:13px">⊕</span>
+        <span class="blk bp" style="font-size:10px">P₁</span>
+        <span class="arr">=</span>
+        <span class="blk bc" style="font-size:10px">C₁</span>
+      </div>
+      <div class="flow-row" style="margin-top:.3rem">
+        <span class="blk bw" style="font-size:10px">Nonce‖1</span>
+        <span class="arr">→</span>
+        <span style="padding:3px 6px;background:#EAF3DE;border-radius:4px;font-size:10px;color:#27500A">AES_K</span>
+        <span class="arr">→</span>
+        <span class="blk bk" style="font-size:10px">KS₂</span>
+        <span class="blk bx" style="font-size:13px">⊕</span>
+        <span class="blk bp" style="font-size:10px">P₂</span>
+        <span class="arr">=</span>
+        <span class="blk bc" style="font-size:10px">C₂</span>
+      </div>
+    </div>
+    <p style="margin:.5rem 0">Keystream hanya bergantung pada K dan Nonce‖Counter:</p>
+    <span class="eq">KS_i = AES_K(Nonce ‖ i)   ← tidak ada P, tidak ada C sebelumnya</span>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Keunggulan CTR vs OFB</p>
+        <p style="font-size:11px;color:#3B6D11">Bisa diparalelkan — tiap blok keystream bisa dihitung independen tanpa menunggu blok sebelumnya.</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Kelemahan yang sama</p>
+        <p style="font-size:11px;color:#A32D2D">Kalau nonce sama → seluruh keystream (KS₁, KS₂, ...) identik untuk kedua pesan!</p>
+      </div>
+    </div>
+    <div class="danger">Perbedaan dari CFB IV reuse: di CTR SEMUA blok bocor (bukan hanya blok pertama) karena semua KS hanya bergantung pada nonce, bukan pada ciphertext sebelumnya.</div>
+  </div>
+</div>
+
+<!-- NR STEP 1 -->
+<div class="step-panel" id="nr-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Rumus serangan (identik dengan OFB)</div>
+    <h3>Two-Time Pad berlaku untuk semua blok</h3>
+    <span class="eq">C_A₁ = P_A₁ ⊕ KS₁     C_A₂ = P_A₂ ⊕ KS₂
+C_B₁ = P_B₁ ⊕ KS₁     C_B₂ = P_B₂ ⊕ KS₂</span>
+    <p style="margin:.5rem 0">XOR per blok (KS hilang):</p>
+    <span class="eq-hi">C_A_i ⊕ C_B_i = P_A_i ⊕ P_B_i</span>
+    <p style="margin:.5rem 0">Isolasi P_B karena P_A diketahui:</p>
+    <span class="eq-ok">P_B_i = C_A_i ⊕ C_B_i ⊕ P_A_i</span>
+    <p style="margin:.5rem 0">Atau ekstrak keystream dulu:</p>
+    <span class="eq-ok">KS_i  = C_A_i ⊕ P_A_i
+P_B_i = C_B_i ⊕ KS_i</span>
+    <div class="note">Berlaku untuk SEMUA blok — ini yang membuat CTR nonce reuse lebih fatal dari CFB IV reuse yang hanya bocor di blok pertama.</div>
+  </div>
+</div>
+
+<!-- NR STEP 2 -->
+<div class="step-panel" id="nr-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Ekstrak KS₁ dari blok pertama</div>
+    <h3>KS₁ = C_A₁ ⊕ P_A₁</h3>
+    <div class="ctr-box">
+      C_A₁ = B2 0F 3C 91 24 68 05 E7 43 5D 9A F1 28 4E 7C 55
+      P_A₁ = 46 49 4C 45 53 54 41 52 54 3A 49 4D 47 30 30 00
+    </div>
+    <table class="tbl">
+      <tr><th>Byte</th><th>C_A₁</th><th>P_A₁</th><th>Char</th><th>KS₁ = XOR</th></tr>
+      <tr><td>0</td><td>B2</td><td>46 'F'</td><td></td><td style="color:#27500A;font-weight:500">F4</td></tr>
+      <tr><td>1</td><td>0F</td><td>49 'I'</td><td></td><td style="color:#27500A;font-weight:500">46</td></tr>
+      <tr><td>2</td><td>3C</td><td>4C 'L'</td><td></td><td style="color:#27500A;font-weight:500">70</td></tr>
+      <tr><td>3</td><td>91</td><td>45 'E'</td><td></td><td style="color:#27500A;font-weight:500">D4</td></tr>
+      <tr><td>4</td><td>24</td><td>53 'S'</td><td></td><td style="color:#27500A;font-weight:500">77</td></tr>
+      <tr><td>5</td><td>68</td><td>54 'T'</td><td></td><td style="color:#27500A;font-weight:500">3C</td></tr>
+      <tr><td>6</td><td>05</td><td>41 'A'</td><td></td><td style="color:#27500A;font-weight:500">44</td></tr>
+      <tr><td>7</td><td>E7</td><td>52 'R'</td><td></td><td style="color:#27500A;font-weight:500">B5</td></tr>
+      <tr><td>8</td><td>43</td><td>54 'T'</td><td></td><td style="color:#27500A;font-weight:500">17</td></tr>
+      <tr><td>9</td><td>5D</td><td>3A ':'</td><td></td><td style="color:#27500A;font-weight:500">67</td></tr>
+      <tr><td>10</td><td>9A</td><td>49 'I'</td><td></td><td style="color:#27500A;font-weight:500">D3</td></tr>
+      <tr><td>11</td><td>F1</td><td>4D 'M'</td><td></td><td style="color:#27500A;font-weight:500">BC</td></tr>
+      <tr><td>12</td><td>28</td><td>47 'G'</td><td></td><td style="color:#27500A;font-weight:500">6F</td></tr>
+      <tr><td>13</td><td>4E</td><td>30 '0'</td><td></td><td style="color:#27500A;font-weight:500">7E</td></tr>
+      <tr><td>14</td><td>7C</td><td>30 '0'</td><td></td><td style="color:#27500A;font-weight:500">4C</td></tr>
+      <tr><td>15</td><td>55</td><td>00 NUL</td><td></td><td style="color:#27500A;font-weight:500">55</td></tr>
+    </table>
+    <span class="eq-ok">KS₁ = F4 46 70 D4 77 3C 44 B5 17 67 D3 BC 6F 7E 4C 55</span>
+  </div>
+</div>
+
+<!-- NR STEP 3 -->
+<div class="step-panel" id="nr-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Dekripsi blok pertama file 2</div>
+    <h3>P_B₁ = C_B₁ ⊕ KS₁</h3>
+    <div class="ctr-box">
+      C_B₁ = A5 1A 29 84 37 7D 10 F2 58 48 8F E4 3B 5B 69 42
+      KS₁  = F4 46 70 D4 77 3C 44 B5 17 67 D3 BC 6F 7E 4C 55
+    </div>
+    <table class="tbl">
+      <tr><th>Byte</th><th>C_B₁</th><th>KS₁</th><th>P_B₁ = XOR</th><th>Char</th></tr>
+      <tr><td>0</td><td>A5</td><td>F4</td><td style="color:#185FA5;font-weight:500">51</td><td style="color:#185FA5">'Q'</td></tr>
+      <tr><td>1</td><td>1A</td><td>46</td><td style="color:#185FA5;font-weight:500">5C</td><td style="color:#185FA5">'\'</td></tr>
+      <tr><td>2</td><td>29</td><td>70</td><td style="color:#185FA5;font-weight:500">59</td><td style="color:#185FA5">'Y'</td></tr>
+      <tr><td>3</td><td>84</td><td>D4</td><td style="color:#185FA5;font-weight:500">50</td><td style="color:#185FA5">'P'</td></tr>
+      <tr><td>4</td><td>37</td><td>77</td><td style="color:#185FA5;font-weight:500">40</td><td style="color:#185FA5">'@'</td></tr>
+      <tr><td>5</td><td>7D</td><td>3C</td><td style="color:#185FA5;font-weight:500">41</td><td style="color:#185FA5">'A'</td></tr>
+      <tr><td>6</td><td>10</td><td>44</td><td style="color:#185FA5;font-weight:500">54</td><td style="color:#185FA5">'T'</td></tr>
+      <tr><td>7</td><td>F2</td><td>B5</td><td style="color:#185FA5;font-weight:500">47</td><td style="color:#185FA5">'G'</td></tr>
+      <tr><td>8</td><td>58</td><td>17</td><td style="color:#185FA5;font-weight:500">4F</td><td style="color:#185FA5">'O'</td></tr>
+      <tr><td>9</td><td>48</td><td>67</td><td style="color:#185FA5;font-weight:500">2F</td><td style="color:#185FA5">'/'</td></tr>
+      <tr><td>10</td><td>8F</td><td>D3</td><td style="color:#185FA5;font-weight:500">5C</td><td style="color:#185FA5">'\'</td></tr>
+      <tr><td>11</td><td>E4</td><td>BC</td><td style="color:#185FA5;font-weight:500">58</td><td style="color:#185FA5">'X'</td></tr>
+      <tr><td>12</td><td>3B</td><td>6F</td><td style="color:#185FA5;font-weight:500">54</td><td style="color:#185FA5">'T'</td></tr>
+      <tr><td>13</td><td>5B</td><td>7E</td><td style="color:#185FA5;font-weight:500">25</td><td style="color:#185FA5">'%'</td></tr>
+      <tr><td>14</td><td>69</td><td>4C</td><td style="color:#185FA5;font-weight:500">25</td><td style="color:#185FA5">'%'</td></tr>
+      <tr><td>15</td><td>42</td><td>55</td><td style="color:#185FA5;font-weight:500">17</td><td style="color:#185FA5">SI</td></tr>
+    </table>
+    <span class="eq-hi">P_B₁ = 51 5C 59 50 40 41 54 47 4F 2F 5C 58 54 25 25 17</span>
+  </div>
+</div>
+
+<!-- NR STEP 4 -->
+<div class="step-panel" id="nr-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Ekstrak KS₂ dan dekripsi blok kedua</div>
+    <h3>KS₂ = C_A₂ ⊕ P_A₂ (butuh known plaintext blok 2 juga)</h3>
+    <p style="margin-bottom:.75rem">Untuk mendekripsi blok 2, kita butuh KS₂. Cara paling mudah: kalau kita punya P_A₂ (plaintext file 1 blok 2), kita bisa hitung KS₂ langsung.</p>
+    <div class="note">Di soal ini P_A hanya diberikan untuk blok 1. Tapi ada cara lain menggunakan rumus langsung tanpa perlu KS₂ eksplisit:</div>
+    <span class="eq-hi">P_B₂ = C_A₂ ⊕ C_B₂ ⊕ P_A₂</span>
+    <p style="margin:.5rem 0;font-size:12px">Jika P_A₂ diketahui (misal "PAYLOAD:SECRET0" = 50 41 59 4C 4F 41 44 3A 53 45 43 52 45 54 30 00):</p>
+    <div class="ctr-box" style="font-size:11px">
+      C_A₂ = 7A C3 81 0B 9F 56 D4 22 E8 14 63 AE 5B 92 3F 0D
+      C_B₂ = 6D D4 96 1E 8C 43 C1 35 FF 09 74 BB 4E 87 2A 18
+      C_A₂ ⊕ C_B₂ = 17 17 17 15 13 15 15 17 17 1D 17 15 15 15 15 15
+    </div>
+    <span class="eq">P_B₂ = (C_A₂ ⊕ C_B₂) ⊕ P_A₂
+       = (17 17 17 15 13 15 15 17 17 1D 17 15 15 15 15 15)
+       ⊕ (50 41 59 4C 4F 41 44 3A 53 45 43 52 45 54 30 00)</span>
+    <span class="eq-hi">P_B₂ = 47 56 4E 59 5C 54 51 2D 44 58 54 47 50 41 25 15</span>
+    <div class="ok" style="margin-top:.5rem">Kedua blok file 2 berhasil didekripsi tanpa kunci K!</div>
+  </div>
+</div>
+
+<!-- NR STEP 5 -->
+<div class="step-panel" id="nr-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Crib dragging: kalau tidak ada known plaintext</div>
+    <h3>Teknik lanjutan: tebak kata umum untuk ungkap plaintext</h3>
+    <p style="margin-bottom:.75rem">Kalau P_A tidak diketahui sama sekali, tapi kita tahu kedua plaintext dalam bahasa Inggris, ada teknik <strong>crib dragging</strong>:</p>
+    <div style="background:#f5f5f5;border-radius:8px;padding:.75rem;border:0.5px solid #ddd;font-size:12px;line-height:1.9">
+      <div style="font-weight:500;margin-bottom:4px">Ide crib dragging:</div>
+      <div>1. Hitung Z = C_A ⊕ C_B = P_A ⊕ P_B</div>
+      <div>2. Tebak kata umum: "the ", "and ", "msg:", " is ", dll (disebut "crib")</div>
+      <div>3. XOR Z dengan crib di berbagai posisi</div>
+      <div>4. Kalau hasilnya teks yang masuk akal → posisi ketemu!</div>
+      <div>5. Dari P_A[pos] yang terungkap, hitung P_B[pos] = Z[pos] ⊕ P_A[pos]</div>
+    </div>
+    <span class="eq">Contoh: coba "the " di posisi 0
+Z[0..3] ⊕ "the " = ?
+Kalau hasilnya kata Inggris yang valid → P_A mulai dengan "the "!</span>
+    <div class="note" style="margin-top:.4rem">Tools seperti <em>many-time-pad solver</em> mengotomasi ini. Dengan cukup banyak ciphertext yang memakai nonce sama, seluruh keystream bisa dipulihkan.</div>
+  </div>
+</div>
+
+<!-- NR STEP 6 -->
+<div class="step-panel" id="nr-step-6">
+  <div class="card">
+    <div class="step-title">Langkah 7 — Kesimpulan dan perbandingan</div>
+    <h3>CTR vs OFB vs CFB — seberapa parah nonce/IV reuse?</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Mode</th><th>Blok yang bocor</th><th>Kenapa?</th></tr>
+      <tr class="hi-row"><td>CTR</td><td>SEMUA blok</td><td>KS_i = AES(Nonce‖i) — semua bergantung pada nonce saja</td></tr>
+      <tr class="hi-row"><td>OFB</td><td>SEMUA blok</td><td>KS_i = AES(KS_{i-1}) — chain dari IV, semua sama</td></tr>
+      <tr class="warn-row"><td>CFB</td><td>Hanya blok 1</td><td>KS₂ = AES(C₁) — C₁ beda antar sesi → KS₂ beda</td></tr>
+      <tr class="ok-row"><td>CBC</td><td>Tidak ada (tapi IV attack lain)</td><td>Tidak pakai keystream — tapi rentan bit-flipping & padding oracle</td></tr>
+    </table>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan CTR Nonce Reuse</div>
+      <div class="big-ans">P_B₁ dan P_B₂ terbongkar penuh</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Hanya butuh: C_A, C_B, P_A — tanpa kunci K</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #185FA5">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan CTR Nonce Reuse Attack</p>
+      <p style="font-size:12px">1. Identifikasi: dua ciphertext dengan nonce sama</p>
+      <p style="font-size:12px">2. KS_i = C_A_i ⊕ P_A_i  (dari known plaintext)</p>
+      <p style="font-size:12px">3. P_B_i = C_B_i ⊕ KS_i  (untuk semua blok)</p>
+      <p style="font-size:12px">4. Alternatif: P_B_i = C_A_i ⊕ C_B_i ⊕ P_A_i</p>
+      <p style="font-size:12px">5. Tanpa known PT: gunakan crib dragging</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Solusi: nonce harus unik — pakai counter deterministik, bukan random</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-nr -->
+
+<!-- ============================================================ -->
+<!-- BIT FLIPPING CTR -->
+<!-- ============================================================ -->
+<div id="sec-bf" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#185FA5;margin-bottom:6px">Soal 2 — CTR Bit-flipping Attack</div>
+  <h2 style="color:#042C53">Ubah "role=user" menjadi "role=root" tanpa kunci!</h2>
+  <p style="color:#0C447C;margin-top:6px;margin-bottom:.75rem">Sebuah API menggunakan AES-CTR untuk enkripsi token akses. Eve menyadap token dan tahu strukturnya. Modifikasi ciphertext agar server membaca role=root!</p>
+  <div style="background:#fff;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;border:0.5px solid #85B7EB;margin-bottom:.75rem">
+    <div style="color:#888;margin-bottom:4px">Plaintext token (struktur diketahui):</div>
+    <div style="color:#0C447C">"uid=1337&role=user&exp=9999"</div>
+    <div style="color:#888;margin-top:8px;margin-bottom:4px">Ciphertext token yang disadap:</div>
+    <div>C = 3A 8F 51 C2 97 04 B6 2D 7E F3 41 88 5C 09 D4 B1 A3 6C 2F 85 47 C0 3B 91 6E D2</div>
+  </div>
+  <p style="color:#0C447C;font-size:12px">Target: ubah byte "user" (posisi 14–17) menjadi "root" — tanpa kunci!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="bf-prev" onclick="prevStep('bf')" disabled>Prev</button>
+  <div class="step-dots" id="bf-dots"></div>
+  <span class="step-label" id="bf-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="bf-next" onclick="nextStep('bf')">Next</button>
+</div>
+
+<!-- BF STEP 0 -->
+<div class="step-panel active" id="bf-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Kenapa bit-flipping CTR lebih bersih dari CBC/CFB</div>
+    <h3>CTR: modifikasi C[j] hanya memengaruhi P[j] — tidak ada efek samping!</h3>
+    <p style="margin-bottom:.75rem">Ingat rumus dekripsi CTR:</p>
+    <span class="eq">P[j] = C[j] ⊕ KS[j]</span>
+    <p style="margin:.5rem 0">Kalau kita flip C[j]:</p>
+    <span class="eq">P'[j] = C'[j] ⊕ KS[j]   ← KS tidak berubah (tidak ada chaining)</span>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">CBC / CFB bit-flip</p>
+        <p style="font-size:11px;color:#A32D2D">Ada efek samping: satu blok lain ikut rusak karena ada chaining antar blok.</p>
+      </div>
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">CTR / OFB bit-flip</p>
+        <p style="font-size:11px;color:#3B6D11">Tidak ada efek samping! Hanya byte yang diflip yang berubah. Blok lain tetap utuh.</p>
+      </div>
+    </div>
+    <div class="danger">Ini membuat bit-flipping di CTR lebih "surgical" — attacker bisa ubah tepat satu byte tanpa merusak data lain. Lebih berbahaya!</div>
+  </div>
+</div>
+
+<!-- BF STEP 1 -->
+<div class="step-panel" id="bf-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Identifikasi posisi target</div>
+    <h3>Di byte ke berapa "user" dalam plaintext?</h3>
+    <p style="margin-bottom:.75rem">Plaintext: <span style="font-family:monospace;background:#f5f5f5;padding:2px 6px;border-radius:4px">uid=1337&role=user&exp=9999</span></p>
+    <table class="tbl">
+      <tr><th>Pos</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th></tr>
+      <tr>
+        <td>Char</td><td>u</td><td>i</td><td>d</td><td>=</td><td>1</td><td>3</td><td>3</td><td>7</td><td>&amp;</td><td>r</td><td>o</td><td>l</td><td>e</td><td>=</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">u</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">s</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">e</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">r</td>
+      </tr>
+      <tr>
+        <td>Hex</td><td>75</td><td>69</td><td>64</td><td>3D</td><td>31</td><td>33</td><td>33</td><td>37</td><td>26</td><td>72</td><td>6F</td><td>6C</td><td>65</td><td>3D</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">75</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">73</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">65</td>
+        <td style="background:#FCEBEH;color:#791F1F;font-weight:500">72</td>
+      </tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">"user" ada di posisi 14, 15, 16, 17. Target: ubah ke "root" = 72 6F 6F 74.</div>
+    <p style="margin-top:.5rem;font-size:12px">Di CTR, ciphertext posisi 14 langsung mengontrol plaintext posisi 14 — tidak perlu modifikasi blok lain!</p>
+  </div>
+</div>
+
+<!-- BF STEP 2 -->
+<div class="step-panel" id="bf-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Rumus modifikasi CTR bit-flipping</div>
+    <h3>Formula identik dengan OFB dan CBC, tapi posisi ciphertext yang dimodifikasi berbeda</h3>
+    <p style="margin-bottom:.75rem">Dari rumus P[j] = C[j] ⊕ KS[j]:</p>
+    <span class="eq">P[j]  = C[j]  ⊕ KS[j]
+P'[j] = C'[j] ⊕ KS[j]
+→ P'[j] = P[j] ⊕ C[j] ⊕ C'[j]
+→ C'[j] = C[j] ⊕ P[j] ⊕ P'[j]</span>
+    <span class="eq-hi">C'[j] = C[j] ⊕ original_byte ⊕ target_byte</span>
+    <p style="margin:.5rem 0">Di CTR, byte ciphertext ke-j langsung mengontrol plaintext ke-j di posisi yang sama — tidak ada offset blok seperti CBC!</p>
+    <div class="note">Perbandingan posisi modifikasi:
+CBC: ubah C₁[j] → memengaruhi P₂[j]
+CFB: ubah C₂[j] → memengaruhi P₂[j] (blok sama)
+CTR: ubah C[j] → memengaruhi P[j] (byte sama, no block boundary)</div>
+  </div>
+</div>
+
+<!-- BF STEP 3 -->
+<div class="step-panel" id="bf-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Hitung 4 byte modifikasi</div>
+    <h3>Ubah "user" (0x75 0x73 0x65 0x72) → "root" (0x72 0x6F 0x6F 0x74)</h3>
+
+    <p style="font-size:12px;font-weight:500;margin-bottom:4px">Byte 14: 'u' (0x75) → 'r' (0x72)</p>
+    <span class="eq">C[14] asli = 0xD4
+C'[14] = 0xD4 ⊕ 0x75 ⊕ 0x72
+       = 0xD4 ⊕ 0x07   (0x75⊕0x72 = 0x07)
+       = 0xD3</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte 15: 's' (0x73) → 'o' (0x6F)</p>
+    <span class="eq">C[15] asli = 0xB1
+C'[15] = 0xB1 ⊕ 0x73 ⊕ 0x6F
+       = 0xB1 ⊕ 0x1C   (0x73⊕0x6F = 0x1C)
+       = 0xAD</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte 16: 'e' (0x65) → 'o' (0x6F)</p>
+    <span class="eq">C[16] asli = 0xA3
+C'[16] = 0xA3 ⊕ 0x65 ⊕ 0x6F
+       = 0xA3 ⊕ 0x0A   (0x65⊕0x6F = 0x0A)
+       = 0xA9</span>
+
+    <p style="font-size:12px;font-weight:500;margin:.75rem 0 4px">Byte 17: 'r' (0x72) → 't' (0x74)</p>
+    <span class="eq">C[17] asli = 0x6C
+C'[17] = 0x6C ⊕ 0x72 ⊕ 0x74
+       = 0x6C ⊕ 0x06   (0x72⊕0x74 = 0x06)
+       = 0x6A</span>
+
+    <div class="ok" style="margin-top:.5rem">Modifikasi: C'[14]=0xD3, C'[15]=0xAD, C'[16]=0xA9, C'[17]=0x6A</div>
+  </div>
+</div>
+
+<!-- BF STEP 4 -->
+<div class="step-panel" id="bf-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Rakit ciphertext yang dimodifikasi</div>
+    <h3>Ganti 4 byte di posisi 14–17</h3>
+    <table class="tbl">
+      <tr><th>Byte</th><th>0–13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18–25</th></tr>
+      <tr>
+        <td>C asli</td>
+        <td style="font-size:10px">3A 8F...3D</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">D4</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">B1</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">A3</td>
+        <td style="background:#FCEBEB;color:#791F1F;font-weight:500">6C</td>
+        <td style="font-size:10px">2F 85...D2</td>
+      </tr>
+      <tr>
+        <td>C' modif</td>
+        <td style="font-size:10px">3A 8F...3D</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">D3</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">AD</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">A9</td>
+        <td style="background:#EAF3DE;color:#27500A;font-weight:500">6A</td>
+        <td style="font-size:10px">2F 85...D2</td>
+      </tr>
+    </table>
+    <div class="ok" style="margin-top:.5rem">Hanya 4 byte yang berubah. Sisa ciphertext (byte 0–13 dan 18–25) tidak tersentuh — server akan mendekripsi bagian lain dengan benar!</div>
+    <div class="warn" style="margin-top:.4rem">Ini yang membuat CTR bit-flipping lebih berbahaya dari CBC/CFB: tidak ada "collateral damage" ke blok lain. Serangan sangat presisi.</div>
+  </div>
+</div>
+
+<!-- BF STEP 5 -->
+<div class="step-panel" id="bf-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Verifikasi dan ringkasan</div>
+    <h3>Server mendekripsi C' dan membaca role=root</h3>
+    <span class="eq-ok">Hasil dekripsi C':
+"uid=1337&role=root&exp=9999" ✓</span>
+    <p style="margin:.5rem 0;font-size:12px">Byte 14–17 yang didekripsi:</p>
+    <span class="eq">P'[14] = C'[14] ⊕ KS[14] = 0xD3 ⊕ KS[14]
+       = (0xD4 ⊕ 0x07) ⊕ KS[14]
+       = 0xD4 ⊕ KS[14] ⊕ 0x07
+       = P[14] ⊕ 0x07
+       = 0x75 ⊕ 0x07 = 0x72 = 'r' ✓</span>
+
+    <div style="text-align:center;padding:1.25rem;margin-top:.75rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil serangan</div>
+      <div class="big-ans">role=user → role=root ✓</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Tanpa efek samping ke byte lain</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #185FA5">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan CTR Bit-flipping Attack</p>
+      <p style="font-size:12px">1. Identifikasi posisi byte target dalam plaintext</p>
+      <p style="font-size:12px">2. Hitung: C'[j] = C[j] ⊕ original_byte ⊕ target_byte</p>
+      <p style="font-size:12px">3. Ganti byte tersebut di ciphertext</p>
+      <p style="font-size:12px">4. Kirim ke server — TIDAK ada efek samping ke byte lain</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Berbeda dari CBC/CFB: modifikasi byte ke-j langsung memengaruhi plaintext byte ke-j (tidak ada offset blok)</p>
+    </div>
+
+    <div class="warn" style="margin-top:.75rem">
+      <strong>Satu tabel untuk ingat perbedaan semua mode:</strong><br>
+      CBC: C[i-1][j] → P[i][j] berubah, P[i-1] rusak<br>
+      CFB: C[i][j] → P[i][j] berubah, P[i+1] rusak<br>
+      CTR: C[j] → P[j] berubah, tidak ada kerusakan lain<br>
+      OFB: C[j] → P[j] berubah, tidak ada kerusakan lain
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-bf -->
+
+<script>
+const state={nr:{cur:0,total:7},bf:{cur:0,total:6}};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#85B7EB':i===s.cur?'background:#185FA5;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('nr');
+renderDots('bf');
+</script>
+</body>
+</html>

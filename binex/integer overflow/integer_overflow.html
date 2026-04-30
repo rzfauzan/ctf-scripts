@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 14px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.btn-next:hover{background:#0F6E56}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#04342C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.eq-warn{font-family:monospace;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#412402}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#1D9E75;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#E1F5EE;color:#085041}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.big-ans{font-size:18px;font-weight:500;font-family:monospace;color:#1D9E75}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.mem-row{display:flex;gap:3px;align-items:stretch;margin:.35rem 0;font-family:monospace;font-size:11px}
+.mem-cell{padding:5px 8px;border-radius:4px;min-width:44px;text-align:center;border:0.5px solid #ddd;background:#f5f5f5;color:#1a1a1a}
+.mem-cell.overflow{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+.mem-cell.wrap{background:#FAEEDA;color:#633806;border-color:#FAC775;border:2px solid #E24B4A}
+.mem-cell.ok{background:#EAF3DE;color:#27500A;border-color:#97C459;border:none}
+.mem-cell.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.arrow{color:#888;font-size:16px;display:flex;align-items:center;margin:0 2px}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0}
+.code-block .cm{color:#555}
+.code-block .ck{color:#64b5f6}
+.code-block .cs{color:#ffd700}
+.code-block .cn{color:#f48fb1}
+.code-block .hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.code-block .ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Binary Exploitation — Integer Overflow / Underflow</div>
+  <h2>Ketika bilangan "meluap" dan program menjadi tidak terduga</h2>
+  <p style="margin-top:4px">Integer Overflow/Underflow terjadi ketika operasi aritmetika menghasilkan nilai di luar batas tipe data. Komputer tidak error — ia diam-diam "wrap around" ke nilai yang tidak kita harapkan. Inilah yang dieksploitasi.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('konsep')">Konsep dasar</button>
+  <button class="nav-btn" onclick="showSec('overflow')">Overflow Attack</button>
+  <button class="nav-btn" onclick="showSec('underflow')">Underflow Attack</button>
+  <button class="nav-btn" onclick="showSec('signedness')">Signedness Bug</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- KONSEP -->
+<!-- ============================================================ -->
+<div id="sec-konsep" class="sec active">
+  <div class="card">
+    <div class="step-title">Fondasi — Tipe data integer di C/C++</div>
+    <h3>Setiap tipe punya batas — dan batas itu bisa dilampaui</h3>
+    <p style="margin-bottom:.75rem">Di C/C++, integer disimpan dalam jumlah bit yang tetap. Kalau nilai melewati batas, ia <strong>wrap around</strong> (melingkar balik) — bukan error, tidak ada exception, program jalan terus dengan nilai yang salah.</p>
+    <table class="tbl">
+      <tr><th>Tipe</th><th>Ukuran</th><th>Min</th><th>Max</th></tr>
+      <tr><td>uint8_t</td><td>8-bit unsigned</td><td>0</td><td>255</td></tr>
+      <tr><td>int8_t</td><td>8-bit signed</td><td>-128</td><td>127</td></tr>
+      <tr><td>uint16_t</td><td>16-bit unsigned</td><td>0</td><td>65,535</td></tr>
+      <tr><td>int16_t</td><td>16-bit signed</td><td>-32,768</td><td>32,767</td></tr>
+      <tr><td>uint32_t</td><td>32-bit unsigned</td><td>0</td><td>4,294,967,295</td></tr>
+      <tr><td>int32_t</td><td>32-bit signed</td><td>-2,147,483,648</td><td>2,147,483,647</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Visualisasi — Wrap Around seperti jam</div>
+    <h3>Bayangkan uint8_t seperti jam 256 angka (0–255)</h3>
+    <p style="margin-bottom:.75rem">Analoginya persis seperti jam analog. Kalau jarum jam di angka 12 maju 1 jam, jadi 1 — bukan 13. Sama persis dengan integer:</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:.75rem 0">
+      <div style="flex:1;min-width:180px;padding:.75rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:6px">OVERFLOW (meluap ke atas)</p>
+        <div class="mem-row">
+          <div class="mem-cell ok">253</div>
+          <div class="mem-cell ok">254</div>
+          <div class="mem-cell ok">255</div>
+          <div class="arrow">→</div>
+          <div class="mem-cell wrap">0</div>
+        </div>
+        <p style="font-size:11px;color:#A32D2D;margin-top:4px">255 + 1 = <strong>0</strong> (bukan 256!)</p>
+      </div>
+      <div style="flex:1;min-width:180px;padding:.75rem;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#633806;margin-bottom:6px">UNDERFLOW (meluap ke bawah)</p>
+        <div class="mem-row">
+          <div class="mem-cell ok">2</div>
+          <div class="mem-cell ok">1</div>
+          <div class="mem-cell ok">0</div>
+          <div class="arrow">→</div>
+          <div class="mem-cell overflow">255</div>
+        </div>
+        <p style="font-size:11px;color:#854F0B;margin-top:4px">0 - 1 = <strong>255</strong> (bukan -1!)</p>
+      </div>
+    </div>
+    <div class="note">Untuk uint8_t: nilai selalu dalam rentang 0–255. Melewati 255 → balik ke 0. Kurang dari 0 → balik ke 255. Ini disebut <strong>modular arithmetic</strong> — (255 + 1) mod 256 = 0.</div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Rumus Wrap Around</div>
+    <h3>Cara hitung nilai setelah overflow/underflow</h3>
+    <span class="eq">Untuk tipe N-bit unsigned:
+  nilai_baru = (nilai_lama ± operasi) mod 2^N
+
+uint8_t:  255 + 1  = (255 + 1) mod 256 = 0
+uint8_t:  0   - 1  = (0 - 1)   mod 256 = 255
+uint16_t: 65535 + 1 = (65535+1) mod 65536 = 0
+uint32_t: 0 - 1    = 4294967295</span>
+
+    <span class="eq">Untuk tipe N-bit signed (two's complement):
+  int8_t:  127 + 1 = -128   (MIN_INT)
+  int8_t: -128 - 1 =  127   (MAX_INT)
+  int32_t: 2147483647 + 1 = -2147483648</span>
+
+    <div class="danger">Kenapa berbahaya? Karena program melanjutkan eksekusi dengan nilai yang salah ini — dan programmer biasanya tidak mengeceknya. Inilah celah yang dieksploitasi.</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- OVERFLOW ATTACK -->
+<!-- ============================================================ -->
+<div id="sec-overflow" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#1D9E75;margin-bottom:6px">Soal 1 — Integer Overflow Attack</div>
+  <h2 style="color:#04342C">Bypass pemeriksaan saldo dengan overflow!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Sebuah aplikasi belanja online memiliki fungsi berikut untuk memproses pembelian. Temukan cara untuk membeli item seharga 200 dengan saldo hanya 10!</p>
+  <div class="code-block">
+    <span class="cm">// Tipe data: uint8_t (0 - 255)</span><br>
+    <span class="ck">uint8_t</span> saldo = <span class="cn">10</span>;        <span class="cm">// saldo user</span><br>
+    <span class="ck">uint8_t</span> harga = <span class="cn">200</span>;       <span class="cm">// harga item</span><br>
+    <span class="ck">uint8_t</span> diskon = <span class="cn">0</span>;        <span class="cm">// diskon dari voucher</span><br>
+    <br>
+    <span class="cm">// Harga setelah diskon</span><br>
+    <span class="ck">uint8_t</span> harga_bayar = harga - diskon;<br>
+    <br>
+    <span class="cm">// Cek apakah saldo cukup</span><br>
+    <span class="ck">if</span> (saldo >= harga_bayar) {<br>
+    &nbsp;&nbsp;saldo -= harga_bayar;<br>
+    &nbsp;&nbsp;printf(<span class="cs">"Pembelian berhasil!\n"</span>);<br>
+    } <span class="ck">else</span> {<br>
+    &nbsp;&nbsp;printf(<span class="cs">"Saldo tidak cukup.\n"</span>);<br>
+    }
+  </div>
+  <p style="color:#085041;font-size:12px;margin-top:.5rem">Pertanyaan: Berikan nilai diskon berapa yang bisa membuat saldo 10 bisa membeli item 200?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="ov-prev" onclick="prevStep('ov')" disabled>Prev</button>
+  <div class="step-dots" id="ov-dots"></div>
+  <span class="step-label" id="ov-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="ov-next" onclick="nextStep('ov')">Next</button>
+</div>
+
+<!-- OV STEP 0 -->
+<div class="step-panel active" id="ov-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi celah</div>
+    <h3>Di mana titik lemah kode ini?</h3>
+    <p style="margin-bottom:.75rem">Perhatikan baris ini:</p>
+    <span class="eq">uint8_t harga_bayar = harga - diskon;</span>
+    <p style="margin:.5rem 0">Kalau <code>diskon > harga</code>, maka <code>harga - diskon</code> akan menghasilkan nilai negatif. Tapi karena tipenya <code>uint8_t</code> (unsigned, tidak bisa negatif), hasilnya akan <strong>wrap around</strong> ke nilai besar!</p>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#EAF3DE;border:0.5px solid #97C459;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#27500A;margin-bottom:4px">Harapan programmer</p>
+        <p style="font-size:11px;color:#3B6D11">diskon selalu &lt;= harga, jadi harga_bayar selalu positif dan masuk akal.</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">Realita yang bisa dieksploitasi</p>
+        <p style="font-size:11px;color:#A32D2D">Kalau kita kontrol nilai diskon dan set > 200, harga_bayar akan underflow ke nilai kecil!</p>
+      </div>
+    </div>
+    <div class="note">Ingat: uint8_t tidak bisa menyimpan nilai negatif. Hasil negatif akan wrap ke (256 + nilai_negatif).</div>
+  </div>
+</div>
+
+<!-- OV STEP 1 -->
+<div class="step-panel" id="ov-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Pahami wrap around untuk pengurangan</div>
+    <h3>Apa yang terjadi saat 200 - diskon di uint8_t?</h3>
+    <p style="margin-bottom:.75rem">Rumus: untuk uint8_t, hasil = (200 - diskon) mod 256</p>
+    <table class="tbl">
+      <tr><th>diskon</th><th>200 - diskon (matematika)</th><th>Hasil uint8_t</th><th>Pembelian berhasil?</th></tr>
+      <tr class="ok-row"><td>0</td><td>200</td><td>200</td><td style="color:#791F1F">Tidak (10 &lt; 200)</td></tr>
+      <tr class="ok-row"><td>100</td><td>100</td><td>100</td><td style="color:#791F1F">Tidak (10 &lt; 100)</td></tr>
+      <tr class="ok-row"><td>190</td><td>10</td><td>10</td><td style="color:#27500A">Ya! (10 >= 10)</td></tr>
+      <tr class="hi-row"><td>201</td><td>-1</td><td>255</td><td style="color:#791F1F">Tidak (10 &lt; 255)</td></tr>
+      <tr class="hi-row"><td>210</td><td>-10</td><td>246</td><td style="color:#791F1F">Tidak (10 &lt; 246)</td></tr>
+      <tr class="warn-row"><td>255</td><td>-55</td><td>201</td><td style="color:#791F1F">Tidak</td></tr>
+    </table>
+    <p style="margin:.5rem 0;font-size:12px">Kita perlu harga_bayar &lt;= 10 (saldo kita). Mari cari nilai diskon yang menghasilkan ini.</p>
+  </div>
+</div>
+
+<!-- OV STEP 2 -->
+<div class="step-panel" id="ov-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung nilai diskon yang tepat</div>
+    <h3>Cari diskon sehingga harga_bayar = 0 atau sangat kecil</h3>
+    <p style="margin-bottom:.75rem">Kita ingin harga_bayar = 0, artinya:</p>
+    <span class="eq">(200 - diskon) mod 256 = 0
+200 - diskon = -256  (karena -256 mod 256 = 0)
+diskon = 200 + 256 = 456</span>
+    <p style="margin:.5rem 0">Tapi diskon bertipe uint8_t juga! Jadi max 255. Kalau diskon = 200:</p>
+    <span class="eq">(200 - 200) mod 256 = 0 ✓</span>
+    <div class="ok" style="margin-top:.5rem">diskon = 200 → harga_bayar = 0! Saldo 10 &gt;= 0, pembelian berhasil!</div>
+
+    <p style="margin:.75rem 0 .4rem;font-size:12px">Atau kalau diskon bisa lebih dari 200 tapi masih uint8_t (max 255):</p>
+    <span class="eq">diskon = 205: (200 - 205) mod 256 = (-5) mod 256 = 251  → gagal
+diskon = 210: (200 - 210) mod 256 = (-10) mod 256 = 246 → gagal</span>
+    <div class="note">Yang paling bersih adalah diskon = 200 → harga_bayar = 0. Atau diskon tepat = 200 + N dimana N = saldo yang tersisa.</div>
+  </div>
+</div>
+
+<!-- OV STEP 3 -->
+<div class="step-panel" id="ov-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Trace eksekusi program dengan diskon=200</div>
+    <h3>Ikuti eksekusi kode step by step</h3>
+    <div class="code-block">
+      uint8_t saldo = <span class="cn">10</span>;<br>
+      uint8_t harga = <span class="cn">200</span>;<br>
+      uint8_t diskon = <span class="hi">200</span>;  <span class="cm">// ← input kita</span><br>
+      <br>
+      uint8_t harga_bayar = <span class="hi">200 - 200</span>;<br>
+      <span class="cm">// = 0  (tidak wrap, kebetulan 0)</span><br>
+      <span class="cm">// harga_bayar = 0</span><br>
+      <br>
+      <span class="ck">if</span> (<span class="ok-hi">10 >= 0</span>) {  <span class="cm">// TRUE!</span><br>
+      &nbsp;&nbsp;saldo -= <span class="cn">0</span>;   <span class="cm">// saldo tetap 10</span><br>
+      &nbsp;&nbsp;printf(<span class="cs">"Pembelian berhasil!\n"</span>);<br>
+      }
+    </div>
+    <div class="ok" style="margin-top:.5rem">Dengan diskon=200, kita membeli item 200 secara GRATIS dan saldo tidak berkurang!</div>
+  </div>
+</div>
+
+<!-- OV STEP 4 -->
+<div class="step-panel" id="ov-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Skenario lebih realistis dengan wrap</div>
+    <h3>Pakai diskon = 201: harga_bayar wrap ke 255</h3>
+    <div class="code-block">
+      uint8_t harga_bayar = <span class="hi">200 - 201</span>;<br>
+      <span class="cm">// Matematis: -1</span><br>
+      <span class="cm">// uint8_t:   (-1) mod 256 = 255</span><br>
+      <span class="cm">// harga_bayar = 255  ← WRAP AROUND!</span><br>
+      <br>
+      <span class="ck">if</span> (<span class="hi">10 >= 255</span>) {  <span class="cm">// FALSE</span><br>
+      &nbsp;&nbsp;<span class="cm">// Tidak berhasil</span><br>
+      }
+    </div>
+    <p style="margin:.75rem 0 .4rem;font-size:12px">Sebaliknya, coba diskon = 246 agar harga_bayar = 10:</p>
+    <span class="eq">(200 - 246) mod 256 = (-46) mod 256 = 210  → tidak = 10</span>
+    <p style="font-size:12px;margin:.4rem 0">Cari dengan formula: diskon = 200 - target_harga_bayar</p>
+    <span class="eq">Mau harga_bayar = 5:  diskon = 200 - 5 = 195  ✓
+Mau harga_bayar = 10: diskon = 200 - 10 = 190 ✓
+Mau harga_bayar = 0:  diskon = 200 - 0 = 200  ✓</span>
+    <div class="ok">Formula sederhana: diskon = harga - harga_yang_kita_mau_bayar</div>
+  </div>
+</div>
+
+<!-- OV STEP 5 -->
+<div class="step-panel" id="ov-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Cara fix dan ringkasan</div>
+    <h3>Bagaimana programmer seharusnya fix ini?</h3>
+    <div class="code-block">
+      <span class="cm">// FIX 1: Validasi diskon tidak melebihi harga</span><br>
+      <span class="ck">if</span> (diskon > harga) {<br>
+      &nbsp;&nbsp;printf(<span class="cs">"Diskon tidak valid!\n"</span>);<br>
+      &nbsp;&nbsp;<span class="ck">return</span>;<br>
+      }<br>
+      <br>
+      <span class="cm">// FIX 2: Gunakan tipe yang lebih besar dan cek</span><br>
+      <span class="ck">int32_t</span> harga_bayar = (<span class="ck">int32_t</span>)harga - (<span class="ck">int32_t</span>)diskon;<br>
+      <span class="ck">if</span> (harga_bayar &lt; 0) {<br>
+      &nbsp;&nbsp;printf(<span class="cs">"Diskon tidak valid!\n"</span>);<br>
+      &nbsp;&nbsp;<span class="ck">return</span>;<br>
+      }
+    </div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">diskon = 200 → harga_bayar = 0</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Beli item 200 dengan saldo 10, gratis, saldo tidak berkurang</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #1D9E75">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Integer Overflow/Underflow Attack</p>
+      <p style="font-size:12px">1. Identifikasi operasi aritmetika pada tipe integer terbatas</p>
+      <p style="font-size:12px">2. Cek apakah hasilnya bisa negatif (pada unsigned) atau melewati MAX</p>
+      <p style="font-size:12px">3. Hitung nilai input yang menyebabkan wrap ke nilai yang menguntungkan</p>
+      <p style="font-size:12px">4. Rumus: hasil = (a ± b) mod 2^N untuk tipe N-bit</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-overflow -->
+
+<!-- ============================================================ -->
+<!-- UNDERFLOW ATTACK -->
+<!-- ============================================================ -->
+<div id="sec-underflow" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#1D9E75;margin-bottom:6px">Soal 2 — Integer Underflow Attack</div>
+  <h2 style="color:#04342C">Bypass batas usia dengan underflow!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Sebuah sistem registrasi membatasi umur user minimum 18 tahun. Lihat kode ini dan temukan cara bypass!</p>
+  <div class="code-block">
+    <span class="ck">uint8_t</span> umur_input;       <span class="cm">// input dari user (0-255)</span><br>
+    <span class="ck">uint8_t</span> batas_min = <span class="cn">18</span>;   <span class="cm">// usia minimum</span><br>
+    <span class="ck">uint8_t</span> selisih;<br>
+    <br>
+    scanf(<span class="cs">"%hhu"</span>, &amp;umur_input);  <span class="cm">// baca input</span><br>
+    <br>
+    selisih = umur_input - batas_min;<br>
+    <br>
+    <span class="ck">if</span> (selisih &lt;= <span class="cn">100</span>) {  <span class="cm">// "usia 18-118 diterima"</span><br>
+    &nbsp;&nbsp;printf(<span class="cs">"Registrasi berhasil!\n"</span>);<br>
+    } <span class="ck">else</span> {<br>
+    &nbsp;&nbsp;printf(<span class="cs">"Usia tidak valid.\n"</span>);<br>
+    }
+  </div>
+  <p style="color:#085041;font-size:12px;margin-top:.5rem">Pertanyaan: Input umur berapa yang bisa lolos padahal &lt; 18?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="un-prev" onclick="prevStep('un')" disabled>Prev</button>
+  <div class="step-dots" id="un-dots"></div>
+  <span class="step-label" id="un-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="un-next" onclick="nextStep('un')">Next</button>
+</div>
+
+<!-- UN STEP 0 -->
+<div class="step-panel active" id="un-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Analisis logika program</div>
+    <h3>Apa yang ingin dicek programmer?</h3>
+    <p style="margin-bottom:.75rem">Programmer ingin memastikan <code>umur_input >= 18</code> dan <code>umur_input &lt;= 118</code>. Ia menggunakan selisih untuk itu:</p>
+    <span class="eq">selisih = umur_input - batas_min  (= umur_input - 18)
+if (selisih &lt;= 100) → diterima</span>
+    <p style="margin:.5rem 0">Dalam matematika biasa, ini masuk akal:</p>
+    <table class="tbl">
+      <tr><th>umur_input</th><th>selisih (matematika)</th><th>selisih &lt;= 100?</th><th>Harusnya</th></tr>
+      <tr class="ok-row"><td>18</td><td>0</td><td>Ya (0 &lt;= 100)</td><td>Diterima ✓</td></tr>
+      <tr class="ok-row"><td>50</td><td>32</td><td>Ya</td><td>Diterima ✓</td></tr>
+      <tr class="ok-row"><td>118</td><td>100</td><td>Ya (100 &lt;= 100)</td><td>Diterima ✓</td></tr>
+      <tr class="hi-row"><td>5</td><td>-13</td><td>Harusnya tidak</td><td>Ditolak ✓</td></tr>
+    </table>
+    <div class="danger" style="margin-top:.5rem">Tapi karena selisih bertipe uint8_t, nilai negatif tidak bisa disimpan → WRAP AROUND!</div>
+  </div>
+</div>
+
+<!-- UN STEP 1 -->
+<div class="step-panel" id="un-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Hitung nilai wrap untuk umur &lt; 18</div>
+    <h3>Kalau umur_input &lt; 18, selisih akan wrap ke nilai besar</h3>
+    <table class="tbl">
+      <tr><th>umur_input</th><th>Matematika</th><th>uint8_t result</th><th>Lolos (&lt;= 100)?</th></tr>
+      <tr class="hi-row"><td>17</td><td>17-18 = -1</td><td>(-1+256) = 255</td><td style="color:#791F1F">Tidak (255 &gt; 100)</td></tr>
+      <tr class="hi-row"><td>10</td><td>10-18 = -8</td><td>248</td><td style="color:#791F1F">Tidak</td></tr>
+      <tr class="hi-row"><td>5</td><td>5-18 = -13</td><td>243</td><td style="color:#791F1F">Tidak</td></tr>
+      <tr class="hi-row"><td>0</td><td>0-18 = -18</td><td>238</td><td style="color:#791F1F">Tidak</td></tr>
+    </table>
+    <p style="margin:.75rem 0 .4rem;font-size:12px">Semua umur &lt; 18 menghasilkan selisih &gt; 100 → tidak lolos. Bagus. Tapi...</p>
+    <div class="warn">Apa yang terjadi kalau umur_input sangat besar (> 118)?</div>
+  </div>
+</div>
+
+<!-- UN STEP 2 -->
+<div class="step-panel" id="un-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Celah di sisi atas: umur > 255 tidak bisa, tapi...</div>
+    <h3>Bagaimana kalau input sangat besar tapi uint8_t?</h3>
+    <p style="margin-bottom:.75rem">Karena <code>scanf("%hhu", ...)</code> membaca uint8_t, input sudah dibatasi 0–255. Tapi mari periksa umur 119–255:</p>
+    <table class="tbl">
+      <tr><th>umur_input</th><th>selisih = umur - 18</th><th>Lolos (&lt;= 100)?</th><th>Harusnya?</th></tr>
+      <tr class="hi-row"><td>119</td><td>101</td><td style="color:#791F1F">Tidak (101 &gt; 100)</td><td>Ditolak ✓</td></tr>
+      <tr class="hi-row"><td>156</td><td>138</td><td style="color:#791F1F">Tidak</td><td>Ditolak ✓</td></tr>
+      <tr class="warn-row"><td>174</td><td>156</td><td style="color:#791F1F">Tidak</td><td>Ditolak ✓</td></tr>
+    </table>
+    <p style="margin:.75rem 0 .4rem;font-size:12px">Hmm, semua aman. Tapi perhatikan: apakah <code>scanf("%hhu")</code> bisa menerima input lebih dari 255?</p>
+    <div class="note">Kalau input "300" diberikan ke scanf dengan %hhu, hasilnya implementation-defined — tapi seringkali: 300 mod 256 = 44. Dan 44 - 18 = 26 &lt;= 100 → LOLOS!</div>
+    <div class="danger" style="margin-top:.4rem">Input 300 → tersimpan sebagai 44 (overflow di parsing!) → selisih = 26 → dianggap usia 44 tahun padahal input 300 yang sebenarnya tidak valid!</div>
+  </div>
+</div>
+
+<!-- UN STEP 3 -->
+<div class="step-panel" id="un-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Trace eksekusi dengan input = 300 (atau 44)</div>
+    <h3>Ikuti eksekusi step by step</h3>
+    <div class="code-block">
+      <span class="cm">// User input: "300"</span><br>
+      <span class="cm">// scanf %hhu membaca 300 → truncate ke uint8_t</span><br>
+      <span class="cm">// 300 mod 256 = 44</span><br>
+      uint8_t umur_input = <span class="hi">44</span>;  <span class="cm">// seharusnya dari 300!</span><br>
+      uint8_t batas_min  = <span class="cn">18</span>;<br>
+      <br>
+      selisih = <span class="hi">44 - 18</span> = <span class="ok-hi">26</span>;<br>
+      <br>
+      <span class="ck">if</span> (<span class="ok-hi">26 &lt;= 100</span>) {  <span class="cm">// TRUE!</span><br>
+      &nbsp;&nbsp;printf(<span class="cs">"Registrasi berhasil!\n"</span>);<br>
+      &nbsp;&nbsp;<span class="cm">// Padahal user input 300 yang tidak valid!</span><br>
+      }
+    </div>
+    <div class="warn" style="margin-top:.5rem">Lebih langsung: input langsung 5 (usia anak) tidak lolos. Tapi input "261" → 261 mod 256 = 5 → 5 - 18 = -13 → 243 &gt; 100 → juga tidak lolos.</div>
+    <div class="ok" style="margin-top:.4rem">Yang lolos adalah input yang setelah truncate ke uint8_t menghasilkan nilai 18–118. Contoh: input 274 → 274 mod 256 = 18 → lolos!</div>
+  </div>
+</div>
+
+<!-- UN STEP 4 -->
+<div class="step-panel" id="un-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Jawaban dan pelajaran</div>
+    <h3>Input yang mengeksploitasi bug ini</h3>
+    <span class="eq-ok">Input 274 → 274 mod 256 = 18 → selisih = 0 → lolos (dianggap usia 18)
+Input 300 → 300 mod 256 = 44 → selisih = 26 → lolos (dianggap usia 44)
+Input 530 → 530 mod 256 = 18 → lolos juga!</span>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">Input 274 (→ tersimpan 18, lolos)</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #1D9E75">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Pelajaran dari soal ini</p>
+      <p style="font-size:12px">1. Selalu validasi input SEBELUM menyimpan ke tipe terbatas</p>
+      <p style="font-size:12px">2. Jangan gunakan unsigned untuk logika "lebih besar dari minimum"</p>
+      <p style="font-size:12px">3. Gunakan signed int dengan cek eksplisit: if (umur &lt; 18 || umur &gt; 118)</p>
+      <p style="font-size:12px">4. Selalu verifikasi range input di sisi server, bukan hanya client</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-underflow -->
+
+<!-- ============================================================ -->
+<!-- SIGNEDNESS BUG -->
+<!-- ============================================================ -->
+<div id="sec-signedness" class="sec">
+
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#1D9E75;margin-bottom:6px">Soal 3 — Signedness Bug (Signed vs Unsigned Confusion)</div>
+  <h2 style="color:#04342C">Akses memori di luar batas dengan bilangan negatif!</h2>
+  <p style="color:#085041;margin-top:6px;margin-bottom:.75rem">Ini adalah kategori bug yang paling sering menyebabkan buffer overflow! Programmer mencampur signed dan unsigned dalam perbandingan.</p>
+  <div class="code-block">
+    <span class="ck">char</span> buffer[<span class="cn">64</span>] = <span class="cs">"Data rahasia: FLAG{secret_data}"</span>;<br>
+    <span class="ck">int</span> index;   <span class="cm">// SIGNED integer!</span><br>
+    <br>
+    printf(<span class="cs">"Masukkan index (0-63): "</span>);<br>
+    scanf(<span class="cs">"%d"</span>, &amp;index);<br>
+    <br>
+    <span class="cm">// Cek batas: hanya cek batas atas!</span><br>
+    <span class="ck">if</span> (index &lt; <span class="cn">64</span>) {<br>
+    &nbsp;&nbsp;printf(<span class="cs">"buffer[%d] = %c\n"</span>, index, buffer[index]);<br>
+    } <span class="ck">else</span> {<br>
+    &nbsp;&nbsp;printf(<span class="cs">"Index out of range!\n"</span>);<br>
+    }
+  </div>
+  <p style="color:#085041;font-size:12px;margin-top:.5rem">Pertanyaan: Bagaimana cara membaca data di luar buffer (bahkan sebelum buffer)?</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="sg-prev" onclick="prevStep('sg')" disabled>Prev</button>
+  <div class="step-dots" id="sg-dots"></div>
+  <span class="step-label" id="sg-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="sg-next" onclick="nextStep('sg')">Next</button>
+</div>
+
+<!-- SG STEP 0 -->
+<div class="step-panel active" id="sg-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Identifikasi celah signedness</div>
+    <h3>Programmer lupa cek batas bawah!</h3>
+    <p style="margin-bottom:.75rem">Kode menggunakan <code>int index</code> (SIGNED) tapi hanya cek <code>index &lt; 64</code>. Tidak ada cek <code>index >= 0</code>!</p>
+    <span class="eq">Cek yang ada:    if (index < 64)
+Cek yang kurang: if (index >= 0 && index < 64)</span>
+    <p style="margin:.5rem 0">Karena <code>int</code> adalah <strong>signed</strong>, index bisa berisi nilai negatif. Dan nilai negatif selalu lolos cek <code>index &lt; 64</code>!</p>
+    <div class="grid2" style="margin:.75rem 0">
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">index = -1</p>
+        <p style="font-size:11px;color:#A32D2D">-1 &lt; 64 → TRUE → akses buffer[-1] → membaca memori SEBELUM buffer!</p>
+      </div>
+      <div style="padding:.6rem;background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:#791F1F;margin-bottom:4px">index = -100</p>
+        <p style="font-size:11px;color:#A32D2D">-100 &lt; 64 → TRUE → akses buffer[-100] → baca 100 byte sebelum buffer!</p>
+      </div>
+    </div>
+    <div class="danger">buffer[index] dengan index negatif mengakses memori di luar buffer — bisa membaca stack frame, return address, variabel lokal lain, atau data sensitif!</div>
+  </div>
+</div>
+
+<!-- SG STEP 1 -->
+<div class="step-panel" id="sg-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Visualisasi memori</div>
+    <h3>Apa yang ada di memori sekitar buffer?</h3>
+    <p style="margin-bottom:.75rem">Di stack, memori tersusun berurutan. Buffer ada di suatu alamat, dan di sekitarnya ada variabel lain:</p>
+    <div style="font-family:monospace;font-size:11px;background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;color:#a8ff78;line-height:2;margin:.5rem 0">
+      <div style="color:#888">Alamat rendah</div>
+      <div>...  [variabel lokal lain]   ← buffer[-32] s/d buffer[-1]</div>
+      <div style="color:#ffd700">  [saved registers / stack frame]</div>
+      <div>---buffer[0]---"D"---       ← index 0</div>
+      <div>  buffer[1] = "a"</div>
+      <div>  buffer[2] = "t"</div>
+      <div>  ...</div>
+      <div>  buffer[14]= "F"   ← FLAG ada di sini!</div>
+      <div>  buffer[63]= terakhir</div>
+      <div>---buffer[64]---            ← batas, sudah bahaya</div>
+      <div style="color:#888">Alamat tinggi</div>
+    </div>
+    <div class="note">Dengan index negatif, kita bisa membaca isi stack sebelum buffer — termasuk variabel lokal, saved registers, bahkan return address!</div>
+  </div>
+</div>
+
+<!-- SG STEP 2 -->
+<div class="step-panel" id="sg-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Eksploitasi: baca data sebelum buffer</div>
+    <h3>Trace dengan index = -1, -2, -10</h3>
+    <div class="code-block">
+      <span class="cm">// Input: index = -1</span><br>
+      <span class="ck">if</span> (<span class="ok-hi">-1 &lt; 64</span>) {  <span class="cm">// TRUE!</span><br>
+      &nbsp;&nbsp;printf(<span class="cs">"buffer[-1] = %c\n"</span>, buffer[<span class="hi">-1</span>]);<br>
+      &nbsp;&nbsp;<span class="cm">// Membaca byte tepat SEBELUM buffer</span><br>
+      &nbsp;&nbsp;<span class="cm">// Mungkin isi variabel lokal lain</span><br>
+      }<br>
+      <br>
+      <span class="cm">// Input: index = -20</span><br>
+      <span class="ck">if</span> (<span class="ok-hi">-20 &lt; 64</span>) {  <span class="cm">// TRUE!</span><br>
+      &nbsp;&nbsp;printf(<span class="cs">"buffer[-20] = %c\n"</span>, buffer[<span class="hi">-20</span>]);<br>
+      &nbsp;&nbsp;<span class="cm">// Membaca 20 byte sebelum buffer — bisa stack frame!</span><br>
+      }
+    </div>
+    <div class="danger" style="margin-top:.5rem">Dengan mengulang dari -1 sampai -N, attacker bisa melakukan <strong>stack read</strong> — membaca semua data di stack termasuk canary values, return addresses, dan data sensitif.</div>
+  </div>
+</div>
+
+<!-- SG STEP 3 -->
+<div class="step-panel" id="sg-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Kasus nyata: int vs size_t</div>
+    <h3>Bug signedness yang paling umum di dunia nyata</h3>
+    <p style="margin-bottom:.75rem">Versi bug yang lebih halus dan sering terjadi:</p>
+    <div class="code-block">
+      <span class="ck">void</span> copy_data(<span class="ck">char</span>* dst, <span class="ck">char</span>* src, <span class="ck">int</span> len) {<br>
+      &nbsp;&nbsp;<span class="cm">// len bertipe int (signed)</span><br>
+      &nbsp;&nbsp;memcpy(dst, src, len);  <span class="cm">// memcpy butuh size_t (unsigned)!</span><br>
+      }<br>
+      <br>
+      <span class="cm">// Kalau attacker bisa set len = -1:</span><br>
+      <span class="cm">// (size_t)(-1) = 0xFFFFFFFF = 4294967295!</span><br>
+      <span class="cm">// memcpy akan copy 4GB data → CRASH atau arbitrary write!</span>
+    </div>
+    <div class="danger" style="margin-top:.5rem">Ini adalah salah satu bug yang menyebabkan heap overflow! Nilai negatif di-cast ke unsigned menjadi nilai sangat besar.</div>
+    <span class="eq">int len = -1;
+size_t size = (size_t) len;  // implicit cast!
+// size = 0xFFFFFFFF = 4,294,967,295 bytes!</span>
+    <div class="warn" style="margin-top:.4rem">Bug ini ada di banyak library C klasik. OpenSSL Heartbleed (2014) adalah contoh nyata dari bug membaca memori di luar batas dengan ukuran yang dimanipulasi.</div>
+  </div>
+</div>
+
+<!-- SG STEP 4 -->
+<div class="step-panel" id="sg-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Tabel semua jenis Integer Bug</div>
+    <h3>Ringkasan lengkap dengan cara hitung</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Jenis</th><th>Kondisi</th><th>Rumus hasil</th><th>Contoh uint8_t</th></tr>
+      <tr><td>Overflow</td><td>hasil &gt; MAX</td><td>(a + b) mod 2^N</td><td>255 + 1 = 0</td></tr>
+      <tr><td>Underflow</td><td>hasil &lt; MIN (0 untuk unsigned)</td><td>(a - b + 2^N) mod 2^N</td><td>0 - 1 = 255</td></tr>
+      <tr><td>Signed overflow</td><td>hasil &gt; MAX_INT</td><td>wrap ke negatif</td><td>int8: 127+1 = -128</td></tr>
+      <tr><td>Signedness bug</td><td>signed dipakai sebagai unsigned</td><td>(size_t)(-1) = MAX_UINT</td><td>int -1 → uint 255</td></tr>
+    </table>
+
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Jawaban soal</div>
+      <div class="big-ans">index = -1 s/d -N → baca memori sebelum buffer</div>
+    </div>
+
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #1D9E75">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Checklist untuk identifikasi Integer Bug di soal</p>
+      <p style="font-size:12px">1. Cari tipe data: uint8, int16, dll — tipe kecil rawan overflow</p>
+      <p style="font-size:12px">2. Cari operasi aritmetika: +, -, * pada tipe terbatas</p>
+      <p style="font-size:12px">3. Cek apakah ada signed/unsigned mixing dalam perbandingan</p>
+      <p style="font-size:12px">4. Cek apakah ada konversi implisit ke tipe lebih besar (int → size_t)</p>
+      <p style="font-size:12px">5. Hitung: nilai apa yang menyebabkan wrap ke nilai yang menguntungkan?</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Rumus kunci: (hasil_target - nilai_awal + 256) mod 256 = input_yang_dibutuhkan</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sec-signedness -->
+
+<script>
+const state={
+  ov:{cur:0,total:6},
+  un:{cur:0,total:5},
+  sg:{cur:0,total:5}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#5DCAA5':i===s.cur?'background:#1D9E75;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('ov');
+renderDots('un');
+renderDots('sg');
+</script>
+</body>
+</html>

