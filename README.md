@@ -1,4 +1,4 @@
-# CTF Toolkit — Exploit & Crypto Scripts
+# CTF Scripts
 
 Kumpulan script otomatisasi dan template eksploitasi untuk kebutuhan **Capture The Flag (CTF)**.  
 Repositori ini difokuskan untuk mempercepat workflow saat kompetisi, khususnya pada kategori **Binary Exploitation**, **Cryptography**, dan **Digital Forensics**.
