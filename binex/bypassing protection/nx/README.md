@@ -1,4 +1,4 @@
-# Binary Exploitation Notes
+# NX Notes
 
 ### 1. Format String (Stack & Memory Analysis)
 Jika di stack posisi ke-11 berisi alamat `0x0804a000` dan di alamat itu ada teks **"RAHASIA"**:
