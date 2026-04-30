@@ -1,0 +1,60 @@
+# CTF Toolkit — Exploit & Crypto Scripts
+
+Kumpulan script otomatisasi dan template eksploitasi untuk kebutuhan **Capture The Flag (CTF)**.  
+Repositori ini difokuskan untuk mempercepat workflow saat kompetisi, khususnya pada kategori **Binary Exploitation**, **Cryptography**, dan **Digital Forensics**.
+
+---
+
+## Tech Stack
+
+- **OS:** Linux (Kali Linux / Debian Recommended)
+- **Language:** Python 3
+- **Libraries:**
+  - `pwntools` — binary exploitation automation
+  - `pycryptodome` — cryptographic attacks
+
+---
+
+## Module Overview
+
+| Module | Description | Technical Focus |
+|--------|-------------|-----------------|
+| **Binex** | Exploit development for vulnerable binaries | ASLR/NX/PIE Bypass, Canary Leak, ROP, Format String |
+| **Crypto** | Cryptanalysis and decryption scripts | AES Modes, RSA Attacks, Number Theory |
+| **Forensics** | Digital artifact and traffic analysis | PCAP Analysis, Metadata, Blockchain Trace |
+
+---
+
+## Usage
+
+Most scripts are modular and can be executed directly.
+
+### Example — RSA Hastad Attack
+```bash
+cd "crypto/rsa attack/hastad attack"
+python3 final.py
+```
+
+### Example — Remote Binary Exploitation
+```bash
+python3 exploit.py REMOTE
+```
+
+---
+
+## Notes
+
+Each subfolder contains supporting notes such as `.html` or `catatan.txt` files that explain:
+
+- attack theory
+- exploitation flow
+- step-by-step solving references
+
+This makes the repository useful not only during CTFs, but also for future practice and review.
+
+---
+
+## Disclaimer
+
+This repository is intended for **educational purposes, legal labs, and CTF competitions only**.  
+Any misuse outside authorized environments is the sole responsibility of the user.
