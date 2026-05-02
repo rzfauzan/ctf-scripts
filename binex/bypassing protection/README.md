@@ -1,50 +1,212 @@
-1. Kenapa Kadang Ada Alignment, Kadang Enggak?
+# Binary Exploitation Notes — Alignment, Libc Leak, and Function Offset
 
-Alignment (perataan memori) itu seperti aturan parkir di memori. 
-Ada dua jenis alignment yang sering bikin pusing:
-Stack Alignment (CPU/OS): 
-Di arsitektur 64-bit, CPU mengharuskan stack rata 16-byte saat memanggil fungsi tertentu (seperti system atau printf). 
-Jika tidak pas, program akan crash (Segfault). Di 32-bit, aturan ini biasanya lebih longgar.
-Compiler Alignment (Padding): 
-Compiler (seperti GCC) sering menambah "jarak" (padding) antar variabel di stack agar data lebih cepat diakses oleh prosesor.
- Itulah kenapa meskipun buffer kamu cuma 64 byte, jarak ke Canary bisa jadi 72 atau 88 byte karena ada tambahan alignment dari compiler.
- 
- 2. Cara Tahu Offset Alamat Libc di Format String
- 
- Kalau Canary gampang dicari karena ada null byte di belakangnya (misal: 0x...00), alamat libc di format string biasanya dikenali dari polanya:
- Cari Alamat yang Dimulai dengan 0xf7 (32-bit) atau 0x7f (64-bit): 
- Ini adalah rentang memori standar untuk shared libraries (libc).
- Gunakan GDB:
- Jalankan program di GDB sampai ke titik printf(buffer).
- Ketik stack 50 atau telescope.
- Cari alamat yang menunjuk ke dalam libc. 
- GDB biasanya akan memberi label seperti <__libc_start_main+231> atau <_IO_2_1_stdout_>.
- Hitung posisinya dari atas stack. 
- Jika dia ada di urutan ke-5, maka offsetnya adalah %5$p.
- 
- Cara Bruteforce Manual: Kirim %p. sebanyak-banyaknya (misal 50 kali). 
- Lihat outputnya, ambil alamat yang punya awalan 0xf7 atau 0x7f, lalu cek di internet atau GDB apakah itu alamat valid milik fungsi libc.
- 
- 3. Cara Mencari Offset Fungsi (Misal 0x067360)
- Angka 0x067360 itu bukan angka gaib, tapi jarak tetap fungsi tersebut dari titik awal (base) file libc.so. 
- 
- Cara nyarinya:
- Pakai Command Linux (readelf):
- Jika kamu punya file libc-nya (misal libc.so.6), ketik di terminal:readelf -s libc.so.6 | grep puts
- Outputnya akan muncul seperti ini:
- 420: 00067360   456 FUNC    GLOBAL DEFAULT   13 puts@@GLIBC_2.2.5
- Nah, 00067360 itulah offsetnya!.
- Pakai Pwntools (Paling Gampang):
- 
- Python
- from pwn import *
+## 1. Kenapa Kadang Perlu Stack Alignment?
+
+Alignment adalah proses merapikan susunan memori agar CPU bisa mengakses data dengan benar dan efisien.
+
+Secara umum ada dua jenis alignment yang sering muncul saat exploit:
+
+### • Stack Alignment (CPU / ABI Rule)
+Pada arsitektur **64-bit**, stack biasanya harus berada pada kelipatan **16-byte** sebelum pemanggilan fungsi penting seperti `system()`, `printf()`, atau gadget tertentu.
+
+Jika posisi stack tidak aligned:
+- fungsi libc bisa crash,
+- exploit gagal,
+- sering muncul `SIGSEGV`.
+
+Karena itu pada ROP 64-bit kadang perlu menambahkan gadget `ret` sebagai penyeimbang stack.
+
+> Di 32-bit aturan ini jauh lebih longgar, jadi tidak selalu dibutuhkan.
+
+---
+
+### • Compiler Padding / Variable Alignment
+Compiler seperti GCC sering menambahkan ruang kosong (*padding*) antar variabel stack.
+
+Tujuannya:
+- mempercepat akses CPU,
+- menjaga alignment data.
+
+Akibatnya:
+- buffer `char buf[64]` belum tentu tepat diikuti Canary,
+- offset ke Canary bisa menjadi `72`, `80`, bahkan `88` byte.
+
+Jadi offset exploit **tidak boleh menebak dari ukuran variabel saja**, harus dicek dengan:
+- GDB,
+- cyclic pattern,
+- atau telescope stack.
+
+---
+
+## 2. Cara Menemukan Leak Alamat Libc dari Format String
+
+Pada bug format string, kita biasanya melakukan dump stack:
+
+```bash
+%p %p %p %p %p %p ...
+```
+
+Tujuannya mencari pointer yang menunjuk ke region libc.
+
+### Ciri Umum Alamat Libc
+- **32-bit:** biasanya diawali `0xf7xxxxxx`
+- **64-bit:** biasanya diawali `0x7fxxxxxx`
+
+Karena shared library (`libc.so`) dimapping di area tersebut.
+
+---
+
+### Cara Menemukan Posisi Leak
+
+#### Metode GDB
+Jalankan binary sampai tepat sebelum `printf(buffer)` lalu cek stack:
+
+```bash
+telescope $rsp
+```
+
+atau pada 32-bit:
+
+```bash
+x/50wx $esp
+```
+
+Cari pointer yang:
+- menunjuk ke `__libc_start_main`
+- `_IO_2_1_stdout_`
+- `puts`
+- `printf`
+- atau simbol libc lainnya.
+
+Jika pointer libc muncul pada urutan ke-5 stack argument, maka payload leak-nya:
+
+```bash
+%5$p
+```
+
+---
+
+#### Metode Bruteforce Manual
+
+Kirim banyak `%p`:
+
+```bash
+%p.%p.%p.%p.%p.%p.%p.%p.%p.%p
+```
+
+Lalu cari output yang memiliki awalan:
+- `0xf7`
+- `0x7f`
+
+Setelah ketemu, validasi menggunakan:
+- GDB
+- atau file libc.
+
+---
+
+## 3. Cara Mencari Offset Fungsi di Libc
+
+Nilai seperti `0x67360` adalah **offset tetap** suatu fungsi dari awal file `libc.so.6`.
+
+Rumusnya:
+
+Runtime Address = Libc Base + Function Offset
+
+---
+
+### Metode 1 — readelf
+
+Jika punya file libc:
+
+```bash
+readelf -s libc.so.6 | grep puts
+```
+
+Contoh output:
+
+```bash
+420: 00067360   456 FUNC    GLOBAL DEFAULT   13 puts@@GLIBC_2.2.5
+```
+
+Maka:
+
+```bash
+puts offset = 0x67360
+```
+
+---
+
+### Metode 2 — Pwntools
+
+```python
+from pwn import *
+
 libc = ELF('./libc.so.6')
-print(hex(libc.symbols['puts'])) # Ini akan munculin 0x67360
+print(hex(libc.symbols['puts']))
+```
 
-Rumus Keramatnya:
-$$\text{Alamat Asli (Runtime)} = \text{Libc Base} + \text{Offset}$$
+Output:
 
-Jadi, kalau kamu dapet leak puts di alamat 0xf7e12360 dan tahu offsetnya 0x67360, kamu bisa nemuin Libc Base dengan:0xf7e12360 - 0x67360 = 0xf7db5000 (Libc Base).Setelah tahu Base, kamu tinggal tambah offset system atau "/bin/sh" ke Base tersebut untuk mendapatkan alamat aslinya di memori.
+```bash
+0x67360
+```
 
+---
 
+## 4. Menghitung Libc Base dari Leak
+
+Jika hasil leak runtime:
+
+```bash
+puts@libc = 0xf7e12360
+```
+
+dan offset `puts`:
+
+```bash
+0x67360
+```
+
+Maka:
+
+```bash
+libc_base = leak_puts - puts_offset
+libc_base = 0xf7e12360 - 0x67360
+libc_base = 0xf7dbb000
+```
+
+Setelah `libc_base` diketahui, alamat lain tinggal dihitung:
+
+```bash
+system = libc_base + system_offset
+/bin/sh = libc_base + binsh_offset
+```
+
+Ini adalah dasar dari teknik **ret2libc**.
+
+---
+
+## 5. Mengecek Status ASLR
+
+Untuk melihat apakah ASLR aktif:
+
+```bash
 cat /proc/sys/kernel/randomize_va_space
+```
+
+Nilai:
+- `0` = ASLR mati
+- `1` = random stack/shared library
+- `2` = full randomization (default Linux modern)
+
+Jika ASLR aktif, alamat libc berubah setiap run, sehingga leak wajib dilakukan.
+
+---
+
+## Summary Singkat
+
+- **Alignment** membuat offset stack kadang tidak sesuai ukuran variabel.
+- **Libc leak** pada format string dicari dari pointer `0xf7` / `0x7f`.
+- **Function offset** diambil dari `readelf` atau `pwntools`.
+- **Libc base** dihitung dengan `leak - offset`.
+- Setelah base ketemu, `system` dan `"/bin/sh"` bisa dihitung untuk ret2libc.
